@@ -1,0 +1,4 @@
+Language,Compilation_Time_μs,Execution_Time_μs
+Aero,2177.11,1440.42
+C++,342923.55,1436.32
+Python,0,12786.84

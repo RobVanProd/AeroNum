@@ -1,0 +1,316 @@
+// Slicing operations for AeroNum arrays
+// Provides safe and efficient array slicing with borrowing semantics
+
+use crate::traits::{Numeric, Sliceable, Range};
+use crate::array::Array;
+use crate::memory::{ArrayMemoryLayout, SliceRange, DataOwnership};
+
+// Slice information structure
+pub struct SliceInfo {
+    pub ranges: Vec<SliceRange>,
+    pub original_shape: Vec<i32>,
+    pub result_shape: Vec<i32>,
+}
+
+impl SliceInfo {
+    pub fn new(ranges: Vec<SliceRange>, original_shape: &[i32]) -> Option<SliceInfo> {
+        if ranges.len() != original_shape.len() {
+            return None;
+        }
+        
+        let mut result_shape = Vec::new();
+        
+        for (i, range) in ranges.iter().enumerate() {
+            let dim_size = original_shape[i];
+            
+            // Normalize negative indices
+            let start = if range.start < 0 { dim_size + range.start } else { range.start };
+            let end = if range.end < 0 { dim_size + range.end } else { range.end };
+            
+            if start < 0 || start >= dim_size || end < start || end > dim_size {
+                return None;
+            }
+            
+            let slice_size = if range.step == 1 {
+                end - start
+            } else {
+                (end - start + range.step - 1) / range.step
+            };
+            
+            result_shape.push(slice_size);
+        }
+        
+        Some(SliceInfo {
+            ranges,
+            original_shape: original_shape.to_vec(),
+            result_shape,
+        })
+    }
+    
+    pub fn is_contiguous(&self) -> bool {
+        // Check if the slice results in contiguous memory
+        for range in &self.ranges {
+            if range.step != 1 {
+                return false;
+            }
+        }
+        
+        // Check if we're taking a contiguous block
+        let mut found_partial = false;
+        for (i, range) in self.ranges.iter().enumerate() {
+            let dim_size = self.original_shape[i];
+            let start = if range.start < 0 { dim_size + range.start } else { range.start };
+            let end = if range.end < 0 { dim_size + range.end } else { range.end };
+            
+            if start != 0 || end != dim_size {
+                if found_partial {
+                    return false; // Multiple partial dimensions
+                }
+                found_partial = true;
+            }
+        }
+        
+        true
+    }
+}
+
+// Slice result that maintains borrowing relationship
+pub struct Slice<'a, T: Numeric, const D: i32> {
+    data: &'a [T],
+    layout: ArrayMemoryLayout,
+    _phantom: core::marker::PhantomData<&'a Array<T, D>>,
+}
+
+impl<'a, T: Numeric, const D: i32> Slice<'a, T, D> {
+    pub fn new(data: &'a [T], layout: ArrayMemoryLayout) -> Slice<'a, T, D> {
+        Slice {
+            data,
+            layout,
+            _phantom: core::marker::PhantomData,
+        }
+    }
+    
+    pub fn shape(&self) -> &[i32] {
+        &self.layout.shape
+    }
+    
+    pub fn as_slice(&self) -> &[T] {
+        self.data
+    }
+    
+    pub fn get(&self, indices: &[i32]) -> Option<&T> {
+        let linear_idx = self.layout.linear_index(indices)?;
+        self.data.get(linear_idx as usize)
+    }
+    
+    pub fn to_array(&self) -> Array<T, D> where T: Copy {
+        let owned_data = self.data.to_vec();
+        Array::new(owned_data, &self.layout.shape).unwrap()
+    }
+    
+    // Create a sub-slice from this slice
+    pub fn slice(&self, ranges: &[SliceRange]) -> Option<Slice<'a, T, D>> {
+        let new_layout = self.layout.slice(ranges)?;
+        
+        // Calculate the new data slice bounds
+        let start_offset = new_layout.offset - self.layout.offset;
+        let end_offset = start_offset + new_layout.total_size();
+        
+        if start_offset < 0 || end_offset > self.data.len() as i32 {
+            return None;
+        }
+        
+        let new_data = &self.data[start_offset as usize..end_offset as usize];
+        Some(Slice::new(new_data, new_layout))
+    }
+}
+
+// Mutable slice for borrowed mutable data
+pub struct SliceMut<'a, T: Numeric, const D: i32> {
+    data: &'a mut [T],
+    layout: ArrayMemoryLayout,
+    _phantom: core::marker::PhantomData<&'a mut Array<T, D>>,
+}
+
+impl<'a, T: Numeric, const D: i32> SliceMut<'a, T, D> {
+    pub fn new(data: &'a mut [T], layout: ArrayMemoryLayout) -> SliceMut<'a, T, D> {
+        SliceMut {
+            data,
+            layout,
+            _phantom: core::marker::PhantomData,
+        }
+    }
+    
+    pub fn shape(&self) -> &[i32] {
+        &self.layout.shape
+    }
+    
+    pub fn as_slice(&self) -> &[T] {
+        self.data
+    }
+    
+    pub fn as_mut_slice(&mut self) -> &mut [T] {
+        self.data
+    }
+    
+    pub fn get(&self, indices: &[i32]) -> Option<&T> {
+        let linear_idx = self.layout.linear_index(indices)?;
+        self.data.get(linear_idx as usize)
+    }
+    
+    pub fn get_mut(&mut self, indices: &[i32]) -> Option<&mut T> {
+        let linear_idx = self.layout.linear_index(indices)?;
+        self.data.get_mut(linear_idx as usize)
+    }
+    
+    pub fn set(&mut self, indices: &[i32], value: T) -> bool where T: Copy {
+        if let Some(elem) = self.get_mut(indices) {
+            *elem = value;
+            true
+        } else {
+            false
+        }
+    }
+    
+    pub fn to_array(&self) -> Array<T, D> where T: Copy {
+        let owned_data = self.data.to_vec();
+        Array::new(owned_data, &self.layout.shape).unwrap()
+    }
+    
+    // Fill slice with a value
+    pub fn fill(&mut self, value: T) where T: Copy {
+        for elem in self.data.iter_mut() {
+            *elem = value;
+        }
+    }
+    
+    // Copy data from another slice
+    pub fn copy_from(&mut self, other: &Slice<T, D>) -> bool where T: Copy {
+        if self.layout.shape != other.layout.shape {
+            return false;
+        }
+        
+        let other_data = other.as_slice();
+        if self.data.len() != other_data.len() {
+            return false;
+        }
+        
+        for (dst, &src) in self.data.iter_mut().zip(other_data.iter()) {
+            *dst = src;
+        }
+        
+        true
+    }
+}
+
+// Implementation of Sliceable trait for Array
+impl<T: Numeric, const D: i32> Sliceable<T> for Array<T, D> where T: Copy {
+    type Output = Slice<'_, T, D>;
+    
+    fn slice(&self, ranges: &[Range]) -> Self::Output {
+        // Convert Range to SliceRange
+        let slice_ranges: Vec<SliceRange> = ranges.iter().map(|r| {
+            SliceRange {
+                start: r.start,
+                end: r.end,
+                step: r.step,
+            }
+        }).collect();
+        
+        let new_layout = self.layout.slice(&slice_ranges).unwrap();
+        let data_slice = self.as_slice();
+        
+        Slice::new(data_slice, new_layout)
+    }
+    
+    fn slice_mut(&mut self, ranges: &[Range]) -> SliceMut<'_, T, D> {
+        // Convert Range to SliceRange
+        let slice_ranges: Vec<SliceRange> = ranges.iter().map(|r| {
+            SliceRange {
+                start: r.start,
+                end: r.end,
+                step: r.step,
+            }
+        }).collect();
+        
+        let new_layout = self.layout.slice(&slice_ranges).unwrap();
+        let data_slice = self.as_mut_slice().unwrap();
+        
+        SliceMut::new(data_slice, new_layout)
+    }
+}
+
+// Convenience functions for common slicing operations
+impl<T: Numeric, const D: i32> Array<T, D> where T: Copy {
+    // Get a 1D slice along a specific axis
+    pub fn slice_axis(&self, axis: i32, index: i32) -> Option<Slice<'_, T, D>> {
+        if axis < 0 || axis >= self.ndim() || index < 0 || index >= self.shape()[axis as usize] {
+            return None;
+        }
+        
+        let mut ranges = Vec::new();
+        for (i, &dim_size) in self.shape().iter().enumerate() {
+            if i == axis as usize {
+                ranges.push(SliceRange::new(index, index + 1));
+            } else {
+                ranges.push(SliceRange::new(0, dim_size));
+            }
+        }
+        
+        let new_layout = self.layout.slice(&ranges)?;
+        let data_slice = self.as_slice();
+        
+        Some(Slice::new(data_slice, new_layout))
+    }
+    
+    // Get a range slice along a specific axis
+    pub fn slice_range(&self, axis: i32, start: i32, end: i32) -> Option<Slice<'_, T, D>> {
+        if axis < 0 || axis >= self.ndim() {
+            return None;
+        }
+        
+        let mut ranges = Vec::new();
+        for (i, &dim_size) in self.shape().iter().enumerate() {
+            if i == axis as usize {
+                ranges.push(SliceRange::new(start, end));
+            } else {
+                ranges.push(SliceRange::new(0, dim_size));
+            }
+        }
+        
+        let new_layout = self.layout.slice(&ranges)?;
+        let data_slice = self.as_slice();
+        
+        Some(Slice::new(data_slice, new_layout))
+    }
+    
+    // Get all elements along a specific axis (equivalent to [:, :, ..., :])
+    pub fn slice_all(&self) -> Slice<'_, T, D> {
+        let ranges: Vec<SliceRange> = self.shape().iter().map(|&dim_size| {
+            SliceRange::new(0, dim_size)
+        }).collect();
+        
+        let new_layout = self.layout.slice(&ranges).unwrap();
+        let data_slice = self.as_slice();
+        
+        Slice::new(data_slice, new_layout)
+    }
+}
+
+// Helper functions for creating common slice ranges
+pub fn range(start: i32, end: i32) -> Range {
+    Range::new(start, end)
+}
+
+pub fn range_step(start: i32, end: i32, step: i32) -> Range {
+    Range::with_step(start, end, step)
+}
+
+pub fn all() -> Range {
+    Range::all()
+}
+
+// Macro for convenient slicing syntax (conceptual - would need macro system)
+// Usage: slice!(array, 0..5, .., 2..10)
+// This would be implemented as a macro in a real system
+

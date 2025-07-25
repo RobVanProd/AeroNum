@@ -1,0 +1,414 @@
+// Foreign Function Interface (FFI) for BLAS and LAPACK integration
+// Provides safe Aero bindings to high-performance linear algebra libraries
+
+use crate::traits::Numeric;
+
+// External function declarations for BLAS Level 1 operations
+extern "C" {
+    // Single precision BLAS Level 1
+    fn cblas_sdot(n: i32, x: *const f32, incx: i32, y: *const f32, incy: i32) -> f32;
+    fn cblas_saxpy(n: i32, alpha: f32, x: *const f32, incx: i32, y: *mut f32, incy: i32);
+    fn cblas_sscal(n: i32, alpha: f32, x: *mut f32, incx: i32);
+    fn cblas_snrm2(n: i32, x: *const f32, incx: i32) -> f32;
+    
+    // Double precision BLAS Level 1
+    fn cblas_ddot(n: i32, x: *const f64, incx: i32, y: *const f64, incy: i32) -> f64;
+    fn cblas_daxpy(n: i32, alpha: f64, x: *const f64, incx: i32, y: *mut f64, incy: i32);
+    fn cblas_dscal(n: i32, alpha: f64, x: *mut f64, incx: i32);
+    fn cblas_dnrm2(n: i32, x: *const f64, incx: i32) -> f64;
+}
+
+// External function declarations for BLAS Level 2 operations
+extern "C" {
+    // Single precision BLAS Level 2
+    fn cblas_sgemv(order: i32, trans: i32, m: i32, n: i32, alpha: f32,
+                   a: *const f32, lda: i32, x: *const f32, incx: i32,
+                   beta: f32, y: *mut f32, incy: i32);
+    
+    // Double precision BLAS Level 2
+    fn cblas_dgemv(order: i32, trans: i32, m: i32, n: i32, alpha: f64,
+                   a: *const f64, lda: i32, x: *const f64, incx: i32,
+                   beta: f64, y: *mut f64, incy: i32);
+}
+
+// External function declarations for BLAS Level 3 operations
+extern "C" {
+    // Single precision BLAS Level 3
+    fn cblas_sgemm(order: i32, transa: i32, transb: i32, m: i32, n: i32, k: i32,
+                   alpha: f32, a: *const f32, lda: i32, b: *const f32, ldb: i32,
+                   beta: f32, c: *mut f32, ldc: i32);
+    
+    // Double precision BLAS Level 3
+    fn cblas_dgemm(order: i32, transa: i32, transb: i32, m: i32, n: i32, k: i32,
+                   alpha: f64, a: *const f64, lda: i32, b: *const f64, ldb: i32,
+                   beta: f64, c: *mut f64, ldc: i32);
+}
+
+// External function declarations for LAPACK operations
+extern "C" {
+    // Single precision LAPACK
+    fn sgetrf_(m: *const i32, n: *const i32, a: *mut f32, lda: *const i32,
+               ipiv: *mut i32, info: *mut i32);
+    fn sgetri_(n: *const i32, a: *mut f32, lda: *const i32, ipiv: *const i32,
+               work: *mut f32, lwork: *const i32, info: *mut i32);
+    fn sgeev_(jobvl: *const u8, jobvr: *const u8, n: *const i32, a: *mut f32, lda: *const i32,
+              wr: *mut f32, wi: *mut f32, vl: *mut f32, ldvl: *const i32,
+              vr: *mut f32, ldvr: *const i32, work: *mut f32, lwork: *const i32, info: *mut i32);
+    
+    // Double precision LAPACK
+    fn dgetrf_(m: *const i32, n: *const i32, a: *mut f64, lda: *const i32,
+               ipiv: *mut i32, info: *mut i32);
+    fn dgetri_(n: *const i32, a: *mut f64, lda: *const i32, ipiv: *const i32,
+               work: *mut f64, lwork: *const i32, info: *mut i32);
+    fn dgeev_(jobvl: *const u8, jobvr: *const u8, n: *const i32, a: *mut f64, lda: *const i32,
+              wr: *mut f64, wi: *mut f64, vl: *mut f64, ldvl: *const i32,
+              vr: *mut f64, ldvr: *const i32, work: *mut f64, lwork: *const i32, info: *mut i32);
+}
+
+// Constants for BLAS operations
+pub const CBLAS_ROW_MAJOR: i32 = 101;
+pub const CBLAS_COL_MAJOR: i32 = 102;
+pub const CBLAS_NO_TRANS: i32 = 111;
+pub const CBLAS_TRANS: i32 = 112;
+pub const CBLAS_CONJ_TRANS: i32 = 113;
+
+// Safe wrapper trait for BLAS operations
+pub trait BlasFFI<T: Numeric> {
+    fn blas_dot(x: &[T], y: &[T]) -> T;
+    fn blas_axpy(alpha: T, x: &[T], y: &mut [T]);
+    fn blas_scal(alpha: T, x: &mut [T]);
+    fn blas_nrm2(x: &[T]) -> T;
+    fn blas_gemv(trans: bool, alpha: T, a: &[T], x: &[T], beta: T, y: &mut [T],
+                 m: i32, n: i32, lda: i32);
+    fn blas_gemm(transa: bool, transb: bool, alpha: T, a: &[T], b: &[T], beta: T, c: &mut [T],
+                 m: i32, n: i32, k: i32, lda: i32, ldb: i32, ldc: i32);
+}
+
+// Implementation for f32
+impl BlasFFI<f32> for f32 {
+    fn blas_dot(x: &[f32], y: &[f32]) -> f32 {
+        if x.len() != y.len() {
+            return 0.0;
+        }
+        
+        unsafe {
+            cblas_sdot(x.len() as i32, x.as_ptr(), 1, y.as_ptr(), 1)
+        }
+    }
+    
+    fn blas_axpy(alpha: f32, x: &[f32], y: &mut [f32]) {
+        if x.len() != y.len() {
+            return;
+        }
+        
+        unsafe {
+            cblas_saxpy(x.len() as i32, alpha, x.as_ptr(), 1, y.as_mut_ptr(), 1);
+        }
+    }
+    
+    fn blas_scal(alpha: f32, x: &mut [f32]) {
+        unsafe {
+            cblas_sscal(x.len() as i32, alpha, x.as_mut_ptr(), 1);
+        }
+    }
+    
+    fn blas_nrm2(x: &[f32]) -> f32 {
+        unsafe {
+            cblas_snrm2(x.len() as i32, x.as_ptr(), 1)
+        }
+    }
+    
+    fn blas_gemv(trans: bool, alpha: f32, a: &[f32], x: &[f32], beta: f32, y: &mut [f32],
+                 m: i32, n: i32, lda: i32) {
+        let trans_flag = if trans { CBLAS_TRANS } else { CBLAS_NO_TRANS };
+        
+        unsafe {
+            cblas_sgemv(CBLAS_ROW_MAJOR, trans_flag, m, n, alpha,
+                       a.as_ptr(), lda, x.as_ptr(), 1,
+                       beta, y.as_mut_ptr(), 1);
+        }
+    }
+    
+    fn blas_gemm(transa: bool, transb: bool, alpha: f32, a: &[f32], b: &[f32], beta: f32, c: &mut [f32],
+                 m: i32, n: i32, k: i32, lda: i32, ldb: i32, ldc: i32) {
+        let transa_flag = if transa { CBLAS_TRANS } else { CBLAS_NO_TRANS };
+        let transb_flag = if transb { CBLAS_TRANS } else { CBLAS_NO_TRANS };
+        
+        unsafe {
+            cblas_sgemm(CBLAS_ROW_MAJOR, transa_flag, transb_flag, m, n, k,
+                       alpha, a.as_ptr(), lda, b.as_ptr(), ldb,
+                       beta, c.as_mut_ptr(), ldc);
+        }
+    }
+}
+
+// Implementation for f64
+impl BlasFFI<f64> for f64 {
+    fn blas_dot(x: &[f64], y: &[f64]) -> f64 {
+        if x.len() != y.len() {
+            return 0.0;
+        }
+        
+        unsafe {
+            cblas_ddot(x.len() as i32, x.as_ptr(), 1, y.as_ptr(), 1)
+        }
+    }
+    
+    fn blas_axpy(alpha: f64, x: &[f64], y: &mut [f64]) {
+        if x.len() != y.len() {
+            return;
+        }
+        
+        unsafe {
+            cblas_daxpy(x.len() as i32, alpha, x.as_ptr(), 1, y.as_mut_ptr(), 1);
+        }
+    }
+    
+    fn blas_scal(alpha: f64, x: &mut [f64]) {
+        unsafe {
+            cblas_dscal(x.len() as i32, alpha, x.as_mut_ptr(), 1);
+        }
+    }
+    
+    fn blas_nrm2(x: &[f64]) -> f64 {
+        unsafe {
+            cblas_dnrm2(x.len() as i32, x.as_ptr(), 1)
+        }
+    }
+    
+    fn blas_gemv(trans: bool, alpha: f64, a: &[f64], x: &[f64], beta: f64, y: &mut [f64],
+                 m: i32, n: i32, lda: i32) {
+        let trans_flag = if trans { CBLAS_TRANS } else { CBLAS_NO_TRANS };
+        
+        unsafe {
+            cblas_dgemv(CBLAS_ROW_MAJOR, trans_flag, m, n, alpha,
+                       a.as_ptr(), lda, x.as_ptr(), 1,
+                       beta, y.as_mut_ptr(), 1);
+        }
+    }
+    
+    fn blas_gemm(transa: bool, transb: bool, alpha: f64, a: &[f64], b: &[f64], beta: f64, c: &mut [f64],
+                 m: i32, n: i32, k: i32, lda: i32, ldb: i32, ldc: i32) {
+        let transa_flag = if transa { CBLAS_TRANS } else { CBLAS_NO_TRANS };
+        let transb_flag = if transb { CBLAS_TRANS } else { CBLAS_NO_TRANS };
+        
+        unsafe {
+            cblas_dgemm(CBLAS_ROW_MAJOR, transa_flag, transb_flag, m, n, k,
+                       alpha, a.as_ptr(), lda, b.as_ptr(), ldb,
+                       beta, c.as_mut_ptr(), ldc);
+        }
+    }
+}
+
+// Safe wrapper trait for LAPACK operations
+pub trait LapackFFI<T: Numeric> {
+    fn lapack_getrf(a: &mut [T], m: i32, n: i32, lda: i32) -> (Vec<i32>, i32);
+    fn lapack_getri(a: &mut [T], n: i32, lda: i32, ipiv: &[i32]) -> i32;
+    fn lapack_geev(a: &mut [T], n: i32, lda: i32) -> (Vec<T>, Vec<T>, Vec<T>, Vec<T>, i32);
+}
+
+// Implementation for f32
+impl LapackFFI<f32> for f32 {
+    fn lapack_getrf(a: &mut [f32], m: i32, n: i32, lda: i32) -> (Vec<i32>, i32) {
+        let mut ipiv = vec![0i32; core::cmp::min(m, n) as usize];
+        let mut info = 0i32;
+        
+        unsafe {
+            sgetrf_(&m, &n, a.as_mut_ptr(), &lda, ipiv.as_mut_ptr(), &mut info);
+        }
+        
+        (ipiv, info)
+    }
+    
+    fn lapack_getri(a: &mut [f32], n: i32, lda: i32, ipiv: &[i32]) -> i32 {
+        let mut info = 0i32;
+        let mut work = vec![0.0f32; n as usize];
+        let lwork = n;
+        
+        unsafe {
+            sgetri_(&n, a.as_mut_ptr(), &lda, ipiv.as_ptr(),
+                   work.as_mut_ptr(), &lwork, &mut info);
+        }
+        
+        info
+    }
+    
+    fn lapack_geev(a: &mut [f32], n: i32, lda: i32) -> (Vec<f32>, Vec<f32>, Vec<f32>, Vec<f32>, i32) {
+        let mut wr = vec![0.0f32; n as usize];
+        let mut wi = vec![0.0f32; n as usize];
+        let mut vl = vec![0.0f32; (n * n) as usize];
+        let mut vr = vec![0.0f32; (n * n) as usize];
+        let mut work = vec![0.0f32; (4 * n) as usize];
+        let mut info = 0i32;
+        let lwork = 4 * n;
+        
+        unsafe {
+            sgeev_(b"V".as_ptr(), b"V".as_ptr(), &n, a.as_mut_ptr(), &lda,
+                  wr.as_mut_ptr(), wi.as_mut_ptr(),
+                  vl.as_mut_ptr(), &n, vr.as_mut_ptr(), &n,
+                  work.as_mut_ptr(), &lwork, &mut info);
+        }
+        
+        (wr, wi, vl, vr, info)
+    }
+}
+
+// Implementation for f64
+impl LapackFFI<f64> for f64 {
+    fn lapack_getrf(a: &mut [f64], m: i32, n: i32, lda: i32) -> (Vec<i32>, i32) {
+        let mut ipiv = vec![0i32; core::cmp::min(m, n) as usize];
+        let mut info = 0i32;
+        
+        unsafe {
+            dgetrf_(&m, &n, a.as_mut_ptr(), &lda, ipiv.as_mut_ptr(), &mut info);
+        }
+        
+        (ipiv, info)
+    }
+    
+    fn lapack_getri(a: &mut [f64], n: i32, lda: i32, ipiv: &[i32]) -> i32 {
+        let mut info = 0i32;
+        let mut work = vec![0.0f64; n as usize];
+        let lwork = n;
+        
+        unsafe {
+            dgetri_(&n, a.as_mut_ptr(), &lda, ipiv.as_ptr(),
+                   work.as_mut_ptr(), &lwork, &mut info);
+        }
+        
+        info
+    }
+    
+    fn lapack_geev(a: &mut [f64], n: i32, lda: i32) -> (Vec<f64>, Vec<f64>, Vec<f64>, Vec<f64>, i32) {
+        let mut wr = vec![0.0f64; n as usize];
+        let mut wi = vec![0.0f64; n as usize];
+        let mut vl = vec![0.0f64; (n * n) as usize];
+        let mut vr = vec![0.0f64; (n * n) as usize];
+        let mut work = vec![0.0f64; (4 * n) as usize];
+        let mut info = 0i32;
+        let lwork = 4 * n;
+        
+        unsafe {
+            dgeev_(b"V".as_ptr(), b"V".as_ptr(), &n, a.as_mut_ptr(), &lda,
+                  wr.as_mut_ptr(), wi.as_mut_ptr(),
+                  vl.as_mut_ptr(), &n, vr.as_mut_ptr(), &n,
+                  work.as_mut_ptr(), &lwork, &mut info);
+        }
+        
+        (wr, wi, vl, vr, info)
+    }
+}
+
+// High-level safe interface for BLAS/LAPACK operations
+pub struct OptimizedBlasBackend;
+
+impl crate::traits::BlasBackend for OptimizedBlasBackend {
+    fn dot<T: Numeric>(x: &[T], y: &[T]) -> T {
+        // This would dispatch to the appropriate BLAS routine based on type
+        // For now, fallback to default implementation
+        if x.len() != y.len() {
+            return T::zero();
+        }
+        
+        x.iter().zip(y.iter()).fold(T::zero(), |acc, (&a, &b)| acc.add(a.mul(b)))
+    }
+    
+    fn axpy<T: Numeric>(alpha: T, x: &[T], y: &mut [T]) {
+        // This would dispatch to the appropriate BLAS routine based on type
+        // For now, fallback to default implementation
+        if x.len() != y.len() {
+            return;
+        }
+        
+        for ((&x_val, y_val)) in x.iter().zip(y.iter_mut()) {
+            *y_val = y_val.add(alpha.mul(x_val));
+        }
+    }
+    
+    fn scal<T: Numeric>(alpha: T, x: &mut [T]) {
+        // This would dispatch to the appropriate BLAS routine based on type
+        // For now, fallback to default implementation
+        for x_val in x.iter_mut() {
+            *x_val = x_val.mul(alpha);
+        }
+    }
+    
+    fn nrm2<T: Numeric>(x: &[T]) -> T {
+        // This would dispatch to the appropriate BLAS routine based on type
+        // For now, fallback to default implementation
+        let sum_squares = x.iter().fold(T::zero(), |acc, &val| acc.add(val.mul(val)));
+        sum_squares.sqrt()
+    }
+    
+    fn gemv<T: Numeric>(alpha: T, a: &[T], x: &[T], beta: T, y: &mut [T], 
+                        m: i32, n: i32, lda: i32) {
+        // This would dispatch to the appropriate BLAS routine based on type
+        // For now, fallback to default implementation
+        for i in 0..m {
+            let mut sum = T::zero();
+            for j in 0..n {
+                let a_idx = (i * lda + j) as usize;
+                if a_idx < a.len() && (j as usize) < x.len() {
+                    sum = sum.add(a[a_idx].mul(x[j as usize]));
+                }
+            }
+            
+            if (i as usize) < y.len() {
+                y[i as usize] = alpha.mul(sum).add(beta.mul(y[i as usize]));
+            }
+        }
+    }
+    
+    fn gemm<T: Numeric>(alpha: T, a: &[T], b: &[T], beta: T, c: &mut [T],
+                        m: i32, n: i32, k: i32, lda: i32, ldb: i32, ldc: i32) {
+        // This would dispatch to the appropriate BLAS routine based on type
+        // For now, fallback to default implementation
+        for i in 0..m {
+            for j in 0..n {
+                let mut sum = T::zero();
+                for l in 0..k {
+                    let a_idx = (i * lda + l) as usize;
+                    let b_idx = (l * ldb + j) as usize;
+                    
+                    if a_idx < a.len() && b_idx < b.len() {
+                        sum = sum.add(a[a_idx].mul(b[b_idx]));
+                    }
+                }
+                
+                let c_idx = (i * ldc + j) as usize;
+                if c_idx < c.len() {
+                    c[c_idx] = alpha.mul(sum).add(beta.mul(c[c_idx]));
+                }
+            }
+        }
+    }
+}
+
+// Error handling for LAPACK operations
+pub enum LapackError {
+    InvalidArgument(i32),
+    SingularMatrix,
+    ConvergenceFailure,
+    InsufficientMemory,
+}
+
+impl LapackError {
+    pub fn from_info(info: i32) -> Option<LapackError> {
+        match info {
+            0 => None,
+            i if i < 0 => Some(LapackError::InvalidArgument(-i)),
+            i if i > 0 => Some(LapackError::SingularMatrix),
+            _ => Some(LapackError::ConvergenceFailure),
+        }
+    }
+    
+    pub fn message(&self) -> &str {
+        match self {
+            LapackError::InvalidArgument(arg) => "Invalid argument to LAPACK routine",
+            LapackError::SingularMatrix => "Matrix is singular",
+            LapackError::ConvergenceFailure => "Algorithm failed to converge",
+            LapackError::InsufficientMemory => "Insufficient memory for operation",
+        }
+    }
+}
+

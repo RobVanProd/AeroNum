@@ -1,0 +1,467 @@
+// Linear algebra module for AeroNum
+// Provides high-performance linear algebra operations with BLAS/LAPACK integration
+
+use crate::traits::{Numeric, BlasBackend};
+use crate::array::Array;
+
+// Re-export submodules
+pub mod ffi;
+
+// Main linear algebra trait
+pub trait LinearAlgebra<T: Numeric> {
+    // Basic linear algebra operations
+    fn dot(&self, other: &Self) -> Option<T>;
+    fn matmul(&self, other: &Self) -> Option<Array<T, 2>>;
+    fn transpose(&self) -> Self;
+    fn inverse(&self) -> Option<Self>;
+    fn determinant(&self) -> Option<T>;
+    
+    // Decompositions
+    fn lu_decomposition(&self) -> Option<(Self, Self, Vec<i32>)>;
+    fn qr_decomposition(&self) -> Option<(Self, Self)>;
+    fn svd(&self) -> Option<(Self, Array<T, 1>, Self)>;
+    fn eigenvalues(&self) -> Option<Array<T, 1>>;
+    fn eigenvectors(&self) -> Option<(Array<T, 1>, Self)>;
+    
+    // Norms and distances
+    fn norm(&self, ord: NormType) -> T;
+    fn condition_number(&self) -> Option<T>;
+}
+
+// Matrix multiplication trait
+pub trait MatMul<T: Numeric, Rhs = Self> {
+    type Output;
+    fn matmul(&self, rhs: &Rhs) -> Option<Self::Output>;
+}
+
+// Norm types for linear algebra operations
+pub enum NormType {
+    Frobenius,      // Frobenius norm
+    Nuclear,        // Nuclear norm (sum of singular values)
+    L1,            // L1 norm (sum of absolute values)
+    L2,            // L2 norm (Euclidean norm)
+    LInf,          // L-infinity norm (maximum absolute value)
+    Custom(f64),   // Custom p-norm
+}
+
+// BLAS backend implementation
+pub struct BlasBackendImpl;
+
+impl BlasBackend for BlasBackendImpl {
+    fn dot<T: Numeric>(x: &[T], y: &[T]) -> T {
+        if x.len() != y.len() {
+            return T::zero();
+        }
+        
+        x.iter().zip(y.iter()).fold(T::zero(), |acc, (&a, &b)| acc.add(a.mul(b)))
+    }
+    
+    fn axpy<T: Numeric>(alpha: T, x: &[T], y: &mut [T]) {
+        if x.len() != y.len() {
+            return;
+        }
+        
+        for ((&x_val, y_val)) in x.iter().zip(y.iter_mut()) {
+            *y_val = y_val.add(alpha.mul(x_val));
+        }
+    }
+    
+    fn scal<T: Numeric>(alpha: T, x: &mut [T]) {
+        for x_val in x.iter_mut() {
+            *x_val = x_val.mul(alpha);
+        }
+    }
+    
+    fn nrm2<T: Numeric>(x: &[T]) -> T {
+        let sum_squares = x.iter().fold(T::zero(), |acc, &val| acc.add(val.mul(val)));
+        sum_squares.sqrt()
+    }
+    
+    fn gemv<T: Numeric>(alpha: T, a: &[T], x: &[T], beta: T, y: &mut [T], 
+                        m: i32, n: i32, lda: i32) {
+        // General matrix-vector multiplication: y = alpha * A * x + beta * y
+        // This is a simplified implementation
+        
+        for i in 0..m {
+            let mut sum = T::zero();
+            for j in 0..n {
+                let a_idx = (i * lda + j) as usize;
+                if a_idx < a.len() && (j as usize) < x.len() {
+                    sum = sum.add(a[a_idx].mul(x[j as usize]));
+                }
+            }
+            
+            if (i as usize) < y.len() {
+                y[i as usize] = alpha.mul(sum).add(beta.mul(y[i as usize]));
+            }
+        }
+    }
+    
+    fn gemm<T: Numeric>(alpha: T, a: &[T], b: &[T], beta: T, c: &mut [T],
+                        m: i32, n: i32, k: i32, lda: i32, ldb: i32, ldc: i32) {
+        // General matrix-matrix multiplication: C = alpha * A * B + beta * C
+        // This is a simplified implementation
+        
+        for i in 0..m {
+            for j in 0..n {
+                let mut sum = T::zero();
+                for l in 0..k {
+                    let a_idx = (i * lda + l) as usize;
+                    let b_idx = (l * ldb + j) as usize;
+                    
+                    if a_idx < a.len() && b_idx < b.len() {
+                        sum = sum.add(a[a_idx].mul(b[b_idx]));
+                    }
+                }
+                
+                let c_idx = (i * ldc + j) as usize;
+                if c_idx < c.len() {
+                    c[c_idx] = alpha.mul(sum).add(beta.mul(c[c_idx]));
+                }
+            }
+        }
+    }
+}
+
+// Implementation of LinearAlgebra for 2D arrays (matrices)
+impl<T: Numeric> LinearAlgebra<T> for Array<T, 2> where T: Copy {
+    fn dot(&self, other: &Self) -> Option<T> {
+        // For matrices, dot product is the Frobenius inner product
+        if self.shape() != other.shape() {
+            return None;
+        }
+        
+        let self_data = self.as_slice();
+        let other_data = other.as_slice();
+        
+        Some(BlasBackendImpl::dot(self_data, other_data))
+    }
+    
+    fn matmul(&self, other: &Self) -> Option<Array<T, 2>> {
+        let self_shape = self.shape();
+        let other_shape = other.shape();
+        
+        // Check dimensions for matrix multiplication
+        if self_shape.len() != 2 || other_shape.len() != 2 || self_shape[1] != other_shape[0] {
+            return None;
+        }
+        
+        let m = self_shape[0];
+        let k = self_shape[1];
+        let n = other_shape[1];
+        
+        let mut result_data = vec![T::zero(); (m * n) as usize];
+        
+        BlasBackendImpl::gemm(
+            T::one(),                    // alpha
+            self.as_slice(),             // A
+            other.as_slice(),            // B
+            T::zero(),                   // beta
+            &mut result_data,            // C
+            m, n, k,                     // dimensions
+            k, n, n                      // leading dimensions
+        );
+        
+        Array::new(result_data, &[m, n])
+    }
+    
+    fn transpose(&self) -> Self {
+        let shape = self.shape();
+        if shape.len() != 2 {
+            return self.clone();
+        }
+        
+        let rows = shape[0];
+        let cols = shape[1];
+        let mut result_data = vec![T::zero(); (rows * cols) as usize];
+        let self_data = self.as_slice();
+        
+        for i in 0..rows {
+            for j in 0..cols {
+                let src_idx = (i * cols + j) as usize;
+                let dst_idx = (j * rows + i) as usize;
+                
+                if src_idx < self_data.len() && dst_idx < result_data.len() {
+                    result_data[dst_idx] = self_data[src_idx];
+                }
+            }
+        }
+        
+        Array::new(result_data, &[cols, rows]).unwrap()
+    }
+    
+    fn inverse(&self) -> Option<Self> {
+        // Simplified implementation using Gauss-Jordan elimination
+        // A full implementation would use LAPACK routines
+        
+        let shape = self.shape();
+        if shape.len() != 2 || shape[0] != shape[1] {
+            return None; // Not a square matrix
+        }
+        
+        let n = shape[0];
+        let mut augmented = vec![T::zero(); (n * 2 * n) as usize];
+        let self_data = self.as_slice();
+        
+        // Create augmented matrix [A | I]
+        for i in 0..n {
+            for j in 0..n {
+                let src_idx = (i * n + j) as usize;
+                let dst_idx = (i * 2 * n + j) as usize;
+                
+                if src_idx < self_data.len() && dst_idx < augmented.len() {
+                    augmented[dst_idx] = self_data[src_idx];
+                }
+            }
+            
+            // Identity matrix part
+            let identity_idx = (i * 2 * n + n + i) as usize;
+            if identity_idx < augmented.len() {
+                augmented[identity_idx] = T::one();
+            }
+        }
+        
+        // Gauss-Jordan elimination (simplified)
+        for i in 0..n {
+            let pivot_idx = (i * 2 * n + i) as usize;
+            if pivot_idx >= augmented.len() {
+                return None;
+            }
+            
+            let pivot = augmented[pivot_idx];
+            if pivot.eq(T::zero()) {
+                return None; // Singular matrix
+            }
+            
+            // Scale row
+            for j in 0..(2 * n) {
+                let idx = (i * 2 * n + j) as usize;
+                if idx < augmented.len() {
+                    augmented[idx] = augmented[idx].div(pivot);
+                }
+            }
+            
+            // Eliminate column
+            for k in 0..n {
+                if k != i {
+                    let factor_idx = (k * 2 * n + i) as usize;
+                    if factor_idx >= augmented.len() {
+                        continue;
+                    }
+                    
+                    let factor = augmented[factor_idx];
+                    for j in 0..(2 * n) {
+                        let k_idx = (k * 2 * n + j) as usize;
+                        let i_idx = (i * 2 * n + j) as usize;
+                        
+                        if k_idx < augmented.len() && i_idx < augmented.len() {
+                            augmented[k_idx] = augmented[k_idx].sub(factor.mul(augmented[i_idx]));
+                        }
+                    }
+                }
+            }
+        }
+        
+        // Extract inverse matrix
+        let mut result_data = vec![T::zero(); (n * n) as usize];
+        for i in 0..n {
+            for j in 0..n {
+                let src_idx = (i * 2 * n + n + j) as usize;
+                let dst_idx = (i * n + j) as usize;
+                
+                if src_idx < augmented.len() && dst_idx < result_data.len() {
+                    result_data[dst_idx] = augmented[src_idx];
+                }
+            }
+        }
+        
+        Array::new(result_data, &[n, n])
+    }
+    
+    fn determinant(&self) -> Option<T> {
+        let shape = self.shape();
+        if shape.len() != 2 || shape[0] != shape[1] {
+            return None;
+        }
+        
+        let n = shape[0];
+        if n == 1 {
+            return Some(self.as_slice()[0]);
+        }
+        
+        if n == 2 {
+            let data = self.as_slice();
+            if data.len() >= 4 {
+                return Some(data[0].mul(data[3]).sub(data[1].mul(data[2])));
+            }
+        }
+        
+        // For larger matrices, use LU decomposition (simplified)
+        // A full implementation would use LAPACK routines
+        let mut det = T::one();
+        let mut matrix = self.clone();
+        let matrix_data = matrix.as_mut_slice()?;
+        
+        for i in 0..n {
+            let pivot_idx = (i * n + i) as usize;
+            if pivot_idx >= matrix_data.len() {
+                return None;
+            }
+            
+            let pivot = matrix_data[pivot_idx];
+            if pivot.eq(T::zero()) {
+                return Some(T::zero());
+            }
+            
+            det = det.mul(pivot);
+            
+            // Eliminate below pivot
+            for k in (i + 1)..n {
+                let factor_idx = (k * n + i) as usize;
+                if factor_idx >= matrix_data.len() {
+                    continue;
+                }
+                
+                let factor = matrix_data[factor_idx].div(pivot);
+                for j in i..n {
+                    let k_idx = (k * n + j) as usize;
+                    let i_idx = (i * n + j) as usize;
+                    
+                    if k_idx < matrix_data.len() && i_idx < matrix_data.len() {
+                        matrix_data[k_idx] = matrix_data[k_idx].sub(factor.mul(matrix_data[i_idx]));
+                    }
+                }
+            }
+        }
+        
+        Some(det)
+    }
+    
+    fn lu_decomposition(&self) -> Option<(Self, Self, Vec<i32>)> {
+        // Simplified LU decomposition
+        // A full implementation would use LAPACK routines
+        None // Placeholder
+    }
+    
+    fn qr_decomposition(&self) -> Option<(Self, Self)> {
+        // Simplified QR decomposition
+        // A full implementation would use LAPACK routines
+        None // Placeholder
+    }
+    
+    fn svd(&self) -> Option<(Self, Array<T, 1>, Self)> {
+        // Simplified SVD
+        // A full implementation would use LAPACK routines
+        None // Placeholder
+    }
+    
+    fn eigenvalues(&self) -> Option<Array<T, 1>> {
+        // Simplified eigenvalue computation
+        // A full implementation would use LAPACK routines
+        None // Placeholder
+    }
+    
+    fn eigenvectors(&self) -> Option<(Array<T, 1>, Self)> {
+        // Simplified eigenvector computation
+        // A full implementation would use LAPACK routines
+        None // Placeholder
+    }
+    
+    fn norm(&self, ord: NormType) -> T {
+        let data = self.as_slice();
+        
+        match ord {
+            NormType::Frobenius => {
+                let sum_squares = data.iter().fold(T::zero(), |acc, &val| acc.add(val.mul(val)));
+                sum_squares.sqrt()
+            },
+            NormType::L1 => {
+                data.iter().fold(T::zero(), |acc, &val| acc.add(val.abs()))
+            },
+            NormType::L2 => {
+                BlasBackendImpl::nrm2(data)
+            },
+            NormType::LInf => {
+                data.iter().fold(T::zero(), |acc, &val| {
+                    let abs_val = val.abs();
+                    if abs_val.gt(acc) { abs_val } else { acc }
+                })
+            },
+            _ => T::zero(), // Placeholder for other norms
+        }
+    }
+    
+    fn condition_number(&self) -> Option<T> {
+        // Simplified condition number computation
+        // A full implementation would use SVD
+        None // Placeholder
+    }
+}
+
+// Implementation of MatMul trait for different array combinations
+impl<T: Numeric> MatMul<T, Array<T, 2>> for Array<T, 2> where T: Copy {
+    type Output = Array<T, 2>;
+    
+    fn matmul(&self, rhs: &Array<T, 2>) -> Option<Self::Output> {
+        LinearAlgebra::matmul(self, rhs)
+    }
+}
+
+impl<T: Numeric> MatMul<T, Array<T, 1>> for Array<T, 2> where T: Copy {
+    type Output = Array<T, 1>;
+    
+    fn matmul(&self, rhs: &Array<T, 1>) -> Option<Self::Output> {
+        let self_shape = self.shape();
+        let rhs_shape = rhs.shape();
+        
+        if self_shape.len() != 2 || rhs_shape.len() != 1 || self_shape[1] != rhs_shape[0] {
+            return None;
+        }
+        
+        let m = self_shape[0];
+        let k = self_shape[1];
+        let mut result_data = vec![T::zero(); m as usize];
+        
+        BlasBackendImpl::gemv(
+            T::one(),                    // alpha
+            self.as_slice(),             // A
+            rhs.as_slice(),              // x
+            T::zero(),                   // beta
+            &mut result_data,            // y
+            m, k, k                      // dimensions and leading dimension
+        );
+        
+        Array::new(result_data, &[m])
+    }
+}
+
+// Convenience functions for common linear algebra operations
+pub fn dot<T: Numeric>(a: &Array<T, 1>, b: &Array<T, 1>) -> Option<T> where T: Copy {
+    if a.shape() != b.shape() {
+        return None;
+    }
+    
+    Some(BlasBackendImpl::dot(a.as_slice(), b.as_slice()))
+}
+
+pub fn matmul<T: Numeric>(a: &Array<T, 2>, b: &Array<T, 2>) -> Option<Array<T, 2>> where T: Copy {
+    a.matmul(b)
+}
+
+pub fn solve<T: Numeric>(a: &Array<T, 2>, b: &Array<T, 1>) -> Option<Array<T, 1>> where T: Copy {
+    // Solve linear system Ax = b
+    // Simplified implementation using matrix inverse
+    let a_inv = a.inverse()?;
+    a_inv.matmul(b)
+}
+
+pub fn lstsq<T: Numeric>(a: &Array<T, 2>, b: &Array<T, 1>) -> Option<Array<T, 1>> where T: Copy {
+    // Least squares solution
+    // Simplified implementation: x = (A^T A)^(-1) A^T b
+    let a_t = a.transpose();
+    let ata = a_t.matmul(a)?;
+    let ata_inv = ata.inverse()?;
+    let atb = a_t.matmul(b)?;
+    ata_inv.matmul(&atb)
+}
+

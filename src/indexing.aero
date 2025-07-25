@@ -1,0 +1,372 @@
+// Advanced indexing operations for AeroNum arrays
+// Provides fancy indexing, boolean indexing, and selection operations
+
+use crate::traits::{Numeric, AdvancedIndexing};
+use crate::array::Array;
+use crate::memory::{DataOwnership, ArrayMemoryLayout};
+
+// Index types for advanced indexing
+pub enum Index {
+    Single(i32),                    // Single integer index
+    Range(i32, i32, i32),          // Range with start, end, step
+    Array(Vec<i32>),               // Array of indices
+    Boolean(Vec<bool>),            // Boolean mask
+    Ellipsis,                      // ... (fill remaining dimensions)
+    NewAxis,                       // Add new axis of size 1
+}
+
+// Advanced index structure for multi-dimensional indexing
+pub struct AdvancedIndex {
+    pub indices: Vec<Index>,
+}
+
+impl AdvancedIndex {
+    pub fn new(indices: Vec<Index>) -> AdvancedIndex {
+        AdvancedIndex { indices }
+    }
+    
+    pub fn single(index: i32) -> AdvancedIndex {
+        AdvancedIndex {
+            indices: vec![Index::Single(index)],
+        }
+    }
+    
+    pub fn range(start: i32, end: i32) -> AdvancedIndex {
+        AdvancedIndex {
+            indices: vec![Index::Range(start, end, 1)],
+        }
+    }
+    
+    pub fn array(indices: Vec<i32>) -> AdvancedIndex {
+        AdvancedIndex {
+            indices: vec![Index::Array(indices)],
+        }
+    }
+    
+    pub fn boolean(mask: Vec<bool>) -> AdvancedIndex {
+        AdvancedIndex {
+            indices: vec![Index::Boolean(mask)],
+        }
+    }
+}
+
+// Result of advanced indexing operation
+pub struct IndexResult<T: Numeric, const D: i32> {
+    pub data: Vec<T>,
+    pub shape: Vec<i32>,
+    pub is_copy: bool,  // True if data was copied, false if it's a view
+}
+
+impl<T: Numeric, const D: i32> IndexResult<T, D> {
+    pub fn to_array(&self) -> Array<T, D> where T: Copy {
+        Array::new(self.data.clone(), &self.shape).unwrap()
+    }
+    
+    pub fn shape(&self) -> &[i32] {
+        &self.shape
+    }
+    
+    pub fn len(&self) -> i32 {
+        self.data.len() as i32
+    }
+    
+    pub fn is_empty(&self) -> bool {
+        self.data.is_empty()
+    }
+}
+
+// Implementation of advanced indexing for Array
+impl<T: Numeric, const D: i32> AdvancedIndexing<T> for Array<T, D> where T: Copy {
+    type Output = IndexResult<T, D>;
+    
+    fn select(&self, indices: &[i32]) -> Self::Output {
+        let mut result_data = Vec::new();
+        let data_slice = self.as_slice();
+        
+        for &idx in indices {
+            if idx >= 0 && (idx as usize) < data_slice.len() {
+                result_data.push(data_slice[idx as usize]);
+            }
+        }
+        
+        IndexResult {
+            data: result_data,
+            shape: vec![indices.len() as i32],
+            is_copy: true,
+        }
+    }
+    
+    fn take(&self, indices: &[i32], axis: i32) -> Self::Output {
+        if axis < 0 || axis >= self.ndim() {
+            return IndexResult {
+                data: Vec::new(),
+                shape: Vec::new(),
+                is_copy: true,
+            };
+        }
+        
+        let shape = self.shape();
+        let axis_size = shape[axis as usize];
+        let mut result_data = Vec::new();
+        let mut result_shape = shape.to_vec();
+        result_shape[axis as usize] = indices.len() as i32;
+        
+        // Calculate strides for efficient indexing
+        let mut strides = vec![1; shape.len()];
+        for i in (0..shape.len() - 1).rev() {
+            strides[i] = strides[i + 1] * shape[i + 1];
+        }
+        
+        let data_slice = self.as_slice();
+        
+        // Iterate through all possible multi-dimensional indices
+        let total_elements = result_shape.iter().fold(1, |acc, &dim| acc * dim);
+        
+        for linear_idx in 0..total_elements {
+            let mut multi_idx = Vec::new();
+            let mut remaining = linear_idx;
+            
+            // Convert linear index to multi-dimensional index
+            for i in 0..result_shape.len() {
+                let stride = if i == result_shape.len() - 1 { 1 } else {
+                    result_shape[i + 1..].iter().fold(1, |acc, &dim| acc * dim)
+                };
+                multi_idx.push(remaining / stride);
+                remaining = remaining % stride;
+            }
+            
+            // Replace the axis index with the selected index
+            let selected_axis_idx = multi_idx[axis as usize];
+            if (selected_axis_idx as usize) < indices.len() {
+                let actual_axis_idx = indices[selected_axis_idx as usize];
+                if actual_axis_idx >= 0 && actual_axis_idx < axis_size {
+                    multi_idx[axis as usize] = actual_axis_idx;
+                    
+                    // Convert back to linear index in original array
+                    let mut original_linear_idx = 0;
+                    for (i, &idx) in multi_idx.iter().enumerate() {
+                        original_linear_idx = original_linear_idx + idx * strides[i];
+                    }
+                    
+                    if (original_linear_idx as usize) < data_slice.len() {
+                        result_data.push(data_slice[original_linear_idx as usize]);
+                    }
+                }
+            }
+        }
+        
+        IndexResult {
+            data: result_data,
+            shape: result_shape,
+            is_copy: true,
+        }
+    }
+    
+    fn put(&mut self, indices: &[i32], values: &[T]) {
+        let data_slice = self.as_mut_slice();
+        if let Some(data) = data_slice {
+            let min_len = core::cmp::min(indices.len(), values.len());
+            
+            for i in 0..min_len {
+                let idx = indices[i];
+                if idx >= 0 && (idx as usize) < data.len() {
+                    data[idx as usize] = values[i];
+                }
+            }
+        }
+    }
+}
+
+// Boolean indexing implementation
+impl<T: Numeric, const D: i32> Array<T, D> where T: Copy {
+    pub fn boolean_index(&self, mask: &[bool]) -> IndexResult<T, D> {
+        let data_slice = self.as_slice();
+        let mut result_data = Vec::new();
+        
+        let min_len = core::cmp::min(data_slice.len(), mask.len());
+        
+        for i in 0..min_len {
+            if mask[i] {
+                result_data.push(data_slice[i]);
+            }
+        }
+        
+        IndexResult {
+            data: result_data,
+            shape: vec![result_data.len() as i32],
+            is_copy: true,
+        }
+    }
+    
+    pub fn where_condition<F>(&self, condition: F) -> Vec<i32> 
+    where F: Fn(T) -> bool {
+        let data_slice = self.as_slice();
+        let mut indices = Vec::new();
+        
+        for (i, &value) in data_slice.iter().enumerate() {
+            if condition(value) {
+                indices.push(i as i32);
+            }
+        }
+        
+        indices
+    }
+    
+    pub fn filter<F>(&self, condition: F) -> IndexResult<T, D>
+    where F: Fn(T) -> bool {
+        let data_slice = self.as_slice();
+        let mut result_data = Vec::new();
+        
+        for &value in data_slice {
+            if condition(value) {
+                result_data.push(value);
+            }
+        }
+        
+        IndexResult {
+            data: result_data,
+            shape: vec![result_data.len() as i32],
+            is_copy: true,
+        }
+    }
+    
+    // Advanced indexing with multiple index types
+    pub fn advanced_index(&self, index: &AdvancedIndex) -> IndexResult<T, D> {
+        // This is a simplified implementation
+        // A full implementation would handle all index types and combinations
+        
+        if index.indices.len() == 1 {
+            match &index.indices[0] {
+                Index::Single(idx) => {
+                    let data_slice = self.as_slice();
+                    if *idx >= 0 && (*idx as usize) < data_slice.len() {
+                        IndexResult {
+                            data: vec![data_slice[*idx as usize]],
+                            shape: vec![1],
+                            is_copy: true,
+                        }
+                    } else {
+                        IndexResult {
+                            data: Vec::new(),
+                            shape: Vec::new(),
+                            is_copy: true,
+                        }
+                    }
+                },
+                Index::Array(indices) => {
+                    self.select(indices)
+                },
+                Index::Boolean(mask) => {
+                    self.boolean_index(mask)
+                },
+                Index::Range(start, end, step) => {
+                    let mut indices = Vec::new();
+                    let mut current = *start;
+                    while current < *end {
+                        indices.push(current);
+                        current = current + step;
+                    }
+                    self.select(&indices)
+                },
+                _ => {
+                    IndexResult {
+                        data: Vec::new(),
+                        shape: Vec::new(),
+                        is_copy: true,
+                    }
+                }
+            }
+        } else {
+            // Multi-dimensional indexing would be implemented here
+            IndexResult {
+                data: Vec::new(),
+                shape: Vec::new(),
+                is_copy: true,
+            }
+        }
+    }
+    
+    // Convenience methods for common indexing patterns
+    pub fn get_item(&self, indices: &[i32]) -> Option<T> {
+        let linear_idx = self.layout.linear_index(indices)?;
+        let data_slice = self.as_slice();
+        data_slice.get(linear_idx as usize).copied()
+    }
+    
+    pub fn set_item(&mut self, indices: &[i32], value: T) -> bool {
+        let linear_idx = match self.layout.linear_index(indices) {
+            Some(idx) => idx,
+            None => return false,
+        };
+        
+        let data_slice = match self.as_mut_slice() {
+            Some(slice) => slice,
+            None => return false,
+        };
+        
+        if let Some(elem) = data_slice.get_mut(linear_idx as usize) {
+            *elem = value;
+            true
+        } else {
+            false
+        }
+    }
+    
+    // Get a row (for 2D arrays)
+    pub fn row(&self, index: i32) -> Option<IndexResult<T, D>> {
+        if self.ndim() != 2 {
+            return None;
+        }
+        
+        let shape = self.shape();
+        if index < 0 || index >= shape[0] {
+            return None;
+        }
+        
+        let row_size = shape[1];
+        let start_idx = index * row_size;
+        let end_idx = start_idx + row_size;
+        
+        let data_slice = self.as_slice();
+        if (end_idx as usize) <= data_slice.len() {
+            let row_data = data_slice[start_idx as usize..end_idx as usize].to_vec();
+            Some(IndexResult {
+                data: row_data,
+                shape: vec![row_size],
+                is_copy: true,
+            })
+        } else {
+            None
+        }
+    }
+    
+    // Get a column (for 2D arrays)
+    pub fn column(&self, index: i32) -> Option<IndexResult<T, D>> {
+        if self.ndim() != 2 {
+            return None;
+        }
+        
+        let shape = self.shape();
+        if index < 0 || index >= shape[1] {
+            return None;
+        }
+        
+        let mut column_data = Vec::new();
+        let data_slice = self.as_slice();
+        let row_size = shape[1];
+        
+        for row in 0..shape[0] {
+            let linear_idx = row * row_size + index;
+            if (linear_idx as usize) < data_slice.len() {
+                column_data.push(data_slice[linear_idx as usize]);
+            }
+        }
+        
+        Some(IndexResult {
+            data: column_data,
+            shape: vec![shape[0]],
+            is_copy: true,
+        })
+    }
+}
+

@@ -1,0 +1,345 @@
+// Memory management module for AeroNum
+// Handles data ownership, memory layout, and allocation strategies
+
+use crate::traits::{Numeric, MemoryLayout};
+
+// Enum to represent different data ownership models
+pub enum DataOwnership<T: Numeric> {
+    Owned(Vec<T>),           // Owns the data, can modify freely
+    Borrowed(&[T]),          // Immutable borrow of external data
+    BorrowedMut(&mut [T]),   // Mutable borrow of external data
+    Shared(SharedData<T>),   // Reference-counted shared data
+}
+
+// Shared data structure for reference counting
+pub struct SharedData<T: Numeric> {
+    data: *mut T,
+    len: i32,
+    capacity: i32,
+    ref_count: i32,
+}
+
+impl<T: Numeric> SharedData<T> {
+    pub fn new(data: Vec<T>) -> SharedData<T> {
+        let len = data.len() as i32;
+        let capacity = data.capacity() as i32;
+        let ptr = data.as_ptr() as *mut T;
+        // Prevent Vec from deallocating
+        core::mem::forget(data);
+        
+        SharedData {
+            data: ptr,
+            len,
+            capacity,
+            ref_count: 1,
+        }
+    }
+    
+    pub fn clone(&mut self) -> SharedData<T> {
+        self.ref_count = self.ref_count + 1;
+        SharedData {
+            data: self.data,
+            len: self.len,
+            capacity: self.capacity,
+            ref_count: self.ref_count,
+        }
+    }
+    
+    pub fn as_slice(&self) -> &[T] {
+        unsafe {
+            core::slice::from_raw_parts(self.data, self.len as usize)
+        }
+    }
+    
+    pub fn as_mut_slice(&mut self) -> &mut [T] {
+        unsafe {
+            core::slice::from_raw_parts_mut(self.data, self.len as usize)
+        }
+    }
+}
+
+impl<T: Numeric> Drop for SharedData<T> {
+    fn drop(&mut self) {
+        self.ref_count = self.ref_count - 1;
+        if self.ref_count == 0 {
+            unsafe {
+                // Reconstruct Vec to properly deallocate
+                let _vec = Vec::from_raw_parts(self.data, self.len as usize, self.capacity as usize);
+            }
+        }
+    }
+}
+
+// Memory layout information for arrays
+pub struct ArrayMemoryLayout {
+    pub shape: Vec<i32>,
+    pub strides: Vec<i32>,
+    pub offset: i32,
+    pub is_contiguous: bool,
+    pub is_c_order: bool,
+    pub is_fortran_order: bool,
+}
+
+impl ArrayMemoryLayout {
+    pub fn new_c_contiguous(shape: &[i32]) -> ArrayMemoryLayout {
+        let mut strides = Vec::new();
+        let mut stride = 1;
+        
+        // Calculate C-order strides (row-major)
+        for i in (0..shape.len()).rev() {
+            strides.insert(0, stride);
+            stride = stride * shape[i];
+        }
+        
+        ArrayMemoryLayout {
+            shape: shape.to_vec(),
+            strides,
+            offset: 0,
+            is_contiguous: true,
+            is_c_order: true,
+            is_fortran_order: shape.len() <= 1,
+        }
+    }
+    
+    pub fn new_fortran_contiguous(shape: &[i32]) -> ArrayMemoryLayout {
+        let mut strides = Vec::new();
+        let mut stride = 1;
+        
+        // Calculate Fortran-order strides (column-major)
+        for i in 0..shape.len() {
+            strides.push(stride);
+            stride = stride * shape[i];
+        }
+        
+        ArrayMemoryLayout {
+            shape: shape.to_vec(),
+            strides,
+            offset: 0,
+            is_contiguous: true,
+            is_c_order: shape.len() <= 1,
+            is_fortran_order: true,
+        }
+    }
+    
+    pub fn new_custom(shape: &[i32], strides: &[i32], offset: i32) -> ArrayMemoryLayout {
+        let is_c_contig = Self::check_c_contiguous(shape, strides);
+        let is_f_contig = Self::check_fortran_contiguous(shape, strides);
+        
+        ArrayMemoryLayout {
+            shape: shape.to_vec(),
+            strides: strides.to_vec(),
+            offset,
+            is_contiguous: is_c_contig || is_f_contig,
+            is_c_order: is_c_contig,
+            is_fortran_order: is_f_contig,
+        }
+    }
+    
+    fn check_c_contiguous(shape: &[i32], strides: &[i32]) -> bool {
+        if shape.len() != strides.len() {
+            return false;
+        }
+        
+        let mut expected_stride = 1;
+        for i in (0..shape.len()).rev() {
+            if strides[i] != expected_stride {
+                return false;
+            }
+            expected_stride = expected_stride * shape[i];
+        }
+        true
+    }
+    
+    fn check_fortran_contiguous(shape: &[i32], strides: &[i32]) -> bool {
+        if shape.len() != strides.len() {
+            return false;
+        }
+        
+        let mut expected_stride = 1;
+        for i in 0..shape.len() {
+            if strides[i] != expected_stride {
+                return false;
+            }
+            expected_stride = expected_stride * shape[i];
+        }
+        true
+    }
+    
+    pub fn total_size(&self) -> i32 {
+        self.shape.iter().fold(1, |acc, &dim| acc * dim)
+    }
+    
+    pub fn linear_index(&self, indices: &[i32]) -> Option<i32> {
+        if indices.len() != self.shape.len() {
+            return None;
+        }
+        
+        let mut linear_idx = self.offset;
+        for i in 0..indices.len() {
+            if indices[i] < 0 || indices[i] >= self.shape[i] {
+                return None;
+            }
+            linear_idx = linear_idx + indices[i] * self.strides[i];
+        }
+        Some(linear_idx)
+    }
+    
+    pub fn reshape(&self, new_shape: &[i32]) -> Option<ArrayMemoryLayout> {
+        let old_size = self.total_size();
+        let new_size = new_shape.iter().fold(1, |acc, &dim| acc * dim);
+        
+        if old_size != new_size {
+            return None;
+        }
+        
+        if !self.is_contiguous {
+            return None;
+        }
+        
+        if self.is_c_order {
+            Some(ArrayMemoryLayout::new_c_contiguous(new_shape))
+        } else {
+            Some(ArrayMemoryLayout::new_fortran_contiguous(new_shape))
+        }
+    }
+    
+    pub fn transpose(&self) -> ArrayMemoryLayout {
+        let mut new_shape = self.shape.clone();
+        let mut new_strides = self.strides.clone();
+        
+        new_shape.reverse();
+        new_strides.reverse();
+        
+        ArrayMemoryLayout::new_custom(&new_shape, &new_strides, self.offset)
+    }
+    
+    pub fn slice(&self, ranges: &[SliceRange]) -> Option<ArrayMemoryLayout> {
+        if ranges.len() != self.shape.len() {
+            return None;
+        }
+        
+        let mut new_shape = Vec::new();
+        let mut new_strides = Vec::new();
+        let mut new_offset = self.offset;
+        
+        for i in 0..ranges.len() {
+            let range = &ranges[i];
+            let dim_size = self.shape[i];
+            
+            // Normalize negative indices
+            let start = if range.start < 0 { dim_size + range.start } else { range.start };
+            let end = if range.end < 0 { dim_size + range.end } else { range.end };
+            
+            if start < 0 || start >= dim_size || end < start || end > dim_size {
+                return None;
+            }
+            
+            new_offset = new_offset + start * self.strides[i];
+            
+            if range.step == 1 {
+                new_shape.push(end - start);
+                new_strides.push(self.strides[i]);
+            } else {
+                let new_dim_size = (end - start + range.step - 1) / range.step;
+                new_shape.push(new_dim_size);
+                new_strides.push(self.strides[i] * range.step);
+            }
+        }
+        
+        Some(ArrayMemoryLayout::new_custom(&new_shape, &new_strides, new_offset))
+    }
+}
+
+impl MemoryLayout for ArrayMemoryLayout {
+    fn is_contiguous(&self) -> bool {
+        self.is_contiguous
+    }
+    
+    fn is_c_contiguous(&self) -> bool {
+        self.is_c_order
+    }
+    
+    fn is_fortran_contiguous(&self) -> bool {
+        self.is_fortran_order
+    }
+    
+    fn stride(&self) -> &[i32] {
+        &self.strides
+    }
+    
+    fn offset(&self) -> i32 {
+        self.offset
+    }
+    
+    fn make_contiguous(&self) -> Self {
+        ArrayMemoryLayout::new_c_contiguous(&self.shape)
+    }
+}
+
+// Slice range for memory layout operations
+pub struct SliceRange {
+    pub start: i32,
+    pub end: i32,
+    pub step: i32,
+}
+
+impl SliceRange {
+    pub fn new(start: i32, end: i32) -> SliceRange {
+        SliceRange { start, end, step: 1 }
+    }
+    
+    pub fn with_step(start: i32, end: i32, step: i32) -> SliceRange {
+        SliceRange { start, end, step }
+    }
+    
+    pub fn all() -> SliceRange {
+        SliceRange { start: 0, end: -1, step: 1 }
+    }
+}
+
+// Memory allocator interface for custom allocation strategies
+pub trait MemoryAllocator<T: Numeric> {
+    fn allocate(&mut self, size: i32) -> Option<*mut T>;
+    fn deallocate(&mut self, ptr: *mut T, size: i32);
+    fn reallocate(&mut self, ptr: *mut T, old_size: i32, new_size: i32) -> Option<*mut T>;
+}
+
+// Default system allocator
+pub struct SystemAllocator;
+
+impl<T: Numeric> MemoryAllocator<T> for SystemAllocator {
+    fn allocate(&mut self, size: i32) -> Option<*mut T> {
+        let layout = core::alloc::Layout::array::<T>(size as usize).ok()?;
+        unsafe {
+            let ptr = core::alloc::alloc(layout) as *mut T;
+            if ptr.is_null() {
+                None
+            } else {
+                Some(ptr)
+            }
+        }
+    }
+    
+    fn deallocate(&mut self, ptr: *mut T, size: i32) {
+        if let Ok(layout) = core::alloc::Layout::array::<T>(size as usize) {
+            unsafe {
+                core::alloc::dealloc(ptr as *mut u8, layout);
+            }
+        }
+    }
+    
+    fn reallocate(&mut self, ptr: *mut T, old_size: i32, new_size: i32) -> Option<*mut T> {
+        let old_layout = core::alloc::Layout::array::<T>(old_size as usize).ok()?;
+        let new_layout = core::alloc::Layout::array::<T>(new_size as usize).ok()?;
+        
+        unsafe {
+            let new_ptr = core::alloc::realloc(ptr as *mut u8, old_layout, new_layout.size()) as *mut T;
+            if new_ptr.is_null() {
+                None
+            } else {
+                Some(new_ptr)
+            }
+        }
+    }
+}
+

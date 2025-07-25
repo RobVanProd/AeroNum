@@ -1,0 +1,502 @@
+// Core Array implementation for AeroNum
+// Provides the main Array<T, D> struct with ownership and borrowing semantics
+
+use crate::traits::{Numeric, ArrayOps, MemoryLayout};
+use crate::memory::{DataOwnership, ArrayMemoryLayout, SliceRange};
+
+// Main Array struct with generic element type T and compile-time dimensionality D
+pub struct Array<T: Numeric, const D: i32> {
+    data: DataOwnership<T>,
+    layout: ArrayMemoryLayout,
+}
+
+impl<T: Numeric, const D: i32> Array<T, D> {
+    // Constructor for owned arrays
+    pub fn new(data: Vec<T>, shape: &[i32]) -> Option<Array<T, D>> {
+        if shape.len() != D as usize {
+            return None;
+        }
+        
+        let total_size = shape.iter().fold(1, |acc, &dim| acc * dim);
+        if data.len() != total_size as usize {
+            return None;
+        }
+        
+        let layout = ArrayMemoryLayout::new_c_contiguous(shape);
+        Some(Array {
+            data: DataOwnership::Owned(data),
+            layout,
+        })
+    }
+    
+    // Constructor for borrowed arrays (immutable)
+    pub fn from_slice(data: &[T], shape: &[i32]) -> Option<Array<T, D>> {
+        if shape.len() != D as usize {
+            return None;
+        }
+        
+        let total_size = shape.iter().fold(1, |acc, &dim| acc * dim);
+        if data.len() != total_size as usize {
+            return None;
+        }
+        
+        let layout = ArrayMemoryLayout::new_c_contiguous(shape);
+        Some(Array {
+            data: DataOwnership::Borrowed(data),
+            layout,
+        })
+    }
+    
+    // Constructor for borrowed arrays (mutable)
+    pub fn from_mut_slice(data: &mut [T], shape: &[i32]) -> Option<Array<T, D>> {
+        if shape.len() != D as usize {
+            return None;
+        }
+        
+        let total_size = shape.iter().fold(1, |acc, &dim| acc * dim);
+        if data.len() != total_size as usize {
+            return None;
+        }
+        
+        let layout = ArrayMemoryLayout::new_c_contiguous(shape);
+        Some(Array {
+            data: DataOwnership::BorrowedMut(data),
+            layout,
+        })
+    }
+    
+    // Get raw data slice (immutable)
+    pub fn as_slice(&self) -> &[T] {
+        match &self.data {
+            DataOwnership::Owned(vec) => vec.as_slice(),
+            DataOwnership::Borrowed(slice) => slice,
+            DataOwnership::BorrowedMut(slice) => slice,
+            DataOwnership::Shared(shared) => shared.as_slice(),
+        }
+    }
+    
+    // Get raw data slice (mutable) - only for owned or mutably borrowed data
+    pub fn as_mut_slice(&mut self) -> Option<&mut [T]> {
+        match &mut self.data {
+            DataOwnership::Owned(vec) => Some(vec.as_mut_slice()),
+            DataOwnership::BorrowedMut(slice) => Some(slice),
+            DataOwnership::Shared(shared) => Some(shared.as_mut_slice()),
+            DataOwnership::Borrowed(_) => None,
+        }
+    }
+    
+    // Check if array owns its data
+    pub fn is_owned(&self) -> bool {
+        match &self.data {
+            DataOwnership::Owned(_) => true,
+            _ => false,
+        }
+    }
+    
+    // Check if array data is mutable
+    pub fn is_mutable(&self) -> bool {
+        match &self.data {
+            DataOwnership::Owned(_) => true,
+            DataOwnership::BorrowedMut(_) => true,
+            DataOwnership::Shared(_) => true,
+            DataOwnership::Borrowed(_) => false,
+        }
+    }
+    
+    // Convert to owned array (makes a copy if necessary)
+    pub fn to_owned(&self) -> Array<T, D> {
+        let data_slice = self.as_slice();
+        let owned_data = data_slice.to_vec();
+        
+        Array {
+            data: DataOwnership::Owned(owned_data),
+            layout: self.layout.clone(),
+        }
+    }
+    
+    // Create array filled with zeros
+    pub fn zeros(shape: &[i32]) -> Array<T, D> {
+        let total_size = shape.iter().fold(1, |acc, &dim| acc * dim);
+        let data = vec![T::zero(); total_size as usize];
+        Array::new(data, shape).unwrap()
+    }
+    
+    // Create array filled with ones
+    pub fn ones(shape: &[i32]) -> Array<T, D> {
+        let total_size = shape.iter().fold(1, |acc, &dim| acc * dim);
+        let data = vec![T::one(); total_size as usize];
+        Array::new(data, shape).unwrap()
+    }
+    
+    // Create array filled with specific value
+    pub fn fill(shape: &[i32], value: T) -> Array<T, D> {
+        let total_size = shape.iter().fold(1, |acc, &dim| acc * dim);
+        let data = vec![value; total_size as usize];
+        Array::new(data, shape).unwrap()
+    }
+    
+    // Create array with range of values (1D only)
+    pub fn arange(start: T, stop: T, step: T) -> Array<T, 1> where T: Copy {
+        let mut data = Vec::new();
+        let mut current = start;
+        
+        while current.lt(stop) {
+            data.push(current);
+            current = current.add(step);
+        }
+        
+        let shape = [data.len() as i32];
+        Array::new(data, &shape).unwrap()
+    }
+    
+    // Create array with linearly spaced values (1D only)
+    pub fn linspace(start: T, stop: T, num: i32) -> Array<T, 1> where T: Copy {
+        if num <= 0 {
+            return Array::zeros(&[0]);
+        }
+        
+        if num == 1 {
+            return Array::new(vec![start], &[1]).unwrap();
+        }
+        
+        let mut data = Vec::new();
+        let step = stop.sub(start).div(T::from_i32(num - 1));
+        
+        for i in 0..num {
+            let value = start.add(step.mul(T::from_i32(i)));
+            data.push(value);
+        }
+        
+        let shape = [num];
+        Array::new(data, &shape).unwrap()
+    }
+    
+    // Reshape array (returns new array if successful)
+    pub fn reshape(&self, new_shape: &[i32]) -> Option<Array<T, D>> {
+        let new_layout = self.layout.reshape(new_shape)?;
+        
+        // If data is contiguous, we can reshape without copying
+        if self.layout.is_contiguous() {
+            Some(Array {
+                data: match &self.data {
+                    DataOwnership::Owned(vec) => DataOwnership::Owned(vec.clone()),
+                    DataOwnership::Borrowed(slice) => DataOwnership::Borrowed(slice),
+                    DataOwnership::BorrowedMut(slice) => DataOwnership::BorrowedMut(slice),
+                    DataOwnership::Shared(shared) => DataOwnership::Shared(shared.clone()),
+                },
+                layout: new_layout,
+            })
+        } else {
+            // Need to make contiguous copy first
+            let owned = self.to_owned();
+            owned.reshape(new_shape)
+        }
+    }
+    
+    // Transpose array
+    pub fn transpose(&self) -> Array<T, D> {
+        let new_layout = self.layout.transpose();
+        
+        Array {
+            data: match &self.data {
+                DataOwnership::Owned(vec) => DataOwnership::Owned(vec.clone()),
+                DataOwnership::Borrowed(slice) => DataOwnership::Borrowed(slice),
+                DataOwnership::BorrowedMut(slice) => DataOwnership::BorrowedMut(slice),
+                DataOwnership::Shared(shared) => DataOwnership::Shared(shared.clone()),
+            },
+            layout: new_layout,
+        }
+    }
+    
+    // Element-wise addition with scalar
+    pub fn add_scalar(&self, scalar: T) -> Array<T, D> where T: Copy {
+        let data_slice = self.as_slice();
+        let new_data: Vec<T> = data_slice.iter().map(|&x| x.add(scalar)).collect();
+        
+        Array {
+            data: DataOwnership::Owned(new_data),
+            layout: self.layout.clone(),
+        }
+    }
+    
+    // Element-wise multiplication with scalar
+    pub fn mul_scalar(&self, scalar: T) -> Array<T, D> where T: Copy {
+        let data_slice = self.as_slice();
+        let new_data: Vec<T> = data_slice.iter().map(|&x| x.mul(scalar)).collect();
+        
+        Array {
+            data: DataOwnership::Owned(new_data),
+            layout: self.layout.clone(),
+        }
+    }
+    
+    // Element-wise addition with another array
+    pub fn add_array(&self, other: &Array<T, D>) -> Option<Array<T, D>> where T: Copy {
+        if self.layout.shape != other.layout.shape {
+            return None;
+        }
+        
+        let self_data = self.as_slice();
+        let other_data = other.as_slice();
+        let new_data: Vec<T> = self_data.iter().zip(other_data.iter())
+            .map(|(&a, &b)| a.add(b)).collect();
+        
+        Some(Array {
+            data: DataOwnership::Owned(new_data),
+            layout: self.layout.clone(),
+        })
+    }
+    
+    // Element-wise multiplication with another array
+    pub fn mul_array(&self, other: &Array<T, D>) -> Option<Array<T, D>> where T: Copy {
+        if self.layout.shape != other.layout.shape {
+            return None;
+        }
+        
+        let self_data = self.as_slice();
+        let other_data = other.as_slice();
+        let new_data: Vec<T> = self_data.iter().zip(other_data.iter())
+            .map(|(&a, &b)| a.mul(b)).collect();
+        
+        Some(Array {
+            data: DataOwnership::Owned(new_data),
+            layout: self.layout.clone(),
+        })
+    }
+    
+    // Sum all elements
+    pub fn sum(&self) -> T where T: Copy {
+        let data_slice = self.as_slice();
+        data_slice.iter().fold(T::zero(), |acc, &x| acc.add(x))
+    }
+    
+    // Calculate mean of all elements
+    pub fn mean(&self) -> T where T: Copy {
+        let total = self.sum();
+        let count = T::from_i32(self.layout.total_size());
+        total.div(count)
+    }
+    
+    // Find minimum element
+    pub fn min(&self) -> T where T: Copy {
+        let data_slice = self.as_slice();
+        if data_slice.is_empty() {
+            return T::zero();
+        }
+        
+        data_slice.iter().fold(data_slice[0], |acc, &x| {
+            if x.lt(acc) { x } else { acc }
+        })
+    }
+    
+    // Find maximum element
+    pub fn max(&self) -> T where T: Copy {
+        let data_slice = self.as_slice();
+        if data_slice.is_empty() {
+            return T::zero();
+        }
+        
+        data_slice.iter().fold(data_slice[0], |acc, &x| {
+            if x.gt(acc) { x } else { acc }
+        })
+    }
+}
+
+impl<T: Numeric, const D: i32> ArrayOps<T, D> for Array<T, D> where T: Copy {
+    fn get(&self, indices: &[i32]) -> Option<&T> {
+        let linear_idx = self.layout.linear_index(indices)?;
+        let data_slice = self.as_slice();
+        data_slice.get(linear_idx as usize)
+    }
+    
+    fn get_mut(&mut self, indices: &[i32]) -> Option<&mut T> {
+        let linear_idx = self.layout.linear_index(indices)?;
+        let data_slice = self.as_mut_slice()?;
+        data_slice.get_mut(linear_idx as usize)
+    }
+    
+    fn set(&mut self, indices: &[i32], value: T) -> bool {
+        if let Some(elem) = self.get_mut(indices) {
+            *elem = value;
+            true
+        } else {
+            false
+        }
+    }
+    
+    fn shape(&self) -> &[i32] {
+        &self.layout.shape
+    }
+    
+    fn ndim(&self) -> i32 {
+        self.layout.shape.len() as i32
+    }
+    
+    fn size(&self) -> i32 {
+        self.layout.total_size()
+    }
+    
+    fn len(&self) -> i32 {
+        if self.layout.shape.is_empty() {
+            0
+        } else {
+            self.layout.shape[0]
+        }
+    }
+    
+    fn is_empty(&self) -> bool {
+        self.layout.total_size() == 0
+    }
+    
+    fn zeros(shape: &[i32]) -> Self {
+        Array::zeros(shape)
+    }
+    
+    fn ones(shape: &[i32]) -> Self {
+        Array::ones(shape)
+    }
+    
+    fn fill(shape: &[i32], value: T) -> Self {
+        Array::fill(shape, value)
+    }
+    
+    fn reshape(&self, new_shape: &[i32]) -> Option<Self> {
+        self.reshape(new_shape)
+    }
+    
+    fn transpose(&self) -> Self {
+        self.transpose()
+    }
+    
+    fn add_scalar(&self, scalar: T) -> Self {
+        self.add_scalar(scalar)
+    }
+    
+    fn mul_scalar(&self, scalar: T) -> Self {
+        self.mul_scalar(scalar)
+    }
+    
+    fn add_array(&self, other: &Self) -> Option<Self> {
+        self.add_array(other)
+    }
+    
+    fn mul_array(&self, other: &Self) -> Option<Self> {
+        self.mul_array(other)
+    }
+    
+    fn sum(&self) -> T {
+        self.sum()
+    }
+    
+    fn mean(&self) -> T {
+        self.mean()
+    }
+    
+    fn min(&self) -> T {
+        self.min()
+    }
+    
+    fn max(&self) -> T {
+        self.max()
+    }
+    
+    fn argmin(&self) -> i32 {
+        let data_slice = self.as_slice();
+        if data_slice.is_empty() {
+            return -1;
+        }
+        
+        let mut min_idx = 0;
+        let mut min_val = data_slice[0];
+        
+        for (i, &val) in data_slice.iter().enumerate() {
+            if val.lt(min_val) {
+                min_val = val;
+                min_idx = i;
+            }
+        }
+        
+        min_idx as i32
+    }
+    
+    fn argmax(&self) -> i32 {
+        let data_slice = self.as_slice();
+        if data_slice.is_empty() {
+            return -1;
+        }
+        
+        let mut max_idx = 0;
+        let mut max_val = data_slice[0];
+        
+        for (i, &val) in data_slice.iter().enumerate() {
+            if val.gt(max_val) {
+                max_val = val;
+                max_idx = i;
+            }
+        }
+        
+        max_idx as i32
+    }
+    
+    fn map<F>(&self, f: F) -> Self where F: Fn(T) -> T {
+        let data_slice = self.as_slice();
+        let new_data: Vec<T> = data_slice.iter().map(|&x| f(x)).collect();
+        
+        Array {
+            data: DataOwnership::Owned(new_data),
+            layout: self.layout.clone(),
+        }
+    }
+    
+    fn fold<F, U>(&self, init: U, f: F) -> U where F: Fn(U, T) -> U {
+        let data_slice = self.as_slice();
+        data_slice.iter().fold(init, |acc, &x| f(acc, x))
+    }
+}
+
+impl<T: Numeric, const D: i32> MemoryLayout for Array<T, D> {
+    fn is_contiguous(&self) -> bool {
+        self.layout.is_contiguous()
+    }
+    
+    fn is_c_contiguous(&self) -> bool {
+        self.layout.is_c_contiguous()
+    }
+    
+    fn is_fortran_contiguous(&self) -> bool {
+        self.layout.is_fortran_contiguous()
+    }
+    
+    fn stride(&self) -> &[i32] {
+        self.layout.stride()
+    }
+    
+    fn offset(&self) -> i32 {
+        self.layout.offset()
+    }
+    
+    fn make_contiguous(&self) -> Self {
+        if self.is_contiguous() {
+            // Already contiguous, return a copy
+            self.to_owned()
+        } else {
+            // Need to reorder data to make it contiguous
+            let new_layout = self.layout.make_contiguous();
+            let mut new_data = Vec::with_capacity(self.layout.total_size() as usize);
+            
+            // Copy data in C-contiguous order
+            // This is a simplified implementation - a real version would need
+            // to handle arbitrary strides and multi-dimensional indexing
+            let data_slice = self.as_slice();
+            for &elem in data_slice {
+                new_data.push(elem);
+            }
+            
+            Array {
+                data: DataOwnership::Owned(new_data),
+                layout: new_layout,
+            }
+        }
+    }
+}
+

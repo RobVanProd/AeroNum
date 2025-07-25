@@ -1,0 +1,243 @@
+// Matrix multiplication benchmarks for AeroNum
+// Tests performance of different matrix sizes and configurations
+
+use aeronum::{Array2, init_with_config, AeroNumConfig};
+use aeronum::linalg::matmul;
+
+fn main() {
+    // Initialize with optimized configuration
+    let config = AeroNumConfig::new()
+        .with_blas(true)
+        .with_threads(0); // Auto-detect thread count
+    init_with_config(config);
+    
+    println!("=== AeroNum Matrix Multiplication Benchmarks ===");
+    
+    // Test different matrix sizes
+    let sizes = vec![64, 128, 256, 512, 1024];
+    
+    for &size in &sizes {
+        println!("\nBenchmarking {}x{} matrices:", size, size);
+        
+        // Create random-like matrices (using simple pattern for deterministic results)
+        let mut a_data = Vec::new();
+        let mut b_data = Vec::new();
+        
+        for i in 0..(size * size) {
+            a_data.push((i % 100) as f64 / 100.0);
+            b_data.push(((i * 7) % 100) as f64 / 100.0);
+        }
+        
+        let a = Array2::new(a_data, &[size, size]).unwrap();
+        let b = Array2::new(b_data, &[size, size]).unwrap();
+        
+        // Warm-up run
+        let _ = matmul(&a, &b);
+        
+        // Benchmark runs
+        let num_runs = if size <= 256 { 10 } else { 3 };
+        let mut total_time = 0.0;
+        
+        for run in 0..num_runs {
+            let start_time = get_time_microseconds();
+            let result = matmul(&a, &b);
+            let end_time = get_time_microseconds();
+            
+            if result.is_some() {
+                let elapsed = end_time - start_time;
+                total_time = total_time + elapsed;
+                
+                if run == 0 {
+                    // Verify result for first run
+                    let c = result.unwrap();
+                    let checksum = c.sum();
+                    println!("  Checksum: {:.6}", checksum);
+                }
+            }
+        }
+        
+        let avg_time = total_time / num_runs as f64;
+        let flops = 2.0 * (size as f64).powi(3); // 2n^3 operations for matrix multiplication
+        let gflops = flops / (avg_time * 1000.0); // Convert microseconds to seconds
+        
+        println!("  Average time: {:.3} ms", avg_time / 1000.0);
+        println!("  Performance: {:.2} GFLOPS", gflops);
+        
+        // Memory bandwidth estimation
+        let memory_ops = 3.0 * (size as f64).powi(2) * 8.0; // 3 matrices * n^2 elements * 8 bytes
+        let bandwidth = memory_ops / (avg_time / 1000000.0) / (1024.0 * 1024.0 * 1024.0);
+        println!("  Memory bandwidth: {:.2} GB/s", bandwidth);
+    }
+    
+    // Test different data types
+    println!("\n=== Data Type Performance Comparison (512x512) ===");
+    
+    benchmark_f32_matmul(512);
+    benchmark_f64_matmul(512);
+    
+    // Test memory layout performance
+    println!("\n=== Memory Layout Performance (256x256) ===");
+    
+    benchmark_memory_layouts(256);
+    
+    // Test vector operations
+    println!("\n=== Vector Operations Benchmarks ===");
+    
+    benchmark_vector_operations();
+    
+    println!("\n=== Benchmarks Complete ===");
+}
+
+fn benchmark_f32_matmul(size: i32) {
+    println!("\nf32 matrices ({}x{}):", size, size);
+    
+    let mut a_data = Vec::new();
+    let mut b_data = Vec::new();
+    
+    for i in 0..(size * size) {
+        a_data.push((i % 100) as f32 / 100.0);
+        b_data.push(((i * 7) % 100) as f32 / 100.0);
+    }
+    
+    let a = Array2::new(a_data, &[size, size]).unwrap();
+    let b = Array2::new(b_data, &[size, size]).unwrap();
+    
+    let start_time = get_time_microseconds();
+    let result = matmul(&a, &b);
+    let end_time = get_time_microseconds();
+    
+    if let Some(c) = result {
+        let elapsed = end_time - start_time;
+        let flops = 2.0 * (size as f64).powi(3);
+        let gflops = flops / (elapsed * 1000.0);
+        
+        println!("  Time: {:.3} ms", elapsed / 1000.0);
+        println!("  Performance: {:.2} GFLOPS", gflops);
+        println!("  Checksum: {:.6}", c.sum());
+    }
+}
+
+fn benchmark_f64_matmul(size: i32) {
+    println!("\nf64 matrices ({}x{}):", size, size);
+    
+    let mut a_data = Vec::new();
+    let mut b_data = Vec::new();
+    
+    for i in 0..(size * size) {
+        a_data.push((i % 100) as f64 / 100.0);
+        b_data.push(((i * 7) % 100) as f64 / 100.0);
+    }
+    
+    let a = Array2::new(a_data, &[size, size]).unwrap();
+    let b = Array2::new(b_data, &[size, size]).unwrap();
+    
+    let start_time = get_time_microseconds();
+    let result = matmul(&a, &b);
+    let end_time = get_time_microseconds();
+    
+    if let Some(c) = result {
+        let elapsed = end_time - start_time;
+        let flops = 2.0 * (size as f64).powi(3);
+        let gflops = flops / (elapsed * 1000.0);
+        
+        println!("  Time: {:.3} ms", elapsed / 1000.0);
+        println!("  Performance: {:.2} GFLOPS", gflops);
+        println!("  Checksum: {:.6}", c.sum());
+    }
+}
+
+fn benchmark_memory_layouts(size: i32) {
+    println!("\nC-contiguous vs Fortran-contiguous layouts:");
+    
+    // C-contiguous (row-major) - default
+    let mut c_data = Vec::new();
+    for i in 0..(size * size) {
+        c_data.push((i % 100) as f64 / 100.0);
+    }
+    let c_matrix = Array2::new(c_data, &[size, size]).unwrap();
+    
+    // Fortran-contiguous (column-major) - transpose
+    let f_matrix = c_matrix.transpose();
+    
+    println!("  C-contiguous (row-major):");
+    let start_time = get_time_microseconds();
+    let _ = matmul(&c_matrix, &c_matrix);
+    let end_time = get_time_microseconds();
+    println!("    Time: {:.3} ms", (end_time - start_time) / 1000.0);
+    
+    println!("  Fortran-contiguous (column-major):");
+    let start_time = get_time_microseconds();
+    let _ = matmul(&f_matrix, &f_matrix);
+    let end_time = get_time_microseconds();
+    println!("    Time: {:.3} ms", (end_time - start_time) / 1000.0);
+}
+
+fn benchmark_vector_operations() {
+    let sizes = vec![1000, 10000, 100000, 1000000];
+    
+    for &size in &sizes {
+        println!("\nVector operations (size {}):", size);
+        
+        let mut a_data = Vec::new();
+        let mut b_data = Vec::new();
+        
+        for i in 0..size {
+            a_data.push((i % 1000) as f64 / 1000.0);
+            b_data.push(((i * 3) % 1000) as f64 / 1000.0);
+        }
+        
+        let a = aeronum::Array::new(a_data, &[size]).unwrap();
+        let b = aeronum::Array::new(b_data, &[size]).unwrap();
+        
+        // Dot product
+        let start_time = get_time_microseconds();
+        let dot_result = aeronum::linalg::dot(&a, &b);
+        let end_time = get_time_microseconds();
+        
+        if let Some(result) = dot_result {
+            println!("  Dot product: {:.3} ms, result: {:.6}", 
+                     (end_time - start_time) / 1000.0, result);
+        }
+        
+        // Element-wise addition
+        let start_time = get_time_microseconds();
+        let add_result = a.add(&b);
+        let end_time = get_time_microseconds();
+        
+        if let Some(result) = add_result {
+            println!("  Addition: {:.3} ms, checksum: {:.6}", 
+                     (end_time - start_time) / 1000.0, result.sum());
+        }
+        
+        // Element-wise multiplication
+        let start_time = get_time_microseconds();
+        let mul_result = a.mul(&b);
+        let end_time = get_time_microseconds();
+        
+        if let Some(result) = mul_result {
+            println!("  Multiplication: {:.3} ms, checksum: {:.6}", 
+                     (end_time - start_time) / 1000.0, result.sum());
+        }
+        
+        // Mathematical functions
+        let start_time = get_time_microseconds();
+        let sin_result = a.sin();
+        let end_time = get_time_microseconds();
+        
+        println!("  Sin function: {:.3} ms, checksum: {:.6}", 
+                 (end_time - start_time) / 1000.0, sin_result.sum());
+    }
+}
+
+// Simple time measurement function
+// In a real implementation, this would use high-resolution timers
+fn get_time_microseconds() -> f64 {
+    // Placeholder implementation
+    // Would use system-specific high-resolution timer
+    static mut COUNTER: i64 = 0;
+    unsafe {
+        COUNTER = COUNTER + 1;
+        COUNTER as f64 * 1000.0 // Simulate microseconds
+    }
+}
+

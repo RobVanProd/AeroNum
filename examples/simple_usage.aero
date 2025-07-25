@@ -1,0 +1,160 @@
+// Simple usage example for AeroNum library
+// Demonstrates basic array operations and linear algebra
+
+use aeronum::{Array, Array2, init, zeros, ones, arange, linspace};
+use aeronum::linalg::{dot, matmul, solve};
+
+fn main() {
+    // Initialize AeroNum library
+    let config = init()
+        .with_blas(true)
+        .with_threads(4);
+    init_with_config(config);
+    
+    println!("=== AeroNum Simple Usage Example ===");
+    
+    // Create 1D arrays
+    println!("\n1. Creating 1D Arrays:");
+    let a = arange(0.0, 10.0, 1.0);
+    let b = linspace(0.0, 1.0, 10);
+    let c = ones(&[10]);
+    
+    println!("a = arange(0, 10, 1) = {:?}", a.as_slice());
+    println!("b = linspace(0, 1, 10) = {:?}", b.as_slice());
+    println!("c = ones([10]) = {:?}", c.as_slice());
+    
+    // Basic arithmetic operations
+    println!("\n2. Basic Arithmetic:");
+    let sum_ab = a.add(&b).unwrap();
+    let product_ac = a.mul(&c).unwrap();
+    let scaled = a.mul_scalar(2.0);
+    
+    println!("a + b = {:?}", sum_ab.as_slice());
+    println!("a * c = {:?}", product_ac.as_slice());
+    println!("a * 2 = {:?}", scaled.as_slice());
+    
+    // Mathematical functions
+    println!("\n3. Mathematical Functions:");
+    let sqrt_a = a.sqrt();
+    let sin_a = a.sin();
+    let exp_b = b.exp();
+    
+    println!("sqrt(a) = {:?}", sqrt_a.as_slice());
+    println!("sin(a) = {:?}", sin_a.as_slice());
+    println!("exp(b) = {:?}", exp_b.as_slice());
+    
+    // Reduction operations
+    println!("\n4. Reduction Operations:");
+    println!("sum(a) = {}", a.sum());
+    println!("mean(a) = {}", a.mean());
+    println!("min(a) = {}", a.min());
+    println!("max(a) = {}", a.max());
+    println!("argmin(a) = {}", a.argmin());
+    println!("argmax(a) = {}", a.argmax());
+    
+    // 2D arrays and matrix operations
+    println!("\n5. 2D Arrays and Matrix Operations:");
+    let matrix_data = vec![
+        1.0, 2.0, 3.0,
+        4.0, 5.0, 6.0,
+        7.0, 8.0, 9.0
+    ];
+    let matrix = Array2::new(matrix_data, &[3, 3]).unwrap();
+    
+    println!("Matrix A:");
+    print_matrix(&matrix);
+    
+    let vector_data = vec![1.0, 2.0, 3.0];
+    let vector = Array::new(vector_data, &[3]).unwrap();
+    
+    println!("Vector x = {:?}", vector.as_slice());
+    
+    // Matrix-vector multiplication
+    if let Some(result) = matrix.matmul(&vector) {
+        println!("A * x = {:?}", result.as_slice());
+    }
+    
+    // Matrix transpose
+    let matrix_t = matrix.transpose();
+    println!("A^T:");
+    print_matrix(&matrix_t);
+    
+    // Matrix-matrix multiplication
+    if let Some(aat) = matrix.matmul(&matrix_t) {
+        println!("A * A^T:");
+        print_matrix(&aat);
+    }
+    
+    // Array slicing
+    println!("\n6. Array Slicing:");
+    let large_array = arange(0.0, 20.0, 1.0);
+    println!("Original array: {:?}", large_array.as_slice());
+    
+    // Get elements 5 to 15
+    if let Some(slice_result) = large_array.slice_range(0, 5, 15) {
+        println!("Elements 5-15: {:?}", slice_result.as_slice());
+    }
+    
+    // Advanced indexing
+    println!("\n7. Advanced Indexing:");
+    let indices = vec![0, 2, 4, 6, 8];
+    let selected = large_array.select(&indices);
+    println!("Selected elements [0,2,4,6,8]: {:?}", selected.data);
+    
+    // Boolean indexing
+    let condition_result = large_array.filter(|x| x > 10.0);
+    println!("Elements > 10: {:?}", condition_result.data);
+    
+    // Linear algebra operations
+    println!("\n8. Linear Algebra:");
+    
+    // Create a simple 2x2 system
+    let a_matrix = Array2::new(vec![2.0, 1.0, 1.0, 3.0], &[2, 2]).unwrap();
+    let b_vector = Array::new(vec![5.0, 7.0], &[2]).unwrap();
+    
+    println!("Solving Ax = b:");
+    println!("A:");
+    print_matrix(&a_matrix);
+    println!("b = {:?}", b_vector.as_slice());
+    
+    if let Some(solution) = solve(&a_matrix, &b_vector) {
+        println!("x = {:?}", solution.as_slice());
+    }
+    
+    // Matrix determinant and inverse
+    if let Some(det) = a_matrix.determinant() {
+        println!("det(A) = {}", det);
+    }
+    
+    if let Some(inv) = a_matrix.inverse() {
+        println!("A^(-1):");
+        print_matrix(&inv);
+    }
+    
+    // Norms
+    println!("\n9. Norms:");
+    println!("Frobenius norm of A = {}", a_matrix.norm(aeronum::linalg::NormType::Frobenius));
+    println!("L2 norm of b = {}", b_vector.norm(aeronum::linalg::NormType::L2));
+    
+    println!("\n=== Example Complete ===");
+}
+
+fn print_matrix<T: aeronum::traits::Numeric>(matrix: &Array2<T>) where T: Copy + core::fmt::Debug {
+    let shape = matrix.shape();
+    let data = matrix.as_slice();
+    
+    for i in 0..shape[0] {
+        print!("[");
+        for j in 0..shape[1] {
+            let idx = (i * shape[1] + j) as usize;
+            if idx < data.len() {
+                print!("{:8.3}", data[idx].to_f64());
+            }
+            if j < shape[1] - 1 {
+                print!(", ");
+            }
+        }
+        println!("]");
+    }
+}
+

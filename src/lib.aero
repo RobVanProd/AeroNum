@@ -1,0 +1,139 @@
+// AeroNum: High-Performance Numerical Computing Library for Aero
+// 
+// This library provides efficient numerical computing capabilities with a focus on:
+// - Memory safety through Aero's ownership system
+// - Zero-cost abstractions for high performance
+// - Seamless interoperability with existing numerical libraries
+// - GPU acceleration support
+// - Python ecosystem integration
+
+// Core module declarations
+mod array;
+mod memory;
+mod slicing;
+mod indexing;
+mod ufuncs;
+mod traits;
+
+// Linear algebra module
+mod linalg;
+
+// Re-export core types and traits for convenient access
+pub use array::Array;
+pub use memory::{MemoryLayout, DataOwnership};
+pub use slicing::{Slice, SliceInfo};
+pub use indexing::{Index, AdvancedIndex};
+pub use traits::{Numeric, BlasBackend, ArrayOps};
+pub use linalg::{MatMul, LinearAlgebra};
+
+// Core type aliases for common use cases
+pub type Array1<T> = Array<T, 1>;
+pub type Array2<T> = Array<T, 2>;
+pub type Array3<T> = Array<T, 3>;
+pub type Array4<T> = Array<T, 4>;
+
+// Convenient type aliases for common numeric types
+pub type ArrayF32 = Array1<f32>;
+pub type ArrayF64 = Array1<f64>;
+pub type ArrayI32 = Array1<i32>;
+pub type ArrayI64 = Array1<i64>;
+
+pub type Array2F32 = Array2<f32>;
+pub type Array2F64 = Array2<f64>;
+pub type Array2I32 = Array2<i32>;
+pub type Array2I64 = Array2<i64>;
+
+// Library version and metadata
+pub const VERSION: &str = "0.1.0";
+pub const AUTHOR: &str = "Robert Van Arsdale";
+pub const DESCRIPTION: &str = "High-performance numerical computing library for Aero";
+
+// Main library initialization and configuration
+pub struct AeroNumConfig {
+    pub use_blas: bool,
+    pub use_gpu: bool,
+    pub thread_count: i32,
+    pub memory_pool_size: i64,
+}
+
+impl AeroNumConfig {
+    pub fn new() -> AeroNumConfig {
+        AeroNumConfig {
+            use_blas: true,
+            use_gpu: false,
+            thread_count: 0, // 0 means auto-detect
+            memory_pool_size: 1024 * 1024 * 1024, // 1GB default
+        }
+    }
+    
+    pub fn with_blas(mut self, enabled: bool) -> AeroNumConfig {
+        self.use_blas = enabled;
+        self
+    }
+    
+    pub fn with_gpu(mut self, enabled: bool) -> AeroNumConfig {
+        self.use_gpu = enabled;
+        self
+    }
+    
+    pub fn with_threads(mut self, count: i32) -> AeroNumConfig {
+        self.thread_count = count;
+        self
+    }
+}
+
+// Global library initialization
+pub fn init() -> AeroNumConfig {
+    AeroNumConfig::new()
+}
+
+pub fn init_with_config(config: AeroNumConfig) {
+    // Initialize library with custom configuration
+    // This would set up BLAS backends, GPU contexts, thread pools, etc.
+    println!("AeroNum initialized with BLAS: {}, GPU: {}, Threads: {}", 
+             config.use_blas, config.use_gpu, config.thread_count);
+}
+
+// Convenience functions for common operations
+pub fn zeros<T: Numeric>(shape: &[i32]) -> Array<T, 1> {
+    Array::zeros(shape)
+}
+
+pub fn ones<T: Numeric>(shape: &[i32]) -> Array<T, 1> {
+    Array::ones(shape)
+}
+
+pub fn arange<T: Numeric>(start: T, stop: T, step: T) -> Array<T, 1> {
+    Array::arange(start, stop, step)
+}
+
+pub fn linspace<T: Numeric>(start: T, stop: T, num: i32) -> Array<T, 1> {
+    Array::linspace(start, stop, num)
+}
+
+// Error types for the library
+pub enum AeroNumError {
+    ShapeMismatch,
+    IndexOutOfBounds,
+    MemoryAllocationFailed,
+    InvalidOperation,
+    BlasError,
+    GpuError,
+}
+
+impl AeroNumError {
+    pub fn message(&self) -> &str {
+        match self {
+            AeroNumError::ShapeMismatch => "Array shapes do not match for this operation",
+            AeroNumError::IndexOutOfBounds => "Index is out of bounds for array",
+            AeroNumError::MemoryAllocationFailed => "Failed to allocate memory for array",
+            AeroNumError::InvalidOperation => "Invalid operation for this array type",
+            AeroNumError::BlasError => "Error in BLAS operation",
+            AeroNumError::GpuError => "Error in GPU operation",
+        }
+    }
+}
+
+// Result type for library operations
+pub type Result<T> = core::result::Result<T, AeroNumError>;
+

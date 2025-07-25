@@ -394,8 +394,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 📞 Contact
 
-- **Author**: Robert Van Arsdale
-- **Email**: robert.vanarsdale@gmail.com
+- **Author**: robvanprod 
 - **GitHub**: [@RobVanProd](https://github.com/RobVanProd)
 - **Project**: [AeroNum](https://github.com/RobVanProd/AeroNum)
 

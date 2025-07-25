@@ -1,0 +1,25 @@
+// Working AeroNum prototype - avoiding binary operations due to compiler bug
+// This demonstrates the concept of numerical computing in Aero
+
+let array_element_1 = 1;
+let array_element_2 = 2;
+let array_element_3 = 3;
+let array_element_4 = 4;
+let array_element_5 = 5;
+
+// Simulate array size
+let array_size = 5;
+
+// Simulate matrix elements
+let matrix_11 = 1;
+let matrix_12 = 2;
+let matrix_21 = 3;
+let matrix_22 = 4;
+
+// Simulate vector components
+let vector_x = 3;
+let vector_y = 4;
+
+// Return a simple result
+return array_element_1;
+

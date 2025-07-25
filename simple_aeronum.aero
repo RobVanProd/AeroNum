@@ -1,0 +1,111 @@
+// Simplified AeroNum implementation for current Aero compiler capabilities
+// This version uses only features currently supported by the Aero compiler
+
+// Simple array operations using basic arithmetic and functions
+
+fn create_array_1d(size) {
+    // In a real implementation, this would allocate memory
+    // For now, we'll simulate with simple arithmetic
+    let array_size = size;
+    return array_size;
+}
+
+fn array_add(a, b) {
+    // Simple element-wise addition simulation
+    let result = a + b;
+    return result;
+}
+
+fn array_multiply(a, b) {
+    // Simple element-wise multiplication simulation
+    let result = a * b;
+    return result;
+}
+
+fn array_sum(arr, size) {
+    // Simple sum calculation
+    let total = 0;
+    let i = 0;
+    
+    // Since we don't have loops yet, we'll simulate with a few operations
+    if size > 0 {
+        total = total + arr;
+    }
+    if size > 1 {
+        total = total + arr * 2;
+    }
+    if size > 2 {
+        total = total + arr * 3;
+    }
+    
+    return total;
+}
+
+fn matrix_multiply_2x2(a11, a12, a21, a22, b11, b12, b21, b22) {
+    // Simple 2x2 matrix multiplication
+    let c11 = a11 * b11 + a12 * b21;
+    let c12 = a11 * b12 + a12 * b22;
+    let c21 = a21 * b11 + a22 * b21;
+    let c22 = a21 * b12 + a22 * b22;
+    
+    // Return first element as a simple test
+    return c11;
+}
+
+fn dot_product_2d(a1, a2, b1, b2) {
+    // Simple 2D dot product
+    let result = a1 * b1 + a2 * b2;
+    return result;
+}
+
+fn vector_magnitude(x, y) {
+    // Simple 2D vector magnitude (without sqrt for now)
+    let magnitude_squared = x * x + y * y;
+    return magnitude_squared;
+}
+
+fn linear_interpolation(start, end, t) {
+    // Simple linear interpolation
+    let result = start + t * (end - start);
+    return result;
+}
+
+fn polynomial_eval(x, a, b, c) {
+    // Evaluate polynomial ax^2 + bx + c
+    let x_squared = x * x;
+    let result = a * x_squared + b * x + c;
+    return result;
+}
+
+fn main() {
+    // Test basic array operations
+    let array_size = create_array_1d(5);
+    
+    // Test arithmetic operations
+    let a = 3;
+    let b = 4;
+    let sum_result = array_add(a, b);
+    let mult_result = array_multiply(a, b);
+    
+    // Test sum operation
+    let sum_total = array_sum(10, 3);
+    
+    // Test matrix multiplication
+    let matrix_result = matrix_multiply_2x2(1, 2, 3, 4, 5, 6, 7, 8);
+    
+    // Test dot product
+    let dot_result = dot_product_2d(1, 2, 3, 4);
+    
+    // Test vector magnitude
+    let magnitude = vector_magnitude(3, 4);
+    
+    // Test interpolation
+    let interp_result = linear_interpolation(0, 10, 0.5);
+    
+    // Test polynomial evaluation
+    let poly_result = polynomial_eval(2, 1, 2, 3);
+    
+    // Return a test result
+    return sum_result + mult_result + matrix_result;
+}
+

@@ -1,0 +1,9 @@
+// Test array operations - simulating different array elements
+let array_1 = 10;
+let array_2 = 20;
+let array_3 = 30;
+
+// Return sum simulation (should be 60 if we could add)
+// For now, return the first element
+return array_1;
+

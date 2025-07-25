@@ -1,0 +1,7 @@
+// Very basic AeroNum implementation - just like the working examples
+// Based on the variables.aero example that should work
+
+let a = 2;
+let b = a * 3;
+return b;
+

@@ -1,0 +1,56 @@
+// Minimal AeroNum implementation for current Aero compiler
+// Using only the most basic features
+
+// Simple arithmetic operations
+let a = 3;
+let b = 4;
+let sum = a + b;
+let product = a * b;
+let difference = a - b;
+let quotient = a / b;
+
+// Simple matrix-like operations (simulated)
+let matrix_a11 = 1;
+let matrix_a12 = 2;
+let matrix_a21 = 3;
+let matrix_a22 = 4;
+
+let matrix_b11 = 5;
+let matrix_b12 = 6;
+let matrix_b21 = 7;
+let matrix_b22 = 8;
+
+// 2x2 matrix multiplication result (first element)
+let c11 = matrix_a11 * matrix_b11 + matrix_a12 * matrix_b21;
+
+// Vector operations (2D)
+let vector_x1 = 1;
+let vector_y1 = 2;
+let vector_x2 = 3;
+let vector_y2 = 4;
+
+// Dot product
+let dot_product = vector_x1 * vector_x2 + vector_y1 * vector_y2;
+
+// Vector magnitude squared (avoiding sqrt for now)
+let magnitude_squared = vector_x1 * vector_x1 + vector_y1 * vector_y1;
+
+// Linear interpolation
+let start_val = 0;
+let end_val = 10;
+let t = 0.5;
+let interpolated = start_val + t * (end_val - start_val);
+
+// Polynomial evaluation: ax^2 + bx + c
+let x = 2;
+let poly_a = 1;
+let poly_b = 2;
+let poly_c = 3;
+let x_squared = x * x;
+let polynomial_result = poly_a * x_squared + poly_b * x + poly_c;
+
+// Final result combining various operations
+let final_result = sum + product + c11 + dot_product + polynomial_result;
+
+return final_result;
+

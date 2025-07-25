@@ -1,0 +1,21 @@
+Python Convolution Benchmark Results
+=========================
+Result:  (consistent: true)
+Mean time: 12002μs
+Std deviation: 416μs
+Min time: 11620μs
+Max time: 12710μs
+Coefficient of variation: 3.46%
+
+Individual run times (μs):
+Run 1: 12710
+Run 2: 12528
+Run 3: 11800
+Run 4: 11648
+Run 5: 11721
+Run 6: 11620
+Run 7: 12645
+Run 8: 11719
+Run 9: 11798
+Run 10: 11839
+

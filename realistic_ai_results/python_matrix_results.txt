@@ -1,0 +1,21 @@
+Python Matrix Operations Benchmark Results
+=========================
+Result:  (consistent: true)
+Mean time: 14917μs
+Std deviation: 6801μs
+Min time: 11964μs
+Max time: 35243μs
+Coefficient of variation: 45.59%
+
+Individual run times (μs):
+Run 1: 35243
+Run 2: 13534
+Run 3: 12509
+Run 4: 13899
+Run 5: 12782
+Run 6: 12110
+Run 7: 12162
+Run 8: 11964
+Run 9: 12175
+Run 10: 12797
+

@@ -1,0 +1,21 @@
+Aero Matrix Operations Benchmark Results
+=========================
+Result:  (consistent: true)
+Mean time: 2928μs
+Std deviation: 81μs
+Min time: 2811μs
+Max time: 3025μs
+Coefficient of variation: 2.76%
+
+Individual run times (μs):
+Run 1: 2982
+Run 2: 2889
+Run 3: 2817
+Run 4: 2811
+Run 5: 2867
+Run 6: 2865
+Run 7: 3025
+Run 8: 2998
+Run 9: 3017
+Run 10: 3009
+

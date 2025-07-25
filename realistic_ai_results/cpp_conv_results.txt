@@ -1,0 +1,21 @@
+C++ Convolution Benchmark Results
+=========================
+Result: Results (consistent: false)
+Mean time: 3274μs
+Std deviation: 259μs
+Min time: 2980μs
+Max time: 3754μs
+Coefficient of variation: 7.91%
+
+Individual run times (μs):
+Run 1: 3207
+Run 2: 3075
+Run 3: 3045
+Run 4: 3099
+Run 5: 2980
+Run 6: 3250
+Run 7: 3753
+Run 8: 3754
+Run 9: 3284
+Run 10: 3301
+

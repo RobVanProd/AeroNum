@@ -1,0 +1,21 @@
+C++ Neural Network Benchmark Results
+=========================
+Result: Results (consistent: false)
+Mean time: 3498μs
+Std deviation: 294μs
+Min time: 3067μs
+Max time: 4062μs
+Coefficient of variation: 8.40%
+
+Individual run times (μs):
+Run 1: 3446
+Run 2: 3107
+Run 3: 3067
+Run 4: 3758
+Run 5: 3636
+Run 6: 3310
+Run 7: 4062
+Run 8: 3301
+Run 9: 3663
+Run 10: 3633
+

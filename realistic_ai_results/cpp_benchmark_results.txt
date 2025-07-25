@@ -1,0 +1,8 @@
+C++ AI Benchmark Results
+========================================
+Matrix Operations: 2538 (5.103 μs)
+Neural Network: 1258 (8.037 μs)
+Convolution Operations: 46314 (4.838 μs)
+Transformer Attention: 420253 (8.402 μs)
+
+Total Time: 26.38 μs

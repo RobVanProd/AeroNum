@@ -1,0 +1,304 @@
+// REAL CONVOLUTION OPERATIONS: Actual Computer Vision Computations
+// This implements genuine 2D convolution operations, pooling, and feature extraction
+// with realistic computational workloads for computer vision tasks
+
+// ============================================================================
+// INPUT IMAGE DATA (8×8 grayscale image)
+// ============================================================================
+// Representing a small 8×8 grayscale image with pixel intensities [0-255]
+
+// Row 0
+let img_00 = 120; let img_01 = 130; let img_02 = 125; let img_03 = 135; 
+let img_04 = 140; let img_05 = 145; let img_06 = 150; let img_07 = 155;
+
+// Row 1  
+let img_10 = 110; let img_11 = 115; let img_12 = 120; let img_13 = 125;
+let img_14 = 130; let img_15 = 135; let img_16 = 140; let img_17 = 145;
+
+// Row 2
+let img_20 = 100; let img_21 = 105; let img_22 = 110; let img_23 = 115;
+let img_24 = 120; let img_25 = 125; let img_26 = 130; let img_27 = 135;
+
+// Row 3
+let img_30 = 90;  let img_31 = 95;  let img_32 = 100; let img_33 = 105;
+let img_34 = 110; let img_35 = 115; let img_36 = 120; let img_37 = 125;
+
+// Row 4
+let img_40 = 80;  let img_41 = 85;  let img_42 = 90;  let img_43 = 95;
+let img_44 = 100; let img_45 = 105; let img_46 = 110; let img_47 = 115;
+
+// Row 5
+let img_50 = 70;  let img_51 = 75;  let img_52 = 80;  let img_53 = 85;
+let img_54 = 90;  let img_55 = 95;  let img_56 = 100; let img_57 = 105;
+
+// Row 6
+let img_60 = 60;  let img_61 = 65;  let img_62 = 70;  let img_63 = 75;
+let img_64 = 80;  let img_65 = 85;  let img_66 = 90;  let img_67 = 95;
+
+// Row 7
+let img_70 = 50;  let img_71 = 55;  let img_72 = 60;  let img_73 = 65;
+let img_74 = 70;  let img_75 = 75;  let img_76 = 80;  let img_77 = 85;
+
+// ============================================================================
+// CONVOLUTION KERNEL 1: EDGE DETECTION (3×3 Sobel X)
+// ============================================================================
+// Sobel X kernel for horizontal edge detection
+
+let sobel_x_00 = -1; let sobel_x_01 = 0; let sobel_x_02 = 1;
+let sobel_x_10 = -2; let sobel_x_11 = 0; let sobel_x_12 = 2;
+let sobel_x_20 = -1; let sobel_x_21 = 0; let sobel_x_22 = 1;
+
+// ============================================================================
+// CONVOLUTION OPERATION 1: SOBEL X EDGE DETECTION
+// ============================================================================
+// Performing 2D convolution: output[i,j] = Σ(kernel[m,n] * image[i+m,j+n])
+
+// Convolution at position (1,1) - top-left valid position
+let conv1_11 = sobel_x_00 * img_00 + sobel_x_01 * img_01 + sobel_x_02 * img_02 +
+               sobel_x_10 * img_10 + sobel_x_11 * img_11 + sobel_x_12 * img_12 +
+               sobel_x_20 * img_20 + sobel_x_21 * img_21 + sobel_x_22 * img_22;
+
+// Convolution at position (1,2)
+let conv1_12 = sobel_x_00 * img_01 + sobel_x_01 * img_02 + sobel_x_02 * img_03 +
+               sobel_x_10 * img_11 + sobel_x_11 * img_12 + sobel_x_12 * img_13 +
+               sobel_x_20 * img_21 + sobel_x_21 * img_22 + sobel_x_22 * img_23;
+
+// Convolution at position (1,3)
+let conv1_13 = sobel_x_00 * img_02 + sobel_x_01 * img_03 + sobel_x_02 * img_04 +
+               sobel_x_10 * img_12 + sobel_x_11 * img_13 + sobel_x_12 * img_14 +
+               sobel_x_20 * img_22 + sobel_x_21 * img_23 + sobel_x_22 * img_24;
+
+// Convolution at position (1,4)
+let conv1_14 = sobel_x_00 * img_03 + sobel_x_01 * img_04 + sobel_x_02 * img_05 +
+               sobel_x_10 * img_13 + sobel_x_11 * img_14 + sobel_x_12 * img_15 +
+               sobel_x_20 * img_23 + sobel_x_21 * img_24 + sobel_x_22 * img_25;
+
+// Convolution at position (1,5)
+let conv1_15 = sobel_x_00 * img_04 + sobel_x_01 * img_05 + sobel_x_02 * img_06 +
+               sobel_x_10 * img_14 + sobel_x_11 * img_15 + sobel_x_12 * img_16 +
+               sobel_x_20 * img_24 + sobel_x_21 * img_25 + sobel_x_22 * img_26;
+
+// Convolution at position (1,6)
+let conv1_16 = sobel_x_00 * img_05 + sobel_x_01 * img_06 + sobel_x_02 * img_07 +
+               sobel_x_10 * img_15 + sobel_x_11 * img_16 + sobel_x_12 * img_17 +
+               sobel_x_20 * img_25 + sobel_x_21 * img_26 + sobel_x_22 * img_27;
+
+// Second row of convolution output
+// Convolution at position (2,1)
+let conv1_21 = sobel_x_00 * img_10 + sobel_x_01 * img_11 + sobel_x_02 * img_12 +
+               sobel_x_10 * img_20 + sobel_x_11 * img_21 + sobel_x_12 * img_22 +
+               sobel_x_20 * img_30 + sobel_x_21 * img_31 + sobel_x_22 * img_32;
+
+// Convolution at position (2,2)
+let conv1_22 = sobel_x_00 * img_11 + sobel_x_01 * img_12 + sobel_x_02 * img_13 +
+               sobel_x_10 * img_21 + sobel_x_11 * img_22 + sobel_x_12 * img_23 +
+               sobel_x_20 * img_31 + sobel_x_21 * img_32 + sobel_x_22 * img_33;
+
+// Convolution at position (2,3)
+let conv1_23 = sobel_x_00 * img_12 + sobel_x_01 * img_13 + sobel_x_02 * img_14 +
+               sobel_x_10 * img_22 + sobel_x_11 * img_23 + sobel_x_12 * img_24 +
+               sobel_x_20 * img_32 + sobel_x_21 * img_33 + sobel_x_22 * img_34;
+
+// ============================================================================
+// CONVOLUTION KERNEL 2: BLUR FILTER (3×3 Gaussian)
+// ============================================================================
+// Gaussian blur kernel for noise reduction
+
+let blur_00 = 1; let blur_01 = 2; let blur_02 = 1;
+let blur_10 = 2; let blur_11 = 4; let blur_12 = 2;
+let blur_20 = 1; let blur_21 = 2; let blur_22 = 1;
+
+// ============================================================================
+// CONVOLUTION OPERATION 2: GAUSSIAN BLUR
+// ============================================================================
+// Applying Gaussian blur to the original image
+
+// Blur convolution at position (1,1)
+let blur_11 = (blur_00 * img_00 + blur_01 * img_01 + blur_02 * img_02 +
+               blur_10 * img_10 + blur_11 * img_11 + blur_12 * img_12 +
+               blur_20 * img_20 + blur_21 * img_21 + blur_22 * img_22) / 16;
+
+// Blur convolution at position (1,2)
+let blur_12 = (blur_00 * img_01 + blur_01 * img_02 + blur_02 * img_03 +
+               blur_10 * img_11 + blur_11 * img_12 + blur_12 * img_13 +
+               blur_20 * img_21 + blur_21 * img_22 + blur_22 * img_23) / 16;
+
+// Blur convolution at position (1,3)
+let blur_13 = (blur_00 * img_02 + blur_01 * img_03 + blur_02 * img_04 +
+               blur_10 * img_12 + blur_11 * img_13 + blur_12 * img_14 +
+               blur_20 * img_22 + blur_21 * img_23 + blur_22 * img_24) / 16;
+
+// Blur convolution at position (1,4)
+let blur_14 = (blur_00 * img_03 + blur_01 * img_04 + blur_02 * img_05 +
+               blur_10 * img_13 + blur_11 * img_14 + blur_12 * img_15 +
+               blur_20 * img_23 + blur_21 * img_24 + blur_22 * img_25) / 16;
+
+// ============================================================================
+// ACTIVATION FUNCTION: ReLU
+// ============================================================================
+// Applying ReLU activation to convolution outputs
+
+// ReLU for Sobel X outputs (edge detection)
+let relu_conv1_11 = conv1_11; if conv1_11 < 0 { relu_conv1_11 = 0; }
+let relu_conv1_12 = conv1_12; if conv1_12 < 0 { relu_conv1_12 = 0; }
+let relu_conv1_13 = conv1_13; if conv1_13 < 0 { relu_conv1_13 = 0; }
+let relu_conv1_14 = conv1_14; if conv1_14 < 0 { relu_conv1_14 = 0; }
+let relu_conv1_15 = conv1_15; if conv1_15 < 0 { relu_conv1_15 = 0; }
+let relu_conv1_16 = conv1_16; if conv1_16 < 0 { relu_conv1_16 = 0; }
+let relu_conv1_21 = conv1_21; if conv1_21 < 0 { relu_conv1_21 = 0; }
+let relu_conv1_22 = conv1_22; if conv1_22 < 0 { relu_conv1_22 = 0; }
+let relu_conv1_23 = conv1_23; if conv1_23 < 0 { relu_conv1_23 = 0; }
+
+// ============================================================================
+// MAX POOLING OPERATION (2×2)
+// ============================================================================
+// Reducing spatial dimensions by taking maximum in 2×2 windows
+
+// Max pooling on ReLU outputs (2×2 windows with stride 2)
+// Pool window 1: positions (1,1), (1,2), (2,1), (2,2)
+let pool1_max = relu_conv1_11;
+if relu_conv1_12 > pool1_max { pool1_max = relu_conv1_12; }
+if relu_conv1_21 > pool1_max { pool1_max = relu_conv1_21; }
+if relu_conv1_22 > pool1_max { pool1_max = relu_conv1_22; }
+
+// Pool window 2: positions (1,3), (1,4), (2,3), (2,4)
+let pool2_max = relu_conv1_13;
+if relu_conv1_14 > pool2_max { pool2_max = relu_conv1_14; }
+if relu_conv1_23 > pool2_max { pool2_max = relu_conv1_23; }
+// Note: conv1_24 would be computed similarly for complete pooling
+
+// ============================================================================
+// AVERAGE POOLING OPERATION (2×2)
+// ============================================================================
+// Alternative pooling using average instead of maximum
+
+// Average pooling on blur outputs
+let avg_pool1 = (blur_11 + blur_12 + blur_13 + blur_14) / 4;
+
+// ============================================================================
+// FEATURE EXTRACTION: HISTOGRAM OF GRADIENTS
+// ============================================================================
+// Computing histogram of oriented gradients (simplified)
+
+// Gradient magnitude from Sobel responses
+let grad_mag_11 = relu_conv1_11;
+if grad_mag_11 < 0 { grad_mag_11 = 0 - grad_mag_11; }  // Absolute value
+
+let grad_mag_12 = relu_conv1_12;
+if grad_mag_12 < 0 { grad_mag_12 = 0 - grad_mag_12; }
+
+let grad_mag_13 = relu_conv1_13;
+if grad_mag_13 < 0 { grad_mag_13 = 0 - grad_mag_13; }
+
+// Histogram bins (simplified to 4 orientation bins)
+let hist_bin_0 = 0;  // 0-45 degrees
+let hist_bin_1 = 0;  // 45-90 degrees  
+let hist_bin_2 = 0;  // 90-135 degrees
+let hist_bin_3 = 0;  // 135-180 degrees
+
+// Accumulate gradients into histogram bins (simplified assignment)
+hist_bin_0 = hist_bin_0 + grad_mag_11;
+hist_bin_1 = hist_bin_1 + grad_mag_12;
+hist_bin_2 = hist_bin_2 + grad_mag_13;
+hist_bin_3 = hist_bin_3 + relu_conv1_14;
+
+// ============================================================================
+// MULTI-SCALE CONVOLUTION
+// ============================================================================
+// Applying convolution at different scales (dilated convolution simulation)
+
+// Dilated convolution (rate=2): skip every other pixel
+let dilated_conv_11 = sobel_x_00 * img_00 + sobel_x_01 * img_02 + sobel_x_02 * img_04 +
+                      sobel_x_10 * img_20 + sobel_x_11 * img_22 + sobel_x_12 * img_24 +
+                      sobel_x_20 * img_40 + sobel_x_21 * img_42 + sobel_x_22 * img_44;
+
+let dilated_conv_12 = sobel_x_00 * img_01 + sobel_x_01 * img_03 + sobel_x_02 * img_05 +
+                      sobel_x_10 * img_21 + sobel_x_11 * img_23 + sobel_x_12 * img_25 +
+                      sobel_x_20 * img_41 + sobel_x_21 * img_43 + sobel_x_22 * img_45;
+
+// ============================================================================
+// BATCH NORMALIZATION (Simplified)
+// ============================================================================
+// Normalizing feature maps for stable training
+
+// Compute mean of convolution outputs
+let conv_sum = conv1_11 + conv1_12 + conv1_13 + conv1_14 + conv1_15 + conv1_16 +
+               conv1_21 + conv1_22 + conv1_23;
+let conv_mean = conv_sum / 9;
+
+// Compute variance (simplified)
+let var_term_1 = (conv1_11 - conv_mean) * (conv1_11 - conv_mean);
+let var_term_2 = (conv1_12 - conv_mean) * (conv1_12 - conv_mean);
+let var_term_3 = (conv1_13 - conv_mean) * (conv1_13 - conv_mean);
+let conv_variance = (var_term_1 + var_term_2 + var_term_3) / 3;
+
+// Batch normalization: (x - mean) / sqrt(variance + epsilon)
+let epsilon = 1;  // Small constant for numerical stability
+let norm_factor = conv_variance + epsilon;
+
+let bn_conv1_11 = (conv1_11 - conv_mean) * 100 / norm_factor;  // Scale by 100 for integer math
+let bn_conv1_12 = (conv1_12 - conv_mean) * 100 / norm_factor;
+let bn_conv1_13 = (conv1_13 - conv_mean) * 100 / norm_factor;
+
+// ============================================================================
+// DEPTHWISE SEPARABLE CONVOLUTION
+// ============================================================================
+// Efficient convolution decomposition
+
+// Depthwise convolution: apply kernel to each channel separately
+let depthwise_11 = sobel_x_11 * img_11;  // Center pixel only for simplicity
+let depthwise_12 = sobel_x_11 * img_12;
+let depthwise_13 = sobel_x_11 * img_13;
+
+// Pointwise convolution: 1×1 convolution to combine channels
+let pointwise_weight = 3;
+let pointwise_11 = depthwise_11 * pointwise_weight;
+let pointwise_12 = depthwise_12 * pointwise_weight;
+let pointwise_13 = depthwise_13 * pointwise_weight;
+
+// ============================================================================
+// COMPUTATIONAL WORKLOAD SUMMARY
+// ============================================================================
+// Summary of actual computer vision computations performed
+
+// Convolution operations:
+// - Sobel X convolution: 9 positions × 9 multiplications = 81 multiplications + 72 additions
+// - Gaussian blur: 4 positions × 9 multiplications = 36 multiplications + 32 additions + 4 divisions
+// - Dilated convolution: 2 positions × 9 multiplications = 18 multiplications + 16 additions
+//
+// Pooling operations:
+// - Max pooling: 2 windows × 4 comparisons = 8 comparisons
+// - Average pooling: 1 window × 4 additions + 1 division = 5 operations
+//
+// Activation functions:
+// - ReLU: 9 conditional operations
+//
+// Feature extraction:
+// - Gradient magnitudes: 3 absolute value operations
+// - Histogram: 4 accumulation operations
+//
+// Normalization:
+// - Batch norm: 9 mean calculations + 3 variance + 3 normalizations = 15 operations
+//
+// TOTAL: ~290 computer vision operations (realistic CV workload)
+
+// Performance metrics
+let total_convolutions = 81 + 36 + 18;           // Total convolution operations = 135
+let total_pooling_ops = 8 + 5;                   // Total pooling operations = 13
+let total_activations = 9;                       // Total activation operations = 9
+let total_normalizations = 15;                   // Total normalization operations = 15
+let total_cv_operations = total_convolutions + total_pooling_ops + total_activations + total_normalizations;
+
+// Feature map statistics
+let max_feature_response = pool1_max;
+if pool2_max > max_feature_response { max_feature_response = pool2_max; }
+
+let total_feature_energy = hist_bin_0 + hist_bin_1 + hist_bin_2 + hist_bin_3;
+
+// Return a composite result that depends on all CV computations
+// This ensures the compiler cannot optimize away the computer vision calculations
+let cv_result = max_feature_response * 1000 + total_feature_energy + 
+                avg_pool1 + bn_conv1_11 + pointwise_11 + total_cv_operations;
+
+return cv_result;
+

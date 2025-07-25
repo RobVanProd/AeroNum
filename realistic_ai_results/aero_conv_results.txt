@@ -1,0 +1,21 @@
+Aero Convolution Benchmark Results
+=========================
+Result:  (consistent: true)
+Mean time: 2761μs
+Std deviation: 140μs
+Min time: 2458μs
+Max time: 2935μs
+Coefficient of variation: 5.07%
+
+Individual run times (μs):
+Run 1: 2747
+Run 2: 2847
+Run 3: 2836
+Run 4: 2873
+Run 5: 2630
+Run 6: 2639
+Run 7: 2935
+Run 8: 2893
+Run 9: 2757
+Run 10: 2458
+

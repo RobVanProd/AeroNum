@@ -1,0 +1,21 @@
+C++ Transformer Benchmark Results
+=========================
+Result: Results (consistent: false)
+Mean time: 3038μs
+Std deviation: 126μs
+Min time: 2929μs
+Max time: 3397μs
+Coefficient of variation: 4.14%
+
+Individual run times (μs):
+Run 1: 3397
+Run 2: 3057
+Run 3: 2997
+Run 4: 2983
+Run 5: 3071
+Run 6: 2929
+Run 7: 3010
+Run 8: 2999
+Run 9: 2974
+Run 10: 2964
+

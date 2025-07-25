@@ -1,0 +1,21 @@
+Python Transformer Benchmark Results
+=========================
+Result:  (consistent: true)
+Mean time: 12266μs
+Std deviation: 1305μs
+Min time: 11469μs
+Max time: 15994μs
+Coefficient of variation: 10.63%
+
+Individual run times (μs):
+Run 1: 12405
+Run 2: 11864
+Run 3: 11523
+Run 4: 11529
+Run 5: 12663
+Run 6: 12143
+Run 7: 11469
+Run 8: 11489
+Run 9: 11585
+Run 10: 15994
+

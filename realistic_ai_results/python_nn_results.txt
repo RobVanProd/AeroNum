@@ -1,0 +1,21 @@
+Python Neural Network Benchmark Results
+=========================
+Result:  (consistent: true)
+Mean time: 12102μs
+Std deviation: 454μs
+Min time: 11705μs
+Max time: 12980μs
+Coefficient of variation: 3.75%
+
+Individual run times (μs):
+Run 1: 12980
+Run 2: 12892
+Run 3: 11835
+Run 4: 12391
+Run 5: 11705
+Run 6: 11785
+Run 7: 11899
+Run 8: 11947
+Run 9: 11823
+Run 10: 11765
+

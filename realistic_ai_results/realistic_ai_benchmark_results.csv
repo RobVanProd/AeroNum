@@ -1,0 +1,174 @@
+Benchmark,Aero_Time_μs,Python_Time_μs,CPP_Time_μs,Aero_vs_Python_Speedup,Aero_vs_CPP_Speedup
+Matrix_Operations,Running Aero Matrix Operations benchmark (10 iterations)...
+  Run 1/10... 2982μs (result: )
+  Run 2/10... 2889μs (result: )
+  Run 3/10... 2817μs (result: )
+  Run 4/10... 2811μs (result: )
+  Run 5/10... 2867μs (result: )
+  Run 6/10... 2865μs (result: )
+  Run 7/10... 3025μs (result: )
+  Run 8/10... 2998μs (result: )
+  Run 9/10... 3017μs (result: )
+  Run 10/10... 3009μs (result: )
+  Statistics: mean=2928μs, std=81μs, range=[2811-3025]μs
+  Result consistency: true
+
+2928,Running Python Matrix Operations benchmark (10 iterations)...
+  Run 1/10... 35243μs (result: )
+  Run 2/10... 13534μs (result: )
+  Run 3/10... 12509μs (result: )
+  Run 4/10... 13899μs (result: )
+  Run 5/10... 12782μs (result: )
+  Run 6/10... 12110μs (result: )
+  Run 7/10... 12162μs (result: )
+  Run 8/10... 11964μs (result: )
+  Run 9/10... 12175μs (result: )
+  Run 10/10... 12797μs (result: )
+  Statistics: mean=14917μs, std=6801μs, range=[11964-35243]μs
+  Result consistency: true
+
+14917,Running C++ Matrix Operations benchmark (10 iterations)...
+  Run 1/10... 4075μs (result: Results saved to cpp_benchmark_results.txt)
+  Run 2/10... 3463μs (result: Results saved to cpp_benchmark_results.txt)
+  Run 3/10... 3139μs (result: Results saved to cpp_benchmark_results.txt)
+  Run 4/10... 3688μs (result: Results saved to cpp_benchmark_results.txt)
+  Run 5/10... 3533μs (result: Results saved to cpp_benchmark_results.txt)
+  Run 6/10... 3390μs (result: Results saved to cpp_benchmark_results.txt)
+  Run 7/10... 3324μs (result: Results saved to cpp_benchmark_results.txt)
+  Run 8/10... 3270μs (result: Results saved to cpp_benchmark_results.txt)
+  Run 9/10... 3061μs (result: Results saved to cpp_benchmark_results.txt)
+  Run 10/10... 3240μs (result: Results saved to cpp_benchmark_results.txt)
+  Statistics: mean=3418μs, std=280μs, range=[3061-4075]μs
+  Result consistency: false
+
+3418,2928,2928
+Neural_Network,Running Aero Neural Network benchmark (10 iterations)...
+  Run 1/10... 2903μs (result: )
+  Run 2/10... 2835μs (result: )
+  Run 3/10... 2913μs (result: )
+  Run 4/10... 2965μs (result: )
+  Run 5/10... 2938μs (result: )
+  Run 6/10... 2902μs (result: )
+  Run 7/10... 2912μs (result: )
+  Run 8/10... 2913μs (result: )
+  Run 9/10... 2981μs (result: )
+  Run 10/10... 3114μs (result: )
+  Statistics: mean=2937μs, std=69μs, range=[2835-3114]μs
+  Result consistency: true
+
+2937,Running Python Neural Network benchmark (10 iterations)...
+  Run 1/10... 12980μs (result: )
+  Run 2/10... 12892μs (result: )
+  Run 3/10... 11835μs (result: )
+  Run 4/10... 12391μs (result: )
+  Run 5/10... 11705μs (result: )
+  Run 6/10... 11785μs (result: )
+  Run 7/10... 11899μs (result: )
+  Run 8/10... 11947μs (result: )
+  Run 9/10... 11823μs (result: )
+  Run 10/10... 11765μs (result: )
+  Statistics: mean=12102μs, std=454μs, range=[11705-12980]μs
+  Result consistency: true
+
+12102,Running C++ Neural Network benchmark (10 iterations)...
+  Run 1/10... 3446μs (result: Results saved to cpp_benchmark_results.txt)
+  Run 2/10... 3107μs (result: Results saved to cpp_benchmark_results.txt)
+  Run 3/10... 3067μs (result: Results saved to cpp_benchmark_results.txt)
+  Run 4/10... 3758μs (result: Results saved to cpp_benchmark_results.txt)
+  Run 5/10... 3636μs (result: Results saved to cpp_benchmark_results.txt)
+  Run 6/10... 3310μs (result: Results saved to cpp_benchmark_results.txt)
+  Run 7/10... 4062μs (result: Results saved to cpp_benchmark_results.txt)
+  Run 8/10... 3301μs (result: Results saved to cpp_benchmark_results.txt)
+  Run 9/10... 3663μs (result: Results saved to cpp_benchmark_results.txt)
+  Run 10/10... 3633μs (result: Results saved to cpp_benchmark_results.txt)
+  Statistics: mean=3498μs, std=294μs, range=[3067-4062]μs
+  Result consistency: false
+
+3498,2937,2937
+Convolution_Operations,Running Aero Convolution benchmark (10 iterations)...
+  Run 1/10... 2747μs (result: )
+  Run 2/10... 2847μs (result: )
+  Run 3/10... 2836μs (result: )
+  Run 4/10... 2873μs (result: )
+  Run 5/10... 2630μs (result: )
+  Run 6/10... 2639μs (result: )
+  Run 7/10... 2935μs (result: )
+  Run 8/10... 2893μs (result: )
+  Run 9/10... 2757μs (result: )
+  Run 10/10... 2458μs (result: )
+  Statistics: mean=2761μs, std=140μs, range=[2458-2935]μs
+  Result consistency: true
+
+2761,Running Python Convolution benchmark (10 iterations)...
+  Run 1/10... 12710μs (result: )
+  Run 2/10... 12528μs (result: )
+  Run 3/10... 11800μs (result: )
+  Run 4/10... 11648μs (result: )
+  Run 5/10... 11721μs (result: )
+  Run 6/10... 11620μs (result: )
+  Run 7/10... 12645μs (result: )
+  Run 8/10... 11719μs (result: )
+  Run 9/10... 11798μs (result: )
+  Run 10/10... 11839μs (result: )
+  Statistics: mean=12002μs, std=416μs, range=[11620-12710]μs
+  Result consistency: true
+
+12002,Running C++ Convolution benchmark (10 iterations)...
+  Run 1/10... 3207μs (result: Results saved to cpp_benchmark_results.txt)
+  Run 2/10... 3075μs (result: Results saved to cpp_benchmark_results.txt)
+  Run 3/10... 3045μs (result: Results saved to cpp_benchmark_results.txt)
+  Run 4/10... 3099μs (result: Results saved to cpp_benchmark_results.txt)
+  Run 5/10... 2980μs (result: Results saved to cpp_benchmark_results.txt)
+  Run 6/10... 3250μs (result: Results saved to cpp_benchmark_results.txt)
+  Run 7/10... 3753μs (result: Results saved to cpp_benchmark_results.txt)
+  Run 8/10... 3754μs (result: Results saved to cpp_benchmark_results.txt)
+  Run 9/10... 3284μs (result: Results saved to cpp_benchmark_results.txt)
+  Run 10/10... 3301μs (result: Results saved to cpp_benchmark_results.txt)
+  Statistics: mean=3274μs, std=259μs, range=[2980-3754]μs
+  Result consistency: false
+
+3274,2761,2761
+Transformer_Attention,Running Aero Transformer benchmark (10 iterations)...
+  Run 1/10... 2880μs (result: )
+  Run 2/10... 2757μs (result: )
+  Run 3/10... 2856μs (result: )
+  Run 4/10... 2692μs (result: )
+  Run 5/10... 2847μs (result: )
+  Run 6/10... 2839μs (result: )
+  Run 7/10... 2920μs (result: )
+  Run 8/10... 2910μs (result: )
+  Run 9/10... 2868μs (result: )
+  Run 10/10... 2716μs (result: )
+  Statistics: mean=2828μs, std=75μs, range=[2692-2920]μs
+  Result consistency: true
+
+2828,Running Python Transformer benchmark (10 iterations)...
+  Run 1/10... 12405μs (result: )
+  Run 2/10... 11864μs (result: )
+  Run 3/10... 11523μs (result: )
+  Run 4/10... 11529μs (result: )
+  Run 5/10... 12663μs (result: )
+  Run 6/10... 12143μs (result: )
+  Run 7/10... 11469μs (result: )
+  Run 8/10... 11489μs (result: )
+  Run 9/10... 11585μs (result: )
+  Run 10/10... 15994μs (result: )
+  Statistics: mean=12266μs, std=1305μs, range=[11469-15994]μs
+  Result consistency: true
+
+12266,Running C++ Transformer benchmark (10 iterations)...
+  Run 1/10... 3397μs (result: Results saved to cpp_benchmark_results.txt)
+  Run 2/10... 3057μs (result: Results saved to cpp_benchmark_results.txt)
+  Run 3/10... 2997μs (result: Results saved to cpp_benchmark_results.txt)
+  Run 4/10... 2983μs (result: Results saved to cpp_benchmark_results.txt)
+  Run 5/10... 3071μs (result: Results saved to cpp_benchmark_results.txt)
+  Run 6/10... 2929μs (result: Results saved to cpp_benchmark_results.txt)
+  Run 7/10... 3010μs (result: Results saved to cpp_benchmark_results.txt)
+  Run 8/10... 2999μs (result: Results saved to cpp_benchmark_results.txt)
+  Run 9/10... 2974μs (result: Results saved to cpp_benchmark_results.txt)
+  Run 10/10... 2964μs (result: Results saved to cpp_benchmark_results.txt)
+  Statistics: mean=3038μs, std=126μs, range=[2929-3397]μs
+  Result consistency: false
+
+3038,2828,2828
+TOTAL,,,,,

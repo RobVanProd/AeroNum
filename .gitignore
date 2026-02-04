@@ -1,0 +1,40 @@
+# AeroNum
+
+# OS / editor
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+.vscode/
+.idea/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.venv/
+venv/
+.env
+build/
+dist/
+*.egg-info/
+
+# Common build outputs (LLVM/toolchain)
+*.ll
+*.s
+*.o
+*.obj
+*.so
+*.dylib
+*.dll
+*.exe
+
+# Benchmark / experiment outputs
+results/
+*_results/
+**/results/*.csv
+**/results/*.png
+
+# Local notes
+*.log

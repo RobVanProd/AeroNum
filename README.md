@@ -139,22 +139,22 @@ AeroNum is designed for high performance through several key strategies:
 ### Core Components
 
 ```
-aeronum/
-├── src/
-│   ├── lib.aero              # Main library entry point
-│   ├── array.aero            # Core Array<T, D> implementation
-│   ├── memory.aero           # Memory management and layouts
-│   ├── traits.aero           # Core traits and interfaces
-│   ├── slicing.aero          # Array slicing operations
-│   ├── indexing.aero         # Advanced indexing
-│   ├── ufuncs.aero           # Universal functions
-│   └── linalg/               # Linear algebra module
-│       ├── mod.aero          # Linear algebra operations
-│       └── ffi.aero          # BLAS/LAPACK bindings
-├── examples/                 # Usage examples
-├── benches/                  # Performance benchmarks
-├── aeronum-python/           # Python interoperability
-└── docs/                     # Documentation
+AeroNum/
+├── src/                      # Core library (Aero)
+│   ├── lib.aero
+│   ├── array.aero
+│   ├── memory.aero
+│   ├── traits.aero
+│   ├── slicing.aero
+│   ├── indexing.aero
+│   ├── ufuncs.aero
+│   └── linalg/
+├── aeronum-python/           # Python packaging/bindings scaffold
+├── examples/                 # Small, focused examples
+├── benches/                  # Micro-benchmarks (Aero)
+├── benchmarks/               # Cross-language benchmarks + charts
+├── labs/                     # Experiments / AI demos (kept separate from core)
+└── docs/                     # Design notes / prototype docs
 ```
 
 ### Memory Model

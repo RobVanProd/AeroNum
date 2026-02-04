@@ -9,7 +9,7 @@ The AeroNum prototype successfully compiles and runs with the Aero compiler, dem
 ## 📁 Files
 
 ### Prototype Implementations
-- `working_prototype.aero` - Main working prototype demonstrating numerical computing concepts
+- `examples/aero/working_prototype.aero` - Main working prototype demonstrating numerical computing concepts
 - `test_array_operations.aero` - Array operation simulation
 - `test_matrix_operations.aero` - Matrix operation concepts
 - `basic_aeronum.aero` - Minimal implementation
@@ -24,7 +24,7 @@ The AeroNum prototype successfully compiles and runs with the Aero compiler, dem
 
 1. **Compile an AeroNum prototype:**
    ```bash
-   ./aero-compiler/aero build working_prototype.aero -o output.ll
+   ./aero-compiler/aero build examples/aero/working_prototype.aero -o output.ll
    ```
 
 2. **Generate executable:**
@@ -39,7 +39,7 @@ The AeroNum prototype successfully compiles and runs with the Aero compiler, dem
 
 ### Test 1: Basic Prototype
 ```bash
-./aero-compiler/aero build working_prototype.aero -o working_prototype.ll
+./aero-compiler/aero build examples/aero/working_prototype.aero -o working_prototype.ll
 # Result: ✅ Compilation successful (250μs)
 # Execution: ✅ Exit code 1 (expected)
 ```

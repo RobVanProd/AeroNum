@@ -189,7 +189,7 @@ As the Aero compiler matures, we expect:
 All benchmark code and scripts are included in this repository:
 - `benchmarks/benchmark.cpp` - C++ implementation
 - `benchmarks/benchmark.py` - Python implementation  
-- `working_prototype.aero` - Aero implementation
+- `examples/aero/working_prototype.aero` - Aero implementation
 - `benchmarks/run_benchmarks.sh` - Automated benchmark suite
 - `benchmarks/results/benchmark_results.csv` - Raw data
 

@@ -38,7 +38,8 @@ When adding more dtypes, prefer an explicit `DType` enum + a single ndarray stru
 
 ## Indexing / views (v0)
 - Slicing support: **slice on first axis only**
-- `reshape(new_shape)`: only for contiguous arrays
+- `reshape(new_shape)`: only for **C-contiguous** layouts (contiguous *views* are allowed even if `offset != 0`).
+  - v0 can implement reshape as a copy into a new owned contiguous buffer (simplest), as long as the element order matches row-major.
 - Internal helper: `view(shape, strides, offset)`
 
 ## Broadcasting (v0)
@@ -48,12 +49,20 @@ NumPy-like broadcasting for elementwise operations:
 - output dim is max along each axis
 
 ## Definition of done (tests)
-- shape/stride invariants
-- broadcasting matrix:
+- shape/stride invariants (including views with non-zero `offset`)
+- reshape:
+  - contiguous reshape preserves row-major element order
+  - non-contiguous layouts (e.g. transpose-like strides) return `None`
+  - zero-sized dimensions round-trip correctly
+- broadcasting:
   - (3,1) + (1,4) -> (3,4)
   - (4,) + (3,4) -> (3,4)
-- matmul:
+  - scalar + matrix and a small higher-rank case to ensure trailing-dim alignment
+  - incompatible shapes must error/panic
+- matmul (2D only):
   - (m,k) @ (k,n) -> (m,n)
+  - inner-dimension mismatch must error/panic
+  - a stride-based case (e.g. transposed view) to ensure we respect strides/offset
 - sum:
   - axis=None returns scalar
   - axis=0 and axis=1 produce correct shapes

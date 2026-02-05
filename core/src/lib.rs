@@ -511,4 +511,91 @@ mod tests {
         let b = NdArray::zeros(&[2, 2]);
         let _ = a.add(&b);
     }
+
+    #[test]
+    fn broadcasting_leading_dim_1_plus_matrix() {
+        // (1,3,4) + (3,4) -> (1,3,4)
+        let a = NdArray::from_list((0..12).map(|x| x as f32).collect(), Some(&[1, 3, 4]));
+        let b = NdArray::from_list((0..12).map(|x| (100 + x) as f32).collect(), Some(&[3, 4]));
+        let out = a.add(&b);
+        assert_eq!(out.shape(), &[1, 3, 4]);
+        assert_eq!(out.get(&[0, 0, 0]), Some(0.0 + 100.0));
+        assert_eq!(out.get(&[0, 2, 3]), Some(11.0 + 111.0));
+
+        // also works in the other order
+        let out2 = b.add(&a);
+        assert_eq!(out2.shape(), &[1, 3, 4]);
+        assert_eq!(out2.to_vec(), out.to_vec());
+    }
+
+    #[test]
+    fn reshape_scalar_to_matrix_and_back() {
+        let s = NdArray::from_list(vec![42.0], Some(&[]));
+        assert_eq!(s.shape(), &[]);
+        let m = s.reshape(&[1, 1]).unwrap();
+        assert_eq!(m.shape(), &[1, 1]);
+        assert_eq!(m.to_vec(), vec![42.0]);
+        let s2 = m.reshape(&[]).unwrap();
+        assert_eq!(s2.shape(), &[]);
+        assert_eq!(s2.to_vec(), vec![42.0]);
+    }
+
+    #[test]
+    fn reshape_zero_sized_dimensions_roundtrip() {
+        let a = NdArray::zeros(&[0, 3]);
+        assert!(a.is_contiguous());
+        let b = a.reshape(&[0, 1, 3]).unwrap();
+        assert_eq!(b.shape(), &[0, 1, 3]);
+        assert!(b.is_empty());
+        assert_eq!(b.to_vec(), vec![]);
+
+        let c = b.reshape(&[0, 3]).unwrap();
+        assert_eq!(c.shape(), &[0, 3]);
+        assert!(c.is_empty());
+    }
+
+    #[test]
+    fn matmul_rectangular_identity_right() {
+        // (2,3) @ (3,3) -> (2,3)
+        let a = NdArray::from_list(vec![1., 2., 3., 4., 5., 6.], Some(&[2, 3]));
+        let eye = NdArray::from_list(
+            vec![1., 0., 0., 0., 1., 0., 0., 0., 1.],
+            Some(&[3, 3]),
+        );
+        let out = a.matmul(&eye);
+        assert_eq!(out.shape(), &[2, 3]);
+        assert_eq!(out.to_vec(), a.to_vec());
+    }
+
+    #[test]
+    fn matmul_with_transposed_view_uses_strides() {
+        // Build A as (2,3) then take AT as a non-contiguous transpose-like view (3,2).
+        // AT @ A => (3,3)
+        let a = NdArray::from_list(vec![1., 2., 3., 4., 5., 6.], Some(&[2, 3]));
+        let at = a.view(&[3, 2], &[1, 3], 0);
+        assert!(!at.is_contiguous());
+        let out = at.matmul(&a);
+        assert_eq!(out.shape(), &[3, 3]);
+        // Compute expected: A^T A
+        // A = [[1,2,3],[4,5,6]]
+        // A^T A =
+        // [[17,22,27],[22,29,36],[27,36,45]]
+        assert_eq!(out.to_vec(), vec![17., 22., 27., 22., 29., 36., 27., 36., 45.]);
+    }
+
+    #[test]
+    #[should_panic]
+    fn matmul_inner_dim_mismatch_panics() {
+        let a = NdArray::zeros(&[2, 3]);
+        let b = NdArray::zeros(&[4, 2]);
+        let _ = a.matmul(&b);
+    }
+
+    #[test]
+    #[should_panic]
+    fn matmul_non_2d_panics() {
+        let a = NdArray::zeros(&[6]);
+        let b = NdArray::zeros(&[6]);
+        let _ = a.matmul(&b);
+    }
 }

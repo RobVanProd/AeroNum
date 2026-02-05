@@ -302,7 +302,9 @@ fn broadcast_shape(a: &[usize], b: &[usize]) -> Option<Vec<usize>> {
         let da = if i < nd - na { 1 } else { a[i - (nd - na)] };
         let db = if i < nd - nb { 1 } else { b[i - (nd - nb)] };
         if da == db || da == 1 || db == 1 {
-            out[i] = da.max(db);
+            // NumPy-style: if either side has a zero-sized dimension, the result is zero-sized.
+            // (0, 3) + (1, 3) => (0, 3), and scalar broadcasting preserves the zero.
+            out[i] = if da == 0 || db == 0 { 0 } else { da.max(db) };
         } else {
             return None;
         }
@@ -555,13 +557,46 @@ mod tests {
     }
 
     #[test]
+    fn broadcasting_zero_sized_dim_with_ones_keeps_zero() {
+        // NumPy: (0, 3) + (1, 3) => (0, 3)
+        let empty = NdArray::zeros(&[0, 3]);
+        let ones = NdArray::from_list(vec![1.0, 1.0, 1.0], Some(&[1, 3]));
+        let out = empty.add(&ones);
+        assert_eq!(out.shape(), &[0, 3]);
+        assert!(out.is_empty());
+        assert_eq!(out.to_vec(), vec![]);
+
+        // Symmetry
+        let out2 = ones.add(&empty);
+        assert_eq!(out2.shape(), &[0, 3]);
+        assert!(out2.is_empty());
+    }
+
+    #[test]
+    fn broadcasting_scalar_with_zero_sized_dim_keeps_zero() {
+        // scalar + (0, 3) => (0, 3)
+        let s = NdArray::from_list(vec![2.0], Some(&[]));
+        let empty = NdArray::zeros(&[0, 3]);
+        let out = s.add(&empty);
+        assert_eq!(out.shape(), &[0, 3]);
+        assert!(out.is_empty());
+        assert_eq!(out.to_vec(), vec![]);
+    }
+
+    #[test]
+    #[should_panic(expected = "incompatible shapes")]
+    fn broadcasting_zero_sized_dim_incompatible_panics() {
+        // (0, 3) and (2, 3) are not compatible: 0 cannot broadcast to 2.
+        let a = NdArray::zeros(&[0, 3]);
+        let b = NdArray::zeros(&[2, 3]);
+        let _ = a.add(&b);
+    }
+
+    #[test]
     fn matmul_rectangular_identity_right() {
         // (2,3) @ (3,3) -> (2,3)
         let a = NdArray::from_list(vec![1., 2., 3., 4., 5., 6.], Some(&[2, 3]));
-        let eye = NdArray::from_list(
-            vec![1., 0., 0., 0., 1., 0., 0., 0., 1.],
-            Some(&[3, 3]),
-        );
+        let eye = NdArray::from_list(vec![1., 0., 0., 0., 1., 0., 0., 0., 1.], Some(&[3, 3]));
         let out = a.matmul(&eye);
         assert_eq!(out.shape(), &[2, 3]);
         assert_eq!(out.to_vec(), a.to_vec());
@@ -580,7 +615,10 @@ mod tests {
         // A = [[1,2,3],[4,5,6]]
         // A^T A =
         // [[17,22,27],[22,29,36],[27,36,45]]
-        assert_eq!(out.to_vec(), vec![17., 22., 27., 22., 29., 36., 27., 36., 45.]);
+        assert_eq!(
+            out.to_vec(),
+            vec![17., 22., 27., 22., 29., 36., 27., 36., 45.]
+        );
     }
 
     #[test]

@@ -7,6 +7,11 @@ Goal: define the smallest, testable surface that makes AeroNum feel real to user
 - Start with **float32** (add int32 later)
 - Contiguous buffers, with support for **non-contiguous views** via (shape, strides, offset)
 
+### dtype planning note (post-v0)
+Keep the v0 implementation monomorphic (`Vec<f32>`) to keep the surface small and tests fast.
+When adding more dtypes, prefer an explicit `DType` enum + a single ndarray struct holding a typed buffer
+(e.g., `Vec<u8>` with reinterpretation) rather than proliferating generic `NdArray<T>` across the public API.
+
 ## ndarray object model
 - `dtype`: `float32` (v0)
 - `shape`: list/tuple of `int`

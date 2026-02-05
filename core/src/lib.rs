@@ -473,6 +473,38 @@ mod tests {
     }
 
     #[test]
+    fn broadcasting_3d_plus_vector_trailing_dim() {
+        // (2,3,4) + (4,) -> (2,3,4)
+        let a = NdArray::from_list((0..24).map(|x| x as f32).collect(), Some(&[2, 3, 4]));
+        let v = NdArray::from_list(vec![10., 20., 30., 40.], Some(&[4]));
+        let out = a.add(&v);
+        assert_eq!(out.shape(), &[2, 3, 4]);
+        assert_eq!(out.get(&[0, 0, 0]), Some(0.0 + 10.0));
+        assert_eq!(out.get(&[0, 0, 3]), Some(3.0 + 40.0));
+        assert_eq!(out.get(&[1, 2, 3]), Some(23.0 + 40.0));
+    }
+
+    #[test]
+    fn broadcasting_scalar_mul_matrix() {
+        // Ensure scalar broadcasting works for ops other than add.
+        let s = NdArray::from_list(vec![2.0], Some(&[]));
+        let m = NdArray::from_list(vec![1., 2., 3., 4.], Some(&[2, 2]));
+        let out = s.mul(&m);
+        assert_eq!(out.shape(), &[2, 2]);
+        assert_eq!(out.to_vec(), vec![2., 4., 6., 8.]);
+    }
+
+    #[test]
+    fn reshape_non_contiguous_transpose_like_returns_none() {
+        // Create a (2,3) contiguous array, then a transpose-like view (3,2) with swapped strides.
+        let base = NdArray::from_list((0..6).map(|x| x as f32).collect(), Some(&[2, 3]));
+        assert!(base.is_contiguous());
+        let t = base.view(&[3, 2], &[1, 3], 0);
+        assert!(!t.is_contiguous());
+        assert!(t.reshape(&[6]).is_none());
+    }
+
+    #[test]
     #[should_panic(expected = "incompatible shapes")]
     fn broadcasting_incompatible_shapes_panics() {
         let a = NdArray::zeros(&[2, 3]);

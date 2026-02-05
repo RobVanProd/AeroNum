@@ -1,0 +1,10 @@
+[package]
+name = "aeronum-core"
+version = "0.0.0"
+edition = "2021"
+license = "MIT"
+
+[dependencies]
+
+[dev-dependencies]
+approx = "0.5"

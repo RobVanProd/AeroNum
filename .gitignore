@@ -38,3 +38,6 @@ results/
 
 # Local notes
 *.log
+
+# Rust build artifacts
+/target/

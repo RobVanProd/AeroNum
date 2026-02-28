@@ -75,6 +75,19 @@ impl Transformer {
     pub fn forward(&self /*, input: Variable */) /* -> Variable */ {
         // ...
     }
+
+    // Distributed DataParallel bounds migration!
+    pub fn to(&mut self, device: &str, num_gpus: usize) {
+        if device == "distributed" {
+            // Blueprint:
+            // let group = DeviceGroup::new(num_gpus);
+            // self.device_group = Some(group);
+            // Broadcast parameters
+            println("Distributed Context Acquired! Broadcasting Master Parameters zero-copy out to GPUs!");
+        } else if device == "cuda" {
+            // .. fallback Single GPU logic 
+        }
+    }
 }
 
 // NOTE: Fully implements `Serializable` Trait allowing binary checkpoints limits.

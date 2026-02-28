@@ -10,3 +10,4 @@ aeronum = "0.1.0"
 [features]
 static_graph = []
 serialization = []
+distributed = []

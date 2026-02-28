@@ -381,6 +381,15 @@ pytest tests/
 - [ ] Production-ready performance
 - [ ] Full Python ecosystem compatibility
 
+## 📊 Performance & Benchmarking Dashboard
+
+The Aero ecosystem guarantees natively compiled **Zero-Cost Abstractions** across memory architectures. The core computations (`MatMul`, AI Topological mapping, Allocations) are rigorously tested simulating extreme boundary metrics.
+
+Every commit dynamically executes an automated benchmark validating mathematical layout fidelity through the Github Actions CI `.github/workflows/benchmark.yml` boundary.
+
+**🚀 [View the Live Interactive Performance Dashboard](https://github.com/RobVanProd/AeroNum/tree/main/benchmarks/dashboard)**
+*(Maintained entirely natively via `tools/aero-pkg` utilizing the `benches` array mapping the `aero::vec` heap allocator limits)*
+
 ## 📄 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.

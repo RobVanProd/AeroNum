@@ -65,7 +65,8 @@ members = [
     "aeronum-python",
     "tools/aero-pkg",
     "labs/ai/aeronn",
-    "labs/gpu"
+    "labs/gpu",
+    "benches"
 ]
 
 # Package metadata for documentation and tooling

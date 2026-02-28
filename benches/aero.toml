@@ -1,0 +1,10 @@
+[package]
+name = "aeronum-benchmarks"
+version = "0.1.0"
+authors = ["Robert Van Arsdale <robert.vanarsdale@gmail.com>"]
+description = "AeroNum Core Ecosystem Benchmarks"
+
+[dependencies]
+aeronum = "0.1.0"
+aeronn = "0.1.0"
+aeronum-gpu = "0.1.0"

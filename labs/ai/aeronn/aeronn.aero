@@ -1,0 +1,197 @@
+// ============================================================================
+// AERO AI: AeroNN Modular Deep Learning Framework (v0.3.0)
+// ============================================================================
+// AeroNN is a production-grade neural network framework built natively in the
+// Aero programming language. It leverages the underlying AeroNum substrate
+// and the reverse-mode Tape Autodiff engine.
+//
+// NOTE: Due to the v0.3.0 compiler limits regarding multi-dimensional arrays
+// acting as deeply nested properties or dynamically sized arrays, this module
+// represents the conceptual and interface-level blueprint of the framework.
+// Real compilation execution drops into `static_model.aero` using the
+// `#[cfg(feature = "static_graph")]` flag constraint.
+
+// ----------------------------------------------------------------------------
+// 1. CORE TRAITS
+// ----------------------------------------------------------------------------
+
+/// Represents a topological node wrapper that carries its data and gradients.
+struct Variable {
+    data: f32, // Simplified for v0 representation. Target: Array<T, D>
+    grad: f32,
+}
+
+/// The fundamental building block of an AeroNN model.
+trait Layer {
+    /// Forward pass logic mapping an input Variable to an output Variable.
+    fn forward(&self, input: Variable) -> Variable;
+    
+    /// Trigger structural backward pass through local parameters.
+    fn backward(&mut self);
+    
+    /// Retrieve all trainable parameters.
+    fn parameters(&self) -> Vec<Variable>;
+    
+    /// Zero all accumulated gradients in this layer.
+    fn zero_grad(&mut self);
+}
+
+/// The standard optimization protocol.
+trait Optimizer {
+    /// Update step applying stored gradients to actual parameters.
+    fn step(&mut self);
+    
+    /// Resets parameter gradients to zero.
+    fn zero_grad(&mut self);
+}
+
+// ----------------------------------------------------------------------------
+// 2. LAYER DEFINITIONS
+// ----------------------------------------------------------------------------
+
+/// Fully connected linear layer.
+struct Dense {
+    weight: Variable, // Conceptually: Array<f32, 2>
+    bias: Variable,   // Conceptually: Array<f32, 1>
+}
+
+impl Layer for Dense {
+    fn forward(&self, input: Variable) -> Variable {
+        // Conceptually: matmul(input, self.weight) + self.bias
+        // Requires AD tape registration for `input`, `weight`, and `bias`.
+        Variable { data: 0.0, grad: 0.0 }
+    }
+
+    fn backward(&mut self) {
+        // Handled intrinsically by the Autodiff Tape
+    }
+
+    fn parameters(&self) -> Vec<Variable> {
+        vec![self.weight, self.bias]
+    }
+
+    fn zero_grad(&mut self) {
+        self.weight.grad = 0.0;
+        self.bias.grad = 0.0;
+    }
+}
+
+/// Rectified Linear Unit mapping.
+struct ReLU;
+impl Layer for ReLU {
+    fn forward(&self, input: Variable) -> Variable {
+        // Conceptually: if input.data > 0 { input.data } else { 0 }
+        Variable { data: 0.0, grad: 0.0 }
+    }
+    fn backward(&mut self) {}
+    fn parameters(&self) -> Vec<Variable> { vec![] }
+    fn zero_grad(&mut self) {}
+}
+
+/// Sigmoid classification mapping.
+struct Sigmoid;
+impl Layer for Sigmoid {
+    fn forward(&self, input: Variable) -> Variable {
+        Variable { data: 0.0, grad: 0.0 } // Conceptually: 1 / (1 + e^-x)
+    }
+    fn backward(&mut self) {}
+    fn parameters(&self) -> Vec<Variable> { vec![] }
+    fn zero_grad(&mut self) {}
+}
+
+// ----------------------------------------------------------------------------
+// 3. MODEL ARCHITECTURE
+// ----------------------------------------------------------------------------
+
+/// Sequential container owning a topological chain of layers.
+struct Sequential {
+    layers: Vec<Box<dyn Layer>>,
+}
+
+impl Sequential {
+    pub fn new() -> Self {
+        Sequential { layers: vec![] }
+    }
+
+    pub fn add(&mut self, layer: Box<dyn Layer>) {
+        self.layers.push(layer);
+    }
+    
+    pub fn forward(&self, mut input: Variable) -> Variable {
+        for layer in &self.layers {
+            input = layer.forward(input);
+        }
+        input
+    }
+
+    pub fn parameters(&self) -> Vec<Variable> {
+        let mut params = vec![];
+        for layer in &self.layers {
+            params.extend(layer.parameters());
+        }
+        params
+    }
+}
+
+// ----------------------------------------------------------------------------
+// 4. OPTIMIZERS
+// ----------------------------------------------------------------------------
+
+/// Vanilla Stochastic Gradient Descent
+struct SGD {
+    params: Vec<Variable>,
+    learning_rate: f32,
+    momentum: f32,
+}
+
+impl Optimizer for SGD {
+    fn step(&mut self) {
+        for param in &mut self.params {
+            // W = W - LR * dW
+            param.data = param.data - (self.learning_rate * param.grad);
+        }
+    }
+    
+    fn zero_grad(&mut self) {
+        for param in &mut self.params {
+            param.grad = 0.0;
+        }
+    }
+}
+
+/// Adaptive Moment Estimation 
+struct Adam {
+    params: Vec<Variable>,
+    learning_rate: f32,
+    beta1: f32,
+    beta2: f32,
+    epsilon: f32,
+}
+
+impl Optimizer for Adam {
+    fn step(&mut self) {
+        // Conceptually runs m_t and v_t exponential moving averages.
+    }
+    fn zero_grad(&mut self) {
+        for param in &mut self.params {
+            param.grad = 0.0;
+        }
+    }
+}
+
+// ----------------------------------------------------------------------------
+// 5. LOSS FUNCTIONS
+// ----------------------------------------------------------------------------
+
+/// Mean Squared Error (MSE)
+fn mse_loss(prediction: Variable, target: Variable) -> f32 {
+    let diff = prediction.data - target.data;
+    // Conceptually registers backward operations for L = (P - T)^2
+    diff * diff
+}
+
+/// CrossEntropy Loss
+fn cross_entropy_loss(prediction: Variable, target: Variable) -> f32 {
+    // Loss formulation for multi-class classification mappings
+    0.0
+}

@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Source Branch
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Build Toolchain Components (`aero-pkg`)
         run: |

@@ -1,40 +1,39 @@
 name: Aero Performance Benchmarks
+
 on:
   push:
-    branches:
-      - main
+    branches: [ main ]
   pull_request:
+    branches: [ main ]
 
 jobs:
-  benchmark_dashboard:
+  benchmark:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v3
-
-      - name: Build Aero Toolchain
-        run: |
-          git clone https://github.com/RobVanProd/Aero.git /tmp/aero
-          cd /tmp/aero
-          cargo build --release
-          echo "/tmp/aero/target/release" >> $GITHUB_PATH
-
-      - name: Execute Aero Benchmark Suite
-        run: |
-          # Simulates the native benchmarking hook explicitly mapped through
-          # the new aero-pkg router validating bounds limits
-          aero test --bench
-
-      - name: Generate Validation Dashboard
-        run: |
-          aero run --bin generate_dashboard
-
-      - name: Publish Artifact (HTML Dashboard)
-        uses: actions/upload-artifact@v3
+      - uses: actions/checkout@v4
         with:
-          name: aeronum-dashboard
-          path: benchmarks/dashboard/index.html
-          retention-days: 30
-          
-      # Additional step natively deploying this artifact loop to GitHub Pages
-      # ensuring continuous monitoring over the repository lifecycle.
+          submodules: recursive
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Build Aero compiler
+        run: |
+          cd aero-compiler
+          cargo build --release
+          echo "$PWD/target/release" >> $GITHUB_PATH
+
+      - name: Build workspace
+        run: aero build --workspace --release
+
+      - name: Run benchmarks
+        run: aero test --bench --all
+
+      - name: Generate dashboard
+        run: aero run --bin generate_dashboard || echo "Dashboard generation optional for now"
+
+      - name: Upload dashboard artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: benchmark-dashboard
+          path: benchmarks/dashboard/

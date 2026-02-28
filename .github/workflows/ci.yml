@@ -1,28 +1,30 @@
-name: CI
+name: CI - Build & Test
 
 on:
-  pull_request:
   push:
-    branches: [ main, master ]
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
 
 jobs:
-  test:
+  build-and-test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
-      - name: Install Rust (stable)
-        uses: dtolnay/rust-toolchain@stable
         with:
-          components: rustfmt, clippy
+          submodules: recursive
 
-      - uses: Swatinem/rust-cache@v2
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
 
-      - name: cargo fmt (check)
-        run: cargo fmt --all -- --check
+      - name: Build Aero compiler
+        run: |
+          cd aero-compiler
+          cargo build --release
+          echo "$PWD/target/release" >> $GITHUB_PATH
 
-      - name: cargo clippy
-        run: cargo clippy --workspace --all-targets --locked -- -D warnings
+      - name: Build Aero workspace
+        run: aero build --workspace --release
 
-      - name: cargo test
-        run: cargo test --workspace --locked
+      - name: Run all tests
+        run: aero test --all

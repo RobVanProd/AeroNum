@@ -16,9 +16,9 @@ The official high-performance numerical computing and deep-learning library writ
 
 ## 🚀 Live Ecosystem
 
-- **[Interactive Playground](https://github.com/RobVanProd/Aero/tree/main/playground)**  
+- **[Interactive Playground](https://github.com/RobVanProd/AeroNum/tree/main/playground)**  
 - **[Live Benchmark Dashboard](https://github.com/RobVanProd/AeroNum/tree/main/benchmarks/dashboard)**  
-- **[Documentation](https://github.com/RobVanProd/Aero/tree/main/docs)**  
+- **[Documentation](https://github.com/RobVanProd/AeroNum/tree/main/docs)**  
 
 ## ⚡ Performance
 

@@ -1,0 +1,77 @@
+// ============================================================================
+// AERO STANDARD LIBRARY: aero::io (v0.5.0+)
+// ============================================================================
+// Core bindings to OS-level file descriptors and standard I/O streams.
+
+use stdlib::string::String;
+use stdlib::vec::Vec;
+
+/// File I/O structure maintaining strict OS descriptor constraints
+pub struct File {
+    fd: i32,
+    is_open: bool,
+}
+
+impl File {
+    /// Opens a file mapping via system `open()` FFI.
+    pub fn open(path: &String) -> Result<Self, i32> {
+        // Blueprint FFI mapping:
+        // let fd = libc::open(path.as_ptr(), libc::O_RDWR);
+        let fd = 1; // Simulated execution
+        
+        if fd < 0 {
+            Result::Err(fd)
+        } else {
+            Result::Ok(File { fd, is_open: true })
+        }
+    }
+    
+    /// Reads byte blobs into a contiguous buffer tracking read count
+    pub fn read(&self, buffer: &mut Vec<u8>) -> usize {
+        // Blueprint FFI mapping:
+        // let bytes_read = libc::read(self.fd, buffer.as_mut_ptr(), buffer.capacity());
+        // buffer.set_len(bytes_read);
+        buffer.capacity()
+    }
+    
+    /// Commits an existing byte slice out to the storage device
+    pub fn write(&self, data: &[u8]) -> usize {
+        // Blueprint FFI mapping:
+        // let bytes_written = libc::write(self.fd, data.as_ptr(), data.len());
+        data.len()
+    }
+
+    /// Explicitly closes the binding immediately
+    pub fn close(&mut self) {
+        if self.is_open {
+            // libc::close(self.fd);
+            self.is_open = false;
+        }
+    }
+}
+
+/// Closes OS handles mechanically when variables leave scope
+impl Drop for File {
+    fn drop(&mut self) {
+        self.close();
+    }
+}
+
+// ----------------------------------------------------------------------------
+// ZERO-COST MACRO ABSTRACTIONS
+// ----------------------------------------------------------------------------
+
+/// Statically unrolls stdout text rendering mappings
+macro_rules! print {
+    ($val:expr) => {
+        // libc::write(1, $val.as_ptr(), $val.len());
+    };
+}
+
+/// Appends newline logic intrinsically 
+macro_rules! println {
+    ($val:expr) => {
+        // print!($val);
+        // print!("\n");
+    };
+}

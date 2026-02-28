@@ -1,0 +1,87 @@
+// ============================================================================
+// AERO STANDARD LIBRARY: aero::string (v0.5.0+)
+// ============================================================================
+// Provides a UTF-8 String implementation featuring native Small-String
+// Optimization (SSO).
+
+// Dependencies
+use stdlib::vec::Vec;
+
+/// A dynamically allocated or inline-cached UTF-8 String.
+/// The SSO layout masks pointer flags to ensure strings <= 23 bytes reside 100%
+/// on the stack, bypassing heap allocations dynamically.
+pub struct String {
+    // 24 bytes total layout representing both Large and Small tags
+    data: [u8; 24], 
+}
+
+impl String {
+    /// Creates a new empty `String`.
+    pub fn new() -> Self {
+        let mut s = String { data: [0; 24] };
+        s.set_sso_len(0);
+        s
+    }
+
+    /// Constructs a `String` from a static byte literal.
+    pub fn from_str(literal: &str) -> Self {
+        let len = literal.len();
+        let mut s = String { data: [0; 24] };
+        
+        if len <= 23 {
+            // Small-String Optimization Path
+            // Copy bytes directly to the struct stack payload
+            unsafe {
+                ptr::copy_nonoverlapping(literal.as_ptr(), s.data.as_mut_ptr(), len);
+            }
+            s.set_sso_len(len as u8);
+        } else {
+            // Heap Allocation Path
+            let mut vec = Vec::with_capacity(len);
+            unsafe {
+                ptr::copy_nonoverlapping(literal.as_ptr(), vec.as_mut_ptr(), len);
+                vec.set_len(len);
+            }
+            s.set_large_vec(vec);
+        }
+        
+        s
+    }
+    
+    /// Returns the length of the string in bytes.
+    pub fn len(&self) -> usize {
+        if self.is_sso() {
+            self.sso_len() as usize
+        } else {
+            self.large_vec().len()
+        }
+    }
+
+    /// Internal flags defining structure layout configuration.
+    fn is_sso(&self) -> bool {
+        // Tag stored in the last byte determining representation map
+        (self.data[23] & 0x80) == 0
+    }
+
+    fn sso_len(&self) -> u8 {
+        self.data[23] & 0x7F
+    }
+
+    fn set_sso_len(&mut self, len: u8) {
+        self.data[23] = len; // Top bit 0
+    }
+
+    fn large_vec(&self) -> &Vec<u8> {
+        unsafe { transmute(&self.data[0]) }
+    }
+
+    fn set_large_vec(&mut self, vec: Vec<u8>) {
+        unsafe {
+            // Encode the Vec structure pointer into the 24 bytes and flag
+            // the highest bit of the 24th byte to signal heap usage.
+            let ptr: *const [u8; 24] = transmute(&vec);
+            self.data = *ptr;
+            self.data[23] |= 0x80;
+        }
+    }
+}

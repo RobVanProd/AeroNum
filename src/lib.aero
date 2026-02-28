@@ -18,6 +18,9 @@ mod traits;
 // Linear algebra module
 mod linalg;
 
+// Standard library foundational components (v0.5.0)
+pub mod stdlib;
+
 // Re-export core types and traits for convenient access
 pub use array::Array;
 pub use memory::{MemoryLayout, DataOwnership};

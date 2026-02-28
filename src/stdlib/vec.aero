@@ -1,0 +1,110 @@
+// ============================================================================
+// AERO STANDARD LIBRARY: aero::vec (v0.5.0+)
+// ============================================================================
+// Provides a dynamically resizable array adhering to the Aero memory and
+// ownership model without relying on garbage collection.
+
+/// A dynamic array allocated on the heap providing automatic capacity scaling.
+pub struct Vec<T> {
+    ptr: *mut T,
+    capacity: usize,
+    len: usize,
+}
+
+impl<T> Vec<T> {
+    /// Constructs a new, empty `Vec<T>`.
+    /// Zero-cost abstraction: does not allocate until the first element is pushed.
+    pub fn new() -> Self {
+        Vec {
+            ptr: null_mut(),
+            capacity: 0,
+            len: 0,
+        }
+    }
+
+    /// Constructs a new, empty `Vec<T>` with a specific pre-allocated capacity.
+    pub fn with_capacity(capacity: usize) -> Self {
+        let ptr = if capacity == 0 {
+            null_mut()
+        } else {
+            // FFI call to internal memory allocator
+            alloc::alloc_array::<T>(capacity)
+        };
+        Vec {
+            ptr,
+            capacity,
+            len: 0,
+        }
+    }
+
+    /// Appends an element to the back of the collection.
+    /// Reallocates memory only if the current capacity is exceeded.
+    pub fn push(&mut self, value: T) {
+        if self.len == self.capacity {
+            self.grow();
+        }
+        unsafe {
+            // Write `value` into the heap pointer offset by `len`
+            let target = self.ptr.add(self.len);
+            ptr::write(target, value);
+        }
+        self.len = self.len + 1;
+    }
+
+    /// Removes the last element from a vector and returns it, or None if empty.
+    pub fn pop(&mut self) -> Option<T> {
+        if self.len == 0 {
+            return Option::None;
+        }
+        self.len = self.len - 1;
+        unsafe {
+            let val = ptr::read(self.ptr.add(self.len));
+            Option::Some(val)
+        }
+    }
+
+    /// Private internal capacity expansion triggering exponential growth (2x).
+    fn grow(&mut self) {
+        let new_capacity = if self.capacity == 0 { 4 } else { self.capacity * 2 };
+        let new_ptr = alloc::realloc_array::<T>(self.ptr, self.capacity, new_capacity);
+        self.ptr = new_ptr;
+        self.capacity = new_capacity;
+    }
+
+    /// Returns the number of elements in the vector.
+    pub fn len(&self) -> usize {
+        self.len
+    }
+
+    /// Returns the total number of elements the vector can hold without reallocating.
+    pub fn capacity(&self) -> usize {
+        self.capacity
+    }
+}
+
+/// Native indexing trait implementation
+impl<T> Index<usize> for Vec<T> {
+    type Output = T;
+    
+    fn index(&self, index: usize) -> &T {
+        // Safe access (bounds checked)
+        if index >= self.len {
+            panic!("Index out of bounds");
+        }
+        unsafe { &*self.ptr.add(index) }
+    }
+}
+
+/// Release native memory back to the allocator when the struct leaves scope.
+impl<T> Drop for Vec<T> {
+    fn drop(&mut self) {
+        if self.capacity > 0 {
+            // Drop elements
+            for i in 0..self.len {
+                unsafe { ptr::drop_in_place(self.ptr.add(i)); }
+            }
+            // Deallocate chunk
+            alloc::dealloc_array::<T>(self.ptr, self.capacity);
+        }
+    }
+}

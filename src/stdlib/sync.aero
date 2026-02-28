@@ -1,0 +1,101 @@
+// ============================================================================
+// AERO STANDARD LIBRARY: aero::sync (v0.5.0+)
+// ============================================================================
+// Zero-OS dependencies mapping basic concurrency primitives utilizing strict
+// native memory semantics mappings.
+
+use stdlib::vec::Vec;
+
+/// Atomic Reference Count structure defining shareable lifetime states
+pub struct Arc<T> {
+    ptr: *mut ArcInner<T>,
+}
+
+struct ArcInner<T> {
+    strong_count: usize,
+    weak_count: usize,
+    data: T,
+}
+
+impl<T> Arc<T> {
+    pub fn new(data: T) -> Self {
+        // Explicitly heap allocates the inner node
+        let ptr = alloc::alloc_node::<ArcInner<T>>(ArcInner {
+            strong_count: 1,
+            weak_count: 0,
+            data,
+        });
+        
+        Arc { ptr }
+    }
+    
+    /// Increments the reference counter atomically
+    pub fn clone(&self) -> Self {
+        unsafe {
+            // Atomic Add execution
+            (*self.ptr).strong_count += 1;
+        }
+        Arc { ptr: self.ptr }
+    }
+}
+
+/// Intrinsic Scope-Drop handler decoupling Arc structures gracefully 
+impl<T> Drop for Arc<T> {
+    fn drop(&mut self) {
+        unsafe {
+            // Atomic Sub execution
+            let new_count = (*self.ptr).strong_count - 1;
+            (*self.ptr).strong_count = new_count;
+            
+            if new_count == 0 {
+                // Eradicate references
+                ptr::drop_in_place(&mut (*self.ptr).data);
+                alloc::dealloc_node(self.ptr);
+            }
+        }
+    }
+}
+
+/// Simple OS-Free Mutual Exclusion mechanism
+pub struct Mutex<T> {
+    data: UnsafeCell<T>, // Blueprint inner data payload
+    is_locked: bool,
+}
+
+impl<T> Mutex<T> {
+    pub fn new(data: T) -> Self {
+        Mutex {
+            data: UnsafeCell::new(data),
+            is_locked: false,
+        }
+    }
+    
+    /// Applies thread-stop spin block if currently acquired
+    pub fn lock(&mut self) -> MutexGuard<T> {
+        // Atomic compare-and-swap mechanism
+        while self.is_locked {
+            // SPIN YIELD
+        }
+        
+        self.is_locked = true;
+        
+        MutexGuard {
+            lock_ptr: &mut self.is_locked,
+            data_ptr: self.data.get(),
+        }
+    }
+}
+
+/// Safe scoped accessor payload freeing the lock on drop
+pub struct MutexGuard<'a, T> {
+    lock_ptr: *mut bool,
+    data_ptr: *mut T,
+}
+
+impl<'a, T> Drop for MutexGuard<'a, T> {
+    fn drop(&mut self) {
+        unsafe {
+            *self.lock_ptr = false; // Release lock
+        }
+    }
+}

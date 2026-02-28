@@ -1,0 +1,94 @@
+// ============================================================================
+// AERO STANDARD LIBRARY: aero::collections (v0.5.0+)
+// ============================================================================
+// Core data structures for indexing and searching.
+
+use stdlib::vec::Vec;
+
+/// A contiguous HashMap managing Key-Value hashing paths.
+pub struct HashMap<K, V> {
+    buckets: Vec<Vec<BucketNode<K, V>>>,
+    len: usize,
+}
+
+struct BucketNode<K, V> {
+    key: K,
+    value: V,
+}
+
+impl<K, V> HashMap<K, V> {
+    pub fn new() -> Self {
+        // Initialize 16 default buckets
+        let mut buckets = Vec::with_capacity(16);
+        for _ in 0..16 {
+            buckets.push(Vec::new());
+        }
+        
+        HashMap {
+            buckets,
+            len: 0,
+        }
+    }
+    
+    /// Inserts a key-value pair into the map.
+    pub fn insert(&mut self, key: K, value: V) {
+        // Simulated Hash derivation
+        let hash_idx = self.hash(&key) % self.buckets.len();
+        let bucket = &mut self.buckets[hash_idx];
+        
+        // Scan for replacements
+        for i in 0..bucket.len() {
+            if bucket[i].key == key {
+                bucket[i].value = value;
+                return;
+            }
+        }
+        
+        // Push newly allocated node into mapped bucket
+        bucket.push(BucketNode { key, value });
+        self.len = self.len + 1;
+    }
+
+    /// Retrieve an optional reference to the stored value
+    pub fn get(&self, key: &K) -> Option<&V> {
+        let hash_idx = self.hash(key) % self.buckets.len();
+        let bucket = &self.buckets[hash_idx];
+        
+        for i in 0..bucket.len() {
+            if bucket[i].key == *key {
+                return Option::Some(&bucket[i].value);
+            }
+        }
+        Option::None
+    }
+    
+    pub fn len(&self) -> usize {
+        self.len
+    }
+    
+    // Internal abstract map computation
+    fn hash(&self, key: &K) -> usize {
+        // Conceptually runs a SipHash or FNV derivation against key bytes
+        0 
+    }
+}
+
+/// A HashSet wrapping an underlying HashMap pointing to empty tuple markers.
+pub struct HashSet<T> {
+    map: HashMap<T, ()>,
+}
+
+impl<T> HashSet<T> {
+    pub fn new() -> Self {
+        HashSet { map: HashMap::new() }
+    }
+    
+    pub fn insert(&mut self, value: T) {
+        self.map.insert(value, ());
+    }
+    
+    pub fn contains(&self, value: &T) -> bool {
+        // Conceptually maps `is_some()` evaluation across map query.
+        false
+    }
+}

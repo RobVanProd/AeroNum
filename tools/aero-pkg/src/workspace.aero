@@ -1,0 +1,34 @@
+// ============================================================================
+// AERO-PKG: Workspace Manager (v0.5.0+)
+// ============================================================================
+// Automates orchestrating multi-crate workspaces linking local directory builds
+// under a unified root directory structure natively using `aero::io`.
+
+use stdlib::vec::Vec;
+use stdlib::string::String;
+// use crate::manifest::Manifest;
+
+pub struct Workspace {
+    pub members: Vec<Manifest>,
+}
+
+impl Workspace {
+    pub fn new() -> Self {
+        Workspace {
+            members: Vec::new(),
+        }
+    }
+
+    /// Evaluates `aero.toml` and recursively builds sub-packages
+    pub fn build_all(&self) {
+        for i in 0..self.members.len() {
+            let member = &self.members[i];
+            
+            // Utilizing the new `print!` and `println!` stdlib macros natively
+            // print!("Compiling ");
+            // println!(member.name);
+            
+            // FFI call simulating `aero build <member_path>`
+        }
+    }
+}

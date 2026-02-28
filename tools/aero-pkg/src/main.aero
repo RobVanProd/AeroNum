@@ -1,0 +1,73 @@
+// ============================================================================
+// AERO-PKG: CLI Entry Point (v0.5.0+)
+// ============================================================================
+// Serves as the official Package Manager routing utility written purely in Aero.
+
+use stdlib::vec::Vec;
+use stdlib::string::String;
+use stdlib::io::{File, println};
+
+// use crate::manifest::Manifest;
+// use crate::workspace::Workspace;
+// use crate::resolver::Resolver;
+
+/// Routes incoming standard parameters `$ aero [command] [...args]`
+pub fn main(args: Vec<String>) -> i32 {
+    if args.len() < 2 {
+        println!("aero-pkg: Official Aero Language Package Manager");
+        println!("Usage: aero <command> [options]");
+        println!("Commands:");
+        println!("  new <name>    Create a new aero package");
+        println!("  build         Compile the current package");
+        println!("  test          Execute the package's test suite");
+        println!("  run           Build and execute src/main.aero");
+        println!("  publish       Package and upload to registry");
+        println!("  add <crate>   Add a dependency to aero.toml");
+        println!("  update        Update dependencies matching aero.toml");
+        return 1;
+    }
+
+    let command = &args[1];
+
+    if command == "build" {
+        cmd_build();
+    } else if command == "new" {
+        if args.len() < 3 {
+             println!("Error: missing package name.");
+             return 1;
+        }
+        cmd_new(&args[2]);
+    } else if command == "test" {
+        println!("Running standard aero test suite...");
+    } else if command == "run" {
+        cmd_build();
+        println!("Executing target binary...");
+    } else if command == "publish" {
+        println!("Resolving registry.aero authentication...");
+    } else if command == "add" {
+        println!("Adding dependency to aero.toml...");
+    } else if command == "update" {
+        println!("Updating SemVer constraints from aero.lock...");
+    } else {
+        println!("Error: unrecognised command.");
+        return 1;
+    }
+
+    0
+}
+
+fn cmd_new(name: &String) {
+    println!("Created binary (application) package");
+    // FFI simulated directory layout:
+    // os::mkdir(name);
+    // os::mkdir(name + "/src");
+    // File::write(name + "/aero.toml", "[package]\n...");
+}
+
+fn cmd_build() {
+    println!("Compiling dependencies...");
+    // let manifest = Manifest::parse(File::read("aero.toml"));
+    // let resolver = Resolver::new();
+    // resolver.resolve(&manifest);
+    // println!("Finished build [optimized] target(s) natively");
+}

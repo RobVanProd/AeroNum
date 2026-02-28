@@ -1,0 +1,11 @@
+[package]
+name = "aeronn"
+version = "0.1.0"
+authors = ["Robert Van Arsdale <robert.vanarsdale@gmail.com>"]
+description = "AeroNN Modular Deep-Learning Framework Context"
+
+[dependencies]
+aeronum = "0.1.0"
+
+[features]
+static_graph = []

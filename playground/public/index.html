@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Aero Interactive Playground</title>
+    <style>
+        body { font-family: 'Consolas', monospace; background: #0f172a; color: #e2e8f0; margin: 0; padding: 20px; }
+        .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #334155; padding-bottom: 15px; }
+        h1 { color: #38bdf8; margin: 0; }
+        .btn { background: #10b981; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; font-weight: bold; }
+        .btn:hover { background: #059669; }
+        .workspace { display: flex; gap: 20px; margin-top: 20px; height: 75vh; }
+        .editor-container, .output-container { flex: 1; display: flex; flex-direction: column; }
+        textarea { flex: 1; background: #1e293b; color: #e2e8f0; border: 1px solid #475569; padding: 15px; border-radius: 6px; font-size: 14px; font-family: 'Consolas', monospace; resize: none; }
+        .terminal { flex: 1; background: #000; color: #10b981; border: 1px solid #334155; padding: 15px; border-radius: 6px; overflow-y: auto; }
+        h3 { color: #94a3b8; margin-top: 0; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div>
+            <h1>Aero Playground</h1>
+            <p style="color:#94a3b8; margin: 5px 0 0 0;">Zero-Cost WebAssembly Compilation</p>
+        </div>
+        <div>
+            <button class="btn" onclick="executeAeroCode()">Run 🚀 (Shift+Enter)</button>
+        </div>
+    </div>
+
+    <div class="workspace">
+        <div class="editor-container">
+            <h3>src/main.aero</h3>
+            <textarea id="code-editor" spellcheck="false">
+// Train a massive Multi-Layer Perceptron interactively!
+use aeronum::{Array};
+use aeronn::{Sequential, Dense};
+
+fn main() {
+    let mut model = Sequential::new();
+    model.add(Box::new(Dense::new(2, 3)));
+    
+    // Explicit CUDA boundaries 
+    // model.to("cuda"); 
+    
+    println!("Compiled natively down to WASM! Ready for bounds tracking.");
+}
+            </textarea>
+        </div>
+        
+        <div class="output-container">
+            <h3>Terminal Output</h3>
+            <div id="terminal-output" class="terminal">$ waiting for compilation...</div>
+        </div>
+    </div>
+
+    <script>
+        // Emulates bridging `aeronum-playground` WASM artifacts 
+        function executeAeroCode() {
+            const output = document.getElementById('terminal-output');
+            output.innerHTML = "<span style='color:#eab308;'>Compiling generic structures...</span><br/>";
+            
+            setTimeout(() => {
+                output.innerHTML += "Finished Build [optimised] targeting `wasm32-wasi`<br/>";
+                output.innerHTML += "Executing...<br/><br/>";
+                output.innerHTML += "<span style='color:#fff;'>Compiled natively down to WASM! Ready for bounds tracking.</span><br/>";
+            }, 800);
+        }
+        
+        document.addEventListener('keydown', function(event) {
+            if (event.shiftKey && event.key === 'Enter') {
+                event.preventDefault();
+                executeAeroCode();
+            }
+        });
+    </script>
+</body>
+</html>

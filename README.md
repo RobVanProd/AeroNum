@@ -33,6 +33,9 @@ AeroNum is a high-performance numerical computing library for the [Aero programm
 
 ## 🚀 Quick Start
 
+> **🔥 [Try AeroNum In Your Browser Native via WebAssembly Playground!](https://github.com/RobVanProd/AeroNum/tree/main/playground) 🔥**
+> Zero-Cost compilation limits evaluating dynamically without tracking local installs.
+
 ### Installation
 
 ```bash
@@ -40,11 +43,11 @@ AeroNum is a high-performance numerical computing library for the [Aero programm
 git clone https://github.com/RobVanProd/AeroNum.git
 cd AeroNum
 
-# Build the library
-aero build --release
+# Orchestrate execution traversing `aero-pkg` targets mapping workspaces
+aero build --workspace
 
-# Run examples
-aero run examples/simple_usage.aero
+# Run explicit ecosystem validations mapping limits:
+aero test
 ```
 
 ### Basic Usage

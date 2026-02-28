@@ -1,0 +1,13 @@
+[package]
+name = "aeronum-playground"
+version = "0.1.0"
+authors = ["Robert Van Arsdale <robert.vanarsdale@gmail.com>"]
+description = "Interactive Aero WebAssembly Compiler Playground"
+
+[dependencies]
+aeronum = "0.1.0"
+aeronn = "0.1.0"
+aeronum-gpu = "0.1.0"
+
+[features]
+wasi_target = []

@@ -1,0 +1,35 @@
+name: Package Ecosystem Deployment (Docs + Playground)
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy_hub:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Source Branch
+        uses: actions/checkout@v3
+
+      - name: Build Toolchain Components (`aero-pkg`)
+        run: |
+          cargo build --release
+          export PATH="$PWD/target/release:$PATH"
+
+      - name: Build Static-Site Generator bounds
+        run: |
+          # Compiles and executes `docs/src/main.aero`
+          aero run --bin docs --manifest-path docs/aero.toml
+
+      - name: Compile Interactive WebAssembly payloads
+        run: |
+          # Targets `wasm32-wasi` tracking compilation out towards the playground UI
+          aero build --target wasm32-wasi --manifest-path playground/aero.toml
+          cp target/wasm32-wasi/release/playground.wasm playground/public/
+
+      - name: Deploy Docs & Playground payload to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: docs/public 
+          # Appends playground artifacts targeting root URL branches.

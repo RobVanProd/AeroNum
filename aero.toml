@@ -68,7 +68,8 @@ members = [
     "labs/gpu",
     "benches",
     "docs",
-    "playground"
+    "playground",
+    "examples/transformer"
 ]
 
 # Package metadata for documentation and tooling

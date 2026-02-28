@@ -8,7 +8,6 @@ on:
 jobs:
   benchmark_dashboard:
     runs-on: ubuntu-latest
-    container: nvidia/cuda:11.8.0-devel-ubuntu22.04
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v3

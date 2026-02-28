@@ -15,8 +15,10 @@ jobs:
 
       - name: Build Aero Toolchain
         run: |
+          git clone https://github.com/RobVanProd/Aero.git /tmp/aero
+          cd /tmp/aero
           cargo build --release
-          export PATH="$PWD/target/release:$PATH"
+          echo "/tmp/aero/target/release" >> $GITHUB_PATH
 
       - name: Execute Aero Benchmark Suite
         run: |

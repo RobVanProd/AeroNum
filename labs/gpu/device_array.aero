@@ -1,0 +1,57 @@
+// ============================================================================
+// AERO AI: AeroNum GPU Acceleration Backend (v0.3.0 Blueprint)
+// ============================================================================
+// Defines the `DeviceArray` interface mapping memory from Host (CPU) to
+// Device (CUDA/OpenCL).
+
+// ----------------------------------------------------------------------------
+// 1. DEVICE ARRAY DEFINITION
+// ----------------------------------------------------------------------------
+
+/// Represents a multi-dimensional array residing on the GPU device memory.
+/// Due to v0.3.0 compiler limits on deep generic struct allocations, this
+/// operates as a conceptual blueprint interfacing with the FFI.
+struct DeviceArray {
+    device_ptr: u64, // Raw pointer to GPU device memory
+    shape_x: i32,
+    shape_y: i32,
+    size: i32,
+    is_allocated: bool,
+}
+
+// ----------------------------------------------------------------------------
+// 2. DEVICE MOVEMENT (ZERO-COPY CONSTRAINTS)
+// ----------------------------------------------------------------------------
+
+impl DeviceArray {
+    /// Simulates allocating memory on the GPU and transferring a Host Array
+    /// payload across the PCIe bus using zero-copy FFI when possible.
+    pub fn to_device(cpu_data: f32, x: i32, y: i32) -> Self {
+        // Blueprint:
+        // 1. cudaMalloc(&device_ptr, size * sizeof(float))
+        // 2. cudaMemcpy(device_ptr, cpu_data.as_ptr(), cudaMemcpyHostToDevice)
+        DeviceArray {
+            device_ptr: 1, // Simulated successful allocation address
+            shape_x: x,
+            shape_y: y,
+            size: x * y,
+            is_allocated: true,
+        }
+    }
+
+    /// Retrieve the Device payload back into Host memory.
+    pub fn to_host(&self) -> f32 {
+        // Blueprint:
+        // 1. cudaMemcpy(cpu_data.as_mut_ptr(), self.device_ptr, cudaMemcpyDeviceToHost)
+        0.0 // Simulated return
+    }
+    
+    /// Triggered natively by the Aero Ownership + Borrowing scope limits
+    pub fn drop(&mut self) {
+        if self.is_allocated {
+            // Blueprint:
+            // cudaFree(self.device_ptr);
+            self.is_allocated = false;
+        }
+    }
+}

@@ -1,0 +1,66 @@
+// ============================================================================
+// AERO AI: AeroNum GPU Acceleration Backend (v0.3.0 FFI & Dispatch)
+// ============================================================================
+// Simulates the linkage to `libcudart` and `libcublas` utilizing Aero FFI
+// capabilities.
+
+// ----------------------------------------------------------------------------
+// 1. CUDA FFI BINDINGS (BLUEPRINT)
+// ----------------------------------------------------------------------------
+// Assuming the compiler links `-lcudart` and `-lcublas`
+
+// extern "C" {
+//     fn cudaMalloc(devPtr: u64, size: usize) -> i32;
+//     fn cudaMemcpy(dst: u64, src: u64, count: usize, kind: i32) -> i32;
+//     fn cudaFree(devPtr: u64) -> i32;
+//     fn cublasCreate_v2(handle: u64) -> i32;
+//     
+//     /// Single-precision real matrix math: C = alpha * op(A) * op(B) + beta * C
+//     fn cublasSgemm_v2(handle: u64, transA: i32, transB: i32, 
+//                       m: i32, n: i32, k: i32, alpha: f32, 
+//                       A: u64, lda: i32, B: u64, ldb: i32, 
+//                       beta: f32, C: u64, ldc: i32) -> i32;
+// }
+
+// ----------------------------------------------------------------------------
+// 2. DISPATCH METHODOLOGY
+// ----------------------------------------------------------------------------
+// Given a Dense layer initialized via `static_model.aero` logic, this shows
+// how the context flags automatically route matrices through the cuBLAS bindings
+
+struct GpuContext {
+    is_cuda_available: bool,
+    cublas_handle: u64, // Initialized via cublasCreate_v2
+}
+
+struct Dense {
+    // Weight parameters
+    w_data: f32, w_grad: f32,
+    
+    // Dispatch properties
+    device: i32, // 0 = cpu, 1 = cuda
+    context: GpuContext,
+}
+
+impl Dense {
+    pub fn to(&mut self, target_device: i32) {
+        if target_device == 1 && self.context.is_cuda_available {
+            self.device = 1;
+            // self.w_data_device = DeviceArray::to_device(self.w_data, ...);
+        } else {
+            self.device = 0; // Fallback back to CPU BLAS bindings
+        }
+    }
+
+    pub fn forward(&self, x: f32) -> f32 {
+        if self.device == 1 {
+            // Blueprint:
+            // cublasSgemm_v2(self.context.cublas_handle, 0, 0, ...)
+            // Executes heavily parallelized MatMul directly within the RTX 4090 cores
+            x * self.w_data // Simulated GPU computation block
+        } else {
+            // Standard CPU path established in earlier phases
+            x * self.w_data
+        }
+    }
+}

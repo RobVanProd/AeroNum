@@ -46,5 +46,9 @@ See the Transformer example for a complete working model.
 - Native Profiler & Flame Graphs – Q3 2026
 - Central aero-pkg Registry (registry.aero) – Q3 2026
 
+## Runtime ROCm Status (March 2026)
+- `aeronum-core` now exports a `gpu` module with `Backend`, `GpuDevice`, and ROCm target metadata (`amdgcn-amd-amdhsa`, `gfx1101`).
+- `aeronn::LlamaModel` now includes `load_gguf`, `to("rocm" | "gpu" | "cuda")`, and a device offload path for model weights.
+- `NdArray::to_hip()` is now available as the runtime hook for HIP tensor offload (currently a no-op until HIP buffer allocation wiring lands).
 ## License
 MIT © RobVanProd and contributors.

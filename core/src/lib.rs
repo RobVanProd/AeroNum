@@ -2,6 +2,11 @@
 //!
 //! This is intentionally tiny and exists to make the v0 spec testable via `cargo test`.
 
+pub mod aeronn;
+pub mod gpu;
+
+pub use aeronn::LlamaModel;
+pub use gpu::{Backend, Device, GpuDevice};
 #[derive(Clone, Debug, PartialEq)]
 pub struct NdArray {
     data: Vec<f32>,
@@ -213,6 +218,10 @@ impl NdArray {
                 self.get(&mi).unwrap()
             })
             .collect()
+    }
+
+    pub fn to_hip(&mut self) {
+        // Runtime hook for HIP tensor offload; no-op in core until HIP buffers are wired.
     }
 
     fn from_data_shape(data: Vec<f32>, shape: &[usize]) -> Self {

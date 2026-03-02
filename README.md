@@ -49,6 +49,12 @@ See the Transformer example for a complete working model.
 ## Runtime ROCm Status (March 2026)
 - `aeronum-core` now exports a `gpu` module with `Backend`, `GpuDevice`, and ROCm target metadata (`amdgcn-amd-amdhsa`, `gfx1101`).
 - `aeronn::LlamaModel` now includes `load_gguf`, `to("rocm" | "gpu" | "cuda")`, and a device offload path for model weights.
-- `NdArray::to_hip()` is now available as the runtime hook for HIP tensor offload (currently a no-op until HIP buffer allocation wiring lands).
+- `NdArray::to_hip_buffer(&HipRuntime)` now performs real HIP allocation + host-to-device copy, with `to_hip()` kept as a compatibility shim.
+- HIP kernel benchmark runner added at `benchmarks/hip/run_hip_vector_add.py` for real ROCm kernel timing (`vector_add.hip.cpp`).
+
+Quick run:
+```powershell
+python benchmarks/hip/run_hip_vector_add.py --arch gfx1101 --size 16777216 --runs 20 --warmup 5
+```
 ## License
 MIT © RobVanProd and contributors.

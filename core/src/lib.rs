@@ -6,7 +6,7 @@ pub mod aeronn;
 pub mod gpu;
 
 pub use aeronn::LlamaModel;
-pub use gpu::{Backend, Device, GpuDevice};
+pub use gpu::{Backend, Device, GpuDevice, GpuError, HipBuffer, HipRuntime};
 #[derive(Clone, Debug, PartialEq)]
 pub struct NdArray {
     data: Vec<f32>,
@@ -220,8 +220,15 @@ impl NdArray {
             .collect()
     }
 
+    pub fn to_hip_buffer(&self, runtime: &HipRuntime) -> Result<HipBuffer, GpuError> {
+        let host = self.to_vec();
+        runtime.copy_to_device(&host)
+    }
+
     pub fn to_hip(&mut self) {
-        // Runtime hook for HIP tensor offload; no-op in core until HIP buffers are wired.
+        if let Ok(runtime) = HipRuntime::new(0) {
+            let _ = self.to_hip_buffer(&runtime);
+        }
     }
 
     fn from_data_shape(data: Vec<f32>, shape: &[usize]) -> Self {

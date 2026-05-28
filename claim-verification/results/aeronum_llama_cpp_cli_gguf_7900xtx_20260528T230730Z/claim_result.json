@@ -1,0 +1,27 @@
+{
+  "claim_id": "aeronum_llama_cpp_cli_gguf_reference_20260528",
+  "status": "verified_reference_only",
+  "benchmark": "AeroNum repo-owned llama.cpp CLI GGUF reference wrapper",
+  "command": "python3 benchmarks/gguf/run_llama_cpp_cli.py --llama-cli /home/rob/llama.cpp/build-gpu/bin/llama-cli --model /home/rob/models/mistralai_Mistral-Small-3.1-24B-Instruct-2503-Q4_K_M.gguf --prompt AeroNum GGUF inference smoke --predict 16 --gpu-layers 999 --main-gpu 0 --split-mode none --timeout 180 --output claim-verification/results/aeronum_llama_cpp_cli_gguf_7900xtx_20260528T230730Z/llama_cpp_cli_result.json",
+  "repo_commit_before_run": "c8902d8fc3ae88c0e49f65cebc30255bf0eaf8f4",
+  "exit_code": 0,
+  "model": {
+    "path": "/home/rob/models/mistralai_Mistral-Small-3.1-24B-Instruct-2503-Q4_K_M.gguf",
+    "sha256": "c5743c1bf39db0ae8a5ade5df0374b8e9e492754a199cfdad7ef393c1590f7c0"
+  },
+  "llama_cpp": {
+    "binary": "/home/rob/llama.cpp/build-gpu/bin/llama-cli",
+    "version": "7074 (22e1ce2f8)",
+    "hip_version": "6.2.41133-dd7f95766"
+  },
+  "result": {
+    "backend": "llama.cpp CLI",
+    "device": "ROCm0 Radeon RX 7900 XTX",
+    "predict": 16,
+    "offloaded_layers": 41,
+    "total_layers": 41,
+    "prompt_eval_tokens_per_second": 125.22,
+    "eval_tokens_per_second": 44.58
+  },
+  "claim_scope": "This verifies a repo-owned AeroNum wrapper around local llama.cpp CLI ROCm GGUF inference. It is a reference benchmark, not AeroNum-native GGUF tensor execution."
+}

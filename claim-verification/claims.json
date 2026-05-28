@@ -127,6 +127,20 @@
       ]
     },
     {
+      "id": "aeronum_llama_cpp_cli_gguf_reference_20260528",
+      "status": "verified_reference_only",
+      "claim": "benchmarks/gguf/run_llama_cpp_cli.py ran a real local llama.cpp CLI ROCm GGUF inference reference on the local Mistral GGUF file. The llama.cpp build reported version 7074 (22e1ce2f8) with HIP 6.2.41133-dd7f95766, offloaded 41/41 layers to ROCm0 Radeon RX 7900 XTX, and measured 125.22 prompt eval tokens/s plus 44.58 eval tokens/s for 16 predicted tokens. This is a llama.cpp reference benchmark through an AeroNum repo wrapper, not AeroNum-native GGUF tensor execution.",
+      "artifacts": [
+        "benchmarks/gguf/run_llama_cpp_cli.py",
+        "claim-verification/results/aeronum_llama_cpp_cli_gguf_7900xtx_20260528T230730Z/claim_result.json",
+        "claim-verification/results/aeronum_llama_cpp_cli_gguf_7900xtx_20260528T230730Z/llama_cpp_cli_result.json",
+        "claim-verification/results/aeronum_llama_cpp_cli_gguf_7900xtx_20260528T230730Z/run_llama_cpp_cli.stdout.log",
+        "claim-verification/results/aeronum_llama_cpp_cli_gguf_7900xtx_20260528T230730Z/run_llama_cpp_cli.stderr.log",
+        "claim-verification/results/aeronum_llama_cpp_cli_gguf_7900xtx_20260528T230730Z/command_config.txt",
+        "claim-verification/results/aeronum_llama_cpp_cli_gguf_7900xtx_20260528T230730Z/hardware_software_metadata.txt"
+      ]
+    },
+    {
       "id": "aeronum_aero_compiler_v1_matrix_examples_20260528",
       "status": "verified_current_limited",
       "claim": "After updating the vendored aero-compiler/aero binary from Aero compiler version 0.1.0 to 1.0.0, SHA-256 2bf72d1965f0d515428a570044da134cd382e91c9550ddd015ddc4a8b95a1b3e, repo-local ./aero-compiler/aero run executed matrix/arithmetic Aero examples that previously hit the old compiler's binary-expression failure: examples/aero/minimal_aeronum.aero reported exit code 60, labs/benchmarks/aero/real_matrix_operations.aero reported exit code 234, and tests/aero/test_matrix_operations.aero reported exit code 42. This does not verify a 4096x4096 AeroNum GPU matmul speedup.",
@@ -182,10 +196,11 @@
     {
       "id": "aeronum_gpt2_nccl_gguf_claims_20260528",
       "status": "blocked",
-      "claim": "AeroNum-vs-PyTorch GPT-2 training speedup, NCCL/MPI multi-GPU scaling, and GGUF token-inference throughput claims are not included because no current AeroNum artifact or rerun verified them. A PyTorch/Hugging Face GPT-2 reference passed, NCCL/DDP world size 1 passed, post-reboot NCCL attempts failed on the local Radeon RX 7900 XTX plus integrated AMD Radeon Graphics topology, a two-rank single-XTX attempt was rejected by RCCL as duplicate GPU usage, and the AeroNum GGUF result is only a header/load smoke with placeholder generation.",
+      "claim": "AeroNum-vs-PyTorch GPT-2 training speedup, NCCL/MPI multi-GPU scaling, and AeroNum-native GGUF token-inference throughput claims are not included because no current AeroNum artifact or rerun verified them. A PyTorch/Hugging Face GPT-2 reference passed, NCCL/DDP world size 1 passed, post-reboot NCCL attempts failed on the local Radeon RX 7900 XTX plus integrated AMD Radeon Graphics topology, a two-rank single-XTX attempt was rejected by RCCL as duplicate GPU usage, the AeroNum GGUF core result is only a header/load smoke with placeholder generation, and the GGUF token-inference result is a llama.cpp reference through an AeroNum repo wrapper.",
       "artifacts": [
         "claim-verification/results/aeronum_pytorch_gpt2_reference_7900xtx_20260528T224500Z/claim_result.json",
         "claim-verification/results/aeronum_core_gguf_header_smoke_7900xtx_20260528T230321Z/claim_result.json",
+        "claim-verification/results/aeronum_llama_cpp_cli_gguf_7900xtx_20260528T230730Z/claim_result.json",
         "claim-verification/results/aeronum_nccl_ddp_single_gpu_7900xtx_20260528T224500Z/claim_result.json",
         "claim-verification/results/aeronum_nccl_ddp_two_device_attempt_7900xtx_20260528T224500Z/distributed_compare.stdout.log",
         "claim-verification/results/aeronum_nccl_ddp_two_device_attempt_7900xtx_20260528T224500Z/distributed_compare.stderr.log",

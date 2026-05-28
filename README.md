@@ -83,6 +83,14 @@ Verified current results:
   header/load smoke result with placeholder generation, not real GGUF token
   inference throughput
   ([result JSON](claim-verification/results/aeronum_core_gguf_header_smoke_7900xtx_20260528T230321Z/claim_result.json)).
+- `benchmarks/gguf/run_llama_cpp_cli.py` ran a real local llama.cpp CLI ROCm
+  GGUF inference reference on the same Mistral GGUF file. The llama.cpp build
+  reported version 7074 (`22e1ce2f8`) with HIP 6.2.41133-dd7f95766, offloaded
+  41/41 layers to ROCm0 Radeon RX 7900 XTX, and measured 125.22 prompt eval
+  tokens/s plus 44.58 eval tokens/s for 16 predicted tokens. This is a
+  llama.cpp reference benchmark through an AeroNum repo wrapper, not
+  AeroNum-native GGUF tensor execution
+  ([result JSON](claim-verification/results/aeronum_llama_cpp_cli_gguf_7900xtx_20260528T230730Z/claim_result.json)).
 - After updating the vendored compiler from Aero `0.1.0` to `1.0.0`, the
   repo-local command `./aero-compiler/aero run` executed matrix/arithmetic Aero
   examples that previously hit the old compiler's binary-expression failure:
@@ -116,9 +124,10 @@ Blocked or omitted claims:
   as duplicate GPU usage. No compatible second discrete ROCm GPU was verified
   on this machine
   ([debug result JSON](claim-verification/results/aeronum_nccl_debug_20260528T225759Z/claim_result.json)).
-- GGUF token-inference throughput claims are omitted. The verified current
-  AeroNum result validates a local GGUF header and reaches placeholder
-  generation, but does not load GGUF tensors or run real token inference.
+- AeroNum-native GGUF token-inference throughput claims are omitted. The
+  verified current AeroNum core result validates a local GGUF header and reaches
+  placeholder generation, and the verified token-inference result is a
+  llama.cpp reference through an AeroNum repo wrapper.
 
 Historical benchmark CSVs remain in the repo, but README claims above only use
 fresh local reruns and captured artifacts.

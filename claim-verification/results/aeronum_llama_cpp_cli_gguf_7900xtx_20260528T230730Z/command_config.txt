@@ -1,0 +1,4 @@
+command: python3 benchmarks/gguf/run_llama_cpp_cli.py --llama-cli /home/rob/llama.cpp/build-gpu/bin/llama-cli --model /home/rob/models/mistralai_Mistral-Small-3.1-24B-Instruct-2503-Q4_K_M.gguf --prompt AeroNum GGUF inference smoke --predict 16 --gpu-layers 999 --main-gpu 0 --split-mode none --timeout 180 --output claim-verification/results/aeronum_llama_cpp_cli_gguf_7900xtx_20260528T230730Z/llama_cpp_cli_result.json
+repo: /home/rob/.openclaw.old/workspace/repos/AeroNum
+commit_before_run: c8902d8fc3ae88c0e49f65cebc30255bf0eaf8f4
+timestamp_utc: 2026-05-28T23:07:30Z

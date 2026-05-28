@@ -137,6 +137,28 @@ type HipMemcpyFn = unsafe extern "C" fn(
     kind: HipMemcpyKind,
 ) -> i32;
 type HipDeviceSynchronizeFn = unsafe extern "C" fn() -> i32;
+type HipBlasCreateFn = unsafe extern "C" fn(handle: *mut HipBlasHandle) -> i32;
+type HipBlasDestroyFn = unsafe extern "C" fn(handle: HipBlasHandle) -> i32;
+type HipBlasSgemmFn = unsafe extern "C" fn(
+    handle: HipBlasHandle,
+    trans_a: i32,
+    trans_b: i32,
+    m: i32,
+    n: i32,
+    k: i32,
+    alpha: *const f32,
+    a: *const f32,
+    lda: i32,
+    b: *const f32,
+    ldb: i32,
+    beta: *const f32,
+    c: *mut f32,
+    ldc: i32,
+) -> i32;
+
+type HipBlasHandle = *mut c_void;
+
+const HIPBLAS_OP_N: i32 = 111;
 
 type LibraryHandle = *mut c_void;
 
@@ -188,6 +210,14 @@ struct HipApi {
     hip_free: HipFreeFn,
     hip_memcpy: HipMemcpyFn,
     hip_device_synchronize: HipDeviceSynchronizeFn,
+}
+
+#[derive(Debug)]
+struct HipBlasApi {
+    module: LibraryHandle,
+    hipblas_create: HipBlasCreateFn,
+    hipblas_destroy: HipBlasDestroyFn,
+    hipblas_sgemm: HipBlasSgemmFn,
 }
 
 impl HipApi {
@@ -310,6 +340,120 @@ impl HipApi {
     }
 }
 
+impl HipBlasApi {
+    fn load() -> Result<Self, GpuError> {
+        if !(cfg!(target_os = "windows") || cfg!(target_os = "linux")) {
+            return Err(GpuError::UnsupportedPlatform);
+        }
+
+        let library_names: &[&str] = if cfg!(target_os = "windows") {
+            &["hipblas.dll"]
+        } else {
+            &["libhipblas.so", "libhipblas.so.2"]
+        };
+
+        let mut module = ptr::null_mut();
+        for library_name in library_names {
+            let name = CString::new(*library_name).expect("static cstring");
+            module = unsafe { LoadLibraryA(name.as_ptr()) };
+            if !module.is_null() {
+                break;
+            }
+        }
+        if module.is_null() {
+            return Err(GpuError::LibraryNotFound);
+        }
+
+        macro_rules! load_symbol {
+            ($symbol:literal, $ty:ty) => {{
+                let sym = CString::new($symbol).expect("static cstring");
+                let ptr = unsafe { GetProcAddress(module, sym.as_ptr()) };
+                if ptr.is_null() {
+                    unsafe {
+                        FreeLibrary(module);
+                    }
+                    return Err(GpuError::SymbolNotFound($symbol));
+                }
+                unsafe { std::mem::transmute::<*mut c_void, $ty>(ptr) }
+            }};
+        }
+
+        Ok(Self {
+            module,
+            hipblas_create: load_symbol!("hipblasCreate", HipBlasCreateFn),
+            hipblas_destroy: load_symbol!("hipblasDestroy", HipBlasDestroyFn),
+            hipblas_sgemm: load_symbol!("hipblasSgemm", HipBlasSgemmFn),
+        })
+    }
+
+    fn check(&self, code: i32, call: &'static str) -> Result<(), GpuError> {
+        if code == 0 {
+            Ok(())
+        } else {
+            Err(GpuError::HipCallFailed { call, code })
+        }
+    }
+
+    fn create_handle(&self) -> Result<HipBlasHandle, GpuError> {
+        let mut handle = ptr::null_mut();
+        let code = unsafe { (self.hipblas_create)(&mut handle as *mut HipBlasHandle) };
+        self.check(code, "hipblasCreate")?;
+        Ok(handle)
+    }
+
+    fn destroy_handle(&self, handle: HipBlasHandle) -> Result<(), GpuError> {
+        let code = unsafe { (self.hipblas_destroy)(handle) };
+        self.check(code, "hipblasDestroy")
+    }
+
+    #[allow(clippy::too_many_arguments)]
+    fn sgemm(
+        &self,
+        handle: HipBlasHandle,
+        m: i32,
+        n: i32,
+        k: i32,
+        alpha: &f32,
+        a: *const f32,
+        lda: i32,
+        b: *const f32,
+        ldb: i32,
+        beta: &f32,
+        c: *mut f32,
+        ldc: i32,
+    ) -> Result<(), GpuError> {
+        let code = unsafe {
+            (self.hipblas_sgemm)(
+                handle,
+                HIPBLAS_OP_N,
+                HIPBLAS_OP_N,
+                m,
+                n,
+                k,
+                alpha as *const f32,
+                a,
+                lda,
+                b,
+                ldb,
+                beta as *const f32,
+                c,
+                ldc,
+            )
+        };
+        self.check(code, "hipblasSgemm")
+    }
+}
+
+impl Drop for HipBlasApi {
+    fn drop(&mut self) {
+        if !self.module.is_null() {
+            unsafe {
+                let _ = FreeLibrary(self.module);
+            }
+        }
+    }
+}
+
 impl Drop for HipApi {
     fn drop(&mut self) {
         if !self.module.is_null() {
@@ -324,6 +468,12 @@ impl Drop for HipApi {
 pub struct HipRuntime {
     api: Arc<HipApi>,
     device_id: i32,
+}
+
+#[derive(Debug)]
+pub struct HipBlas {
+    api: Arc<HipBlasApi>,
+    handle: HipBlasHandle,
 }
 
 impl HipRuntime {
@@ -397,6 +547,50 @@ impl HipRuntime {
     }
 }
 
+impl HipBlas {
+    pub fn new(_runtime: &HipRuntime) -> Result<Self, GpuError> {
+        let api = Arc::new(HipBlasApi::load()?);
+        let handle = api.create_handle()?;
+        Ok(Self { api, handle })
+    }
+
+    pub fn sgemm(
+        &self,
+        m: i32,
+        n: i32,
+        k: i32,
+        a: &HipBuffer,
+        b: &HipBuffer,
+        c: &HipBuffer,
+    ) -> Result<(), GpuError> {
+        let alpha = 1.0f32;
+        let beta = 0.0f32;
+        self.api.sgemm(
+            self.handle,
+            m,
+            n,
+            k,
+            &alpha,
+            a.as_mut_ptr() as *const f32,
+            m,
+            b.as_mut_ptr() as *const f32,
+            k,
+            &beta,
+            c.as_mut_ptr() as *mut f32,
+            m,
+        )
+    }
+}
+
+impl Drop for HipBlas {
+    fn drop(&mut self) {
+        if !self.handle.is_null() {
+            let _ = self.api.destroy_handle(self.handle);
+            self.handle = ptr::null_mut();
+        }
+    }
+}
+
 #[derive(Debug)]
 pub struct HipBuffer {
     api: Arc<HipApi>,
@@ -451,15 +645,49 @@ mod tests {
         };
 
         let input = [1.0f32, 2.5, 4.0, 8.0];
-        let buffer = runtime.copy_to_device(&input).expect("copy host to HIP device");
-        runtime.synchronize().expect("synchronize after host to device copy");
+        let buffer = runtime
+            .copy_to_device(&input)
+            .expect("copy host to HIP device");
+        runtime
+            .synchronize()
+            .expect("synchronize after host to device copy");
 
         let mut output = [0.0f32; 4];
         runtime
             .copy_to_host(&buffer, &mut output)
             .expect("copy HIP device to host");
-        runtime.synchronize().expect("synchronize after device to host copy");
+        runtime
+            .synchronize()
+            .expect("synchronize after device to host copy");
 
         assert_eq!(output, input);
+    }
+
+    #[test]
+    fn hipblas_sgemm_2x2_when_available() {
+        let Ok(runtime) = HipRuntime::new(0) else {
+            return;
+        };
+        let Ok(blas) = HipBlas::new(&runtime) else {
+            return;
+        };
+
+        let a = [1.0f32, 3.0, 2.0, 4.0];
+        let b = [5.0f32, 7.0, 6.0, 8.0];
+        let c = [0.0f32; 4];
+        let d_a = runtime.copy_to_device(&a).expect("copy A to device");
+        let d_b = runtime.copy_to_device(&b).expect("copy B to device");
+        let d_c = runtime.copy_to_device(&c).expect("copy C to device");
+
+        blas.sgemm(2, 2, 2, &d_a, &d_b, &d_c)
+            .expect("hipBLAS SGEMM");
+        runtime.synchronize().expect("synchronize after SGEMM");
+
+        let mut output = [0.0f32; 4];
+        runtime
+            .copy_to_host(&d_c, &mut output)
+            .expect("copy SGEMM output to host");
+
+        assert_eq!(output, [19.0, 43.0, 22.0, 50.0]);
     }
 }

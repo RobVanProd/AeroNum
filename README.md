@@ -48,6 +48,13 @@ Verified current results:
   the filtered GPU test set passed 3/3 tests, and the filtered core matmul test
   set passed 5/5 tests. The full `aeronum-core` suite passed 31/31 tests
   ([result JSON](claim-verification/results/aeronum_core_linux_hip_runtime_7900xtx_20260528T231000Z/claim_result.json)).
+- `aeronum-core` now includes a minimal hipBLAS SGEMM bridge and release example
+  benchmark. The repo-owned command
+  `cargo run --release -p aeronum-core --example hip_sgemm_4096 -- --n 4096 --runs 10 --warmup 3`
+  passed on the Radeon RX 7900 XTX with median 4.950619 ms and 27.761973 TFLOP/s.
+  This verifies an AeroNum core HIP/hipBLAS 4096x4096 matmul path, not a
+  speedup versus another framework
+  ([result JSON](claim-verification/results/aeronum_core_hipblas_sgemm_4096_7900xtx_20260528T232000Z/claim_result.json)).
 - HIP/hipBLAS SGEMM passed on the Radeon RX 7900 XTX for 4096x4096 float32
   matrices with 10 measured runs, median 4.953900 ms, and 27.743587 TFLOP/s.
   This is a ROCm library reference benchmark, not an AeroNum-language matmul
@@ -88,10 +95,9 @@ Blocked or omitted claims:
   GPT-2 training result was produced. The current
   `labs/compare/transformer_compare.py` result is a PyTorch/Hugging Face
   reference only.
-- GPU 4096x4096 AeroNum-language matmul speedup is omitted.
-  `benches/core_ops.aero` contains simulated timings. The current
-  `benches/matmul.aero` is a 2x2 integer smoke benchmark that proves the path
-  executes, not a 4096x4096 GPU benchmark.
+- GPU 4096x4096 speedup versus another framework is omitted. The verified
+  current result is an AeroNum core HIP/hipBLAS 4096x4096 SGEMM measurement
+  without a same-run baseline comparison.
 - NCCL/MPI multi-GPU scaling is omitted. A real NCCL/DDP single-GPU smoke test
   passed, but the local two-device attempt using the Radeon RX 7900 XTX plus
   integrated AMD Radeon Graphics failed with RCCL `hipIpcGetMemHandle failed:

@@ -1,0 +1,23 @@
+{
+  "claim_id": "aeronum_core_hipblas_sgemm_4096_20260528",
+  "benchmark": "aeronum-core hipBLAS SGEMM 4096",
+  "command": "cargo run --release -p aeronum-core --example hip_sgemm_4096 -- --n 4096 --runs 10 --warmup 3",
+  "test_exit_code": 0,
+  "full_core_test_exit_code": 0,
+  "run_exit_code": 0,
+  "test_passed": true,
+  "full_core_tests_passed": true,
+  "result": {
+    "backend": "aeronum_core_hipblas",
+    "kernel": "sgemm",
+    "n": 4096,
+    "runs": 10,
+    "warmup": 3,
+    "mean_ms": 4.915113,
+    "median_ms": 4.950619,
+    "min_ms": 4.676253,
+    "max_ms": 5.056508,
+    "median_tflops": 27.761973,
+    "validation": "sampled_all_ones_expected_n"
+  }
+}

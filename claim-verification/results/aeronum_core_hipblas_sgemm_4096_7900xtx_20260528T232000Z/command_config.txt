@@ -1,0 +1,6 @@
+command: cargo run --release -p aeronum-core --example hip_sgemm_4096 -- --n 4096 --runs 10 --warmup 3
+test_command: cargo test -p aeronum-core hipblas -- --nocapture
+full_test_command: cargo test -p aeronum-core
+repo: /home/rob/.openclaw.old/workspace/repos/AeroNum
+commit_before_run: 247c80e7b1e9d373609272f94589d6842193021d
+timestamp_utc: 2026-05-28T22:53:27Z

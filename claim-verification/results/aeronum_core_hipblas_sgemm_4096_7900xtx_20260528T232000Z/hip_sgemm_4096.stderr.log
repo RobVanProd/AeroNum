@@ -1,0 +1,2 @@
+    Finished `release` profile [optimized] target(s) in 0.00s
+     Running `target/release/examples/hip_sgemm_4096 --n 4096 --runs 10 --warmup 3`

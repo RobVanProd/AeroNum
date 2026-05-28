@@ -1,0 +1,3 @@
+command: python3 labs/compare/transformer_compare.py --output claim-verification/results/aeronum_pytorch_gpt2_reference_7900xtx_20260528T224500Z/claim_result.json
+repo: /home/rob/.openclaw.old/workspace/repos/AeroNum
+commit_before_run: f0d3a7f5a19ead1b4c5508dcfd82d8808afd1d65

@@ -42,27 +42,40 @@ Verified current results:
   This is a ROCm library reference benchmark, not an AeroNum-language matmul
   speedup claim
   ([result JSON](claim-verification/results/aeronum_hip_sgemm_4096_7900xtx_20260528T222200Z/claim_result.json)).
+- `labs/compare/transformer_compare.py` now reports a PyTorch/Hugging Face
+  GPT-2 training reference without AeroNum speedup claims. The 6-layer,
+  6-head, 384-dim run completed on the Radeon RX 7900 XTX with 24,576 total
+  tokens in 0.7213051319 s, or 34,071.572366 tokens/s
+  ([result JSON](claim-verification/results/aeronum_pytorch_gpt2_reference_7900xtx_20260528T224500Z/claim_result.json)).
 - `labs/compare/aeronn_gpu_compare.py` measured a PyTorch reference 4096x4096
   matmul on the same machine: CPU 0.1620 s, GPU 0.0067 s, relative speedup
   24.28x. This is a PyTorch CPU-vs-GPU reference only, not an AeroNum matmul
   result
   ([raw log](claim-verification/results/aeronum_pytorch_matmul_reference_7900xtx_20260528T191500Z/aeronn_gpu_compare.stdout.log)).
+- `labs/compare/distributed_compare.py` now runs a real PyTorch DDP smoke
+  benchmark instead of a simulated message. NCCL world size 1 passed on GPU 0
+  with 3 steps, mean rank time 0.3393106461 s, and 565.853156 tokens/s
+  ([result JSON](claim-verification/results/aeronum_nccl_ddp_single_gpu_7900xtx_20260528T224500Z/claim_result.json)).
 - `benchmarks/run_benchmarks.sh` completed on the rebased commit, but redirects
   command output to `/dev/null` and does not emit fresh raw timings
   ([raw log](claim-verification/results/aeronum_runner_b727dfb_7900xtx_20260528T192000Z/run_benchmarks.stdout.log)).
 
 Blocked or omitted claims:
 
-- GPT-2 training vs PyTorch is omitted because no current Aero/AeroNum GPT-2
-  training result was produced. The available `labs/compare/transformer_compare.py`
-  is a PyTorch/Hugging Face baseline script, not an AeroNum-vs-PyTorch result.
+- GPT-2 training vs PyTorch is omitted because no current AeroNum-vs-PyTorch
+  GPT-2 training result was produced. The current
+  `labs/compare/transformer_compare.py` result is a PyTorch/Hugging Face
+  reference only.
 - GPU 4096x4096 AeroNum-language matmul speedup is omitted.
   `benches/core_ops.aero` contains simulated timings, and
   `benches/matmul.aero` did not run with the bundled Aero compiler; the
   compiler reported lexer/parser errors and `llc` rejected the generated LLVM IR
   ([failed attempt](claim-verification/results/aeronum_matmul_b727dfb_7900xtx_20260528T192000Z/)).
-- NCCL/MPI multi-GPU scaling is omitted because the current repo contains source
-  and comparison scaffolding, but no fresh successful multi-GPU scaling run.
+- NCCL/MPI multi-GPU scaling is omitted. A real NCCL/DDP single-GPU smoke test
+  passed, but the local two-device attempt using the Radeon RX 7900 XTX plus
+  integrated AMD Radeon Graphics failed with RCCL `hipIpcGetMemHandle failed:
+  invalid argument`
+  ([failed attempt](claim-verification/results/aeronum_nccl_ddp_two_device_attempt_7900xtx_20260528T224500Z/)).
 - GGUF/inference benchmark claims are omitted because no current raw GGUF
   inference benchmark result was found or rerun.
 

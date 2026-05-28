@@ -1,0 +1,9 @@
+============================================================================
+PyTorch/Hugging Face GPT-2 Training Reference
+============================================================================
+Initializing GPT-2 layout (6 layers, 6 heads, 384 dim)...
+Hardware Context Check: [CUDA Layout]
+Deploying Execution Constraints...
+PyTorch Epoch Execution Block: 0.72 seconds
+PyTorch Base Throughput limits: 34071.57 Tokens / Sec
+{"batch_size": 8, "benchmark": "pytorch_hf_gpt2_training_reference", "cuda_available": true, "device": "cuda", "embedding_dim": 384, "epochs": 6, "heads": 6, "last_loss": 9.755632400512695, "layers": 6, "positions": 512, "seq_len": 512, "tokens_per_second": 34071.57236611816, "torch": "2.5.1+rocm6.2", "torch_hip": "6.2.41133-dd7f95766", "total_time_seconds": 0.7213051319122314, "total_tokens": 24576, "vocab_size": 50257}

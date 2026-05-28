@@ -1,0 +1,7 @@
+/home/rob/.local/lib/python3.10/site-packages/transformers/pytorch_utils.py:121: UserWarning: Attempting to use hipBLASLt on an unsupported architecture! Overriding blas backend to hipblas (Triggered internally at ../aten/src/ATen/Context.cpp:296.)
+  x = torch.addmm(self.bias, x.view(-1, x.size(-1)), self.weight)
+/home/rob/.local/lib/python3.10/site-packages/transformers/integrations/sdpa_attention.py:92: UserWarning: Flash attention support on Navi31 GPU is still experimental. Enable it with TORCH_ROCM_AOTRITON_ENABLE_EXPERIMENTAL=1. (Triggered internally at ../aten/src/ATen/native/transformers/hip/sdp_utils.cpp:225.)
+  attn_output = torch.nn.functional.scaled_dot_product_attention(
+/home/rob/.local/lib/python3.10/site-packages/transformers/integrations/sdpa_attention.py:92: UserWarning: Memory Efficient attention on Navi31 GPU is still experimental. Enable it with TORCH_ROCM_AOTRITON_ENABLE_EXPERIMENTAL=1. (Triggered internally at ../aten/src/ATen/native/transformers/hip/sdp_utils.cpp:269.)
+  attn_output = torch.nn.functional.scaled_dot_product_attention(
+`loss_type=None` was set in the config but it is unrecognized. Using the default loss: `ForCausalLMLoss`.

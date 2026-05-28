@@ -1,0 +1,5 @@
+============================================================================
+PyTorch Reference: DistributedDataParallel Smoke Benchmark
+============================================================================
+Executing backend=nccl world_size=1 device_ids=[0]
+{"backend": "nccl", "batch_size": 2, "benchmark": "pytorch_ddp_smoke", "d_model": 64, "device_ids": [0], "layers": 1, "mean_last_loss": 7.653871536254883, "mean_rank_seconds": 0.3393106460571289, "nhead": 4, "seq_len": 32, "steps": 3, "tokens_per_second": 565.8531561891324, "torch": "2.5.1+rocm6.2", "torch_hip": "6.2.41133-dd7f95766", "vocab_size": 2048, "world_size": 1}

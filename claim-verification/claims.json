@@ -30,6 +30,18 @@
       ]
     },
     {
+      "id": "aeronum_pytorch_gpt2_reference_20260528",
+      "status": "verified_reference_only",
+      "claim": "labs/compare/transformer_compare.py measured a PyTorch/Hugging Face GPT-2 training reference on Radeon RX 7900 XTX: 6 layers, 6 heads, 384 embedding dim, 24,576 total tokens, 0.7213051319 s, and 34,071.572366 tokens/s. This is not an AeroNum-vs-PyTorch speedup result.",
+      "artifacts": [
+        "claim-verification/results/aeronum_pytorch_gpt2_reference_7900xtx_20260528T224500Z/claim_result.json",
+        "claim-verification/results/aeronum_pytorch_gpt2_reference_7900xtx_20260528T224500Z/transformer_compare.stdout.log",
+        "claim-verification/results/aeronum_pytorch_gpt2_reference_7900xtx_20260528T224500Z/transformer_compare.stderr.log",
+        "claim-verification/results/aeronum_pytorch_gpt2_reference_7900xtx_20260528T224500Z/command_config.txt",
+        "claim-verification/results/aeronum_pytorch_gpt2_reference_7900xtx_20260528T224500Z/hardware_software_metadata.txt"
+      ]
+    },
+    {
       "id": "aeronum_hip_sgemm_4096_20260528",
       "status": "verified_reference_only",
       "claim": "HIP/hipBLAS SGEMM passed on Radeon RX 7900 XTX for 4096x4096 float32 matrices with 10 measured runs, median 4.953900 ms, and 27.743587 TFLOP/s. This is a ROCm library reference benchmark, not an AeroNum-language matmul speedup claim.",
@@ -49,6 +61,18 @@
         "claim-verification/results/aeronum_runner_b727dfb_7900xtx_20260528T192000Z/run_benchmarks.stdout.log",
         "claim-verification/results/aeronum_runner_b727dfb_7900xtx_20260528T192000Z/run_benchmarks.stderr.log",
         "claim-verification/results/aeronum_runner_b727dfb_7900xtx_20260528T192000Z/hardware_software_metadata.txt"
+      ]
+    },
+    {
+      "id": "aeronum_nccl_ddp_single_gpu_smoke_20260528",
+      "status": "verified_current_limited",
+      "claim": "labs/compare/distributed_compare.py ran a real PyTorch DDP smoke benchmark with NCCL world size 1 on GPU 0: 3 steps, mean rank time 0.3393106461 s, and 565.853156 tokens/s. This verifies NCCL initialization and DDP on one ROCm-visible GPU, not multi-GPU scaling.",
+      "artifacts": [
+        "claim-verification/results/aeronum_nccl_ddp_single_gpu_7900xtx_20260528T224500Z/claim_result.json",
+        "claim-verification/results/aeronum_nccl_ddp_single_gpu_7900xtx_20260528T224500Z/distributed_compare.stdout.log",
+        "claim-verification/results/aeronum_nccl_ddp_single_gpu_7900xtx_20260528T224500Z/distributed_compare.stderr.log",
+        "claim-verification/results/aeronum_nccl_ddp_single_gpu_7900xtx_20260528T224500Z/command_config.txt",
+        "claim-verification/results/aeronum_nccl_ddp_single_gpu_7900xtx_20260528T224500Z/hardware_software_metadata.txt"
       ]
     },
     {
@@ -90,9 +114,13 @@
     {
       "id": "aeronum_gpt2_nccl_gguf_claims_20260528",
       "status": "blocked",
-      "claim": "GPT-2 training versus PyTorch, NCCL/MPI multi-GPU scaling, and GGUF inference claims are not included because no current AeroNum artifact or rerun verified them.",
+      "claim": "AeroNum-vs-PyTorch GPT-2 training speedup, NCCL/MPI multi-GPU scaling, and GGUF inference claims are not included because no current AeroNum artifact or rerun verified them. A PyTorch/Hugging Face GPT-2 reference passed, NCCL/DDP world size 1 passed, and the local two-device NCCL attempt failed between the 7900 XTX and integrated AMD Radeon Graphics with RCCL hipIpcGetMemHandle invalid argument.",
       "artifacts": [
-        "claim-verification/results/aeronum_hip_vector_add_7900xtx_20260528T191500Z/hardware_software_metadata.txt"
+        "claim-verification/results/aeronum_pytorch_gpt2_reference_7900xtx_20260528T224500Z/claim_result.json",
+        "claim-verification/results/aeronum_nccl_ddp_single_gpu_7900xtx_20260528T224500Z/claim_result.json",
+        "claim-verification/results/aeronum_nccl_ddp_two_device_attempt_7900xtx_20260528T224500Z/distributed_compare.stdout.log",
+        "claim-verification/results/aeronum_nccl_ddp_two_device_attempt_7900xtx_20260528T224500Z/distributed_compare.stderr.log",
+        "claim-verification/results/aeronum_nccl_ddp_two_device_attempt_7900xtx_20260528T224500Z/hardware_software_metadata.txt"
       ]
     }
   ]

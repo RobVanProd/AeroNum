@@ -1,0 +1,19 @@
+{
+  "benchmark": "pytorch_hf_gpt2_training_reference",
+  "device": "cuda",
+  "torch": "2.5.1+rocm6.2",
+  "torch_hip": "6.2.41133-dd7f95766",
+  "cuda_available": true,
+  "layers": 6,
+  "heads": 6,
+  "embedding_dim": 384,
+  "positions": 512,
+  "vocab_size": 50257,
+  "batch_size": 8,
+  "seq_len": 512,
+  "epochs": 6,
+  "total_tokens": 24576,
+  "total_time_seconds": 0.7213051319122314,
+  "tokens_per_second": 34071.57236611816,
+  "last_loss": 9.755632400512695
+}

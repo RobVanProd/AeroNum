@@ -1,0 +1,3 @@
+command: NCCL_DEBUG=INFO timeout 120s python3 labs/compare/distributed_compare.py --backend nccl --world-size 2 --device-ids 0,1 --master-port 12357 --steps 1 --batch-size 1 --seq-len 16 --vocab-size 1024 --d-model 32 --layers 1 --nhead 4 --output claim-verification/results/aeronum_nccl_ddp_two_device_attempt_7900xtx_20260528T224500Z/claim_result.json
+repo: /home/rob/.openclaw.old/workspace/repos/AeroNum
+commit_before_run: f0d3a7f5a19ead1b4c5508dcfd82d8808afd1d65

@@ -98,13 +98,14 @@ Verified current results:
   benchmark instead of a simulated message. NCCL world size 1 passed on GPU 0
   with 3 steps, mean rank time 0.3393106461 s, and 565.853156 tokens/s
   ([result JSON](claim-verification/results/aeronum_nccl_ddp_single_gpu_7900xtx_20260528T224500Z/claim_result.json)).
-- `labs/compare/nccl_topology_preflight.py` now gates local multi-device NCCL
-  runs before launching DDP. On this machine, the requested two-device topology
-  is blocked because device 1 is integrated AMD Radeon Graphics, selected
-  devices span ROCm architectures 11.0 and 10.3, and the kernel command line
-  does not include `iommu=pt`. A fresh NCCL world-size-1 DDP smoke still passed
-  on device 0 with 562.417411 tokens/s
-  ([result JSON](claim-verification/results/aeronum_nccl_preflight_7900xtx_20260528T231927Z/claim_result.json)).
+- `labs/compare/distributed_compare.py` now runs an integrated NCCL topology
+  guard before spawning multi-rank DDP. On this machine, the requested
+  two-device topology is blocked before launch because device 1 is integrated
+  AMD Radeon Graphics, selected devices span ROCm architectures 11.0 and 10.3,
+  and the kernel command line does not include `iommu=pt`. The same script
+  still passed an NCCL world-size-1 DDP smoke on device 0 with 191.244289
+  tokens/s for the one-step smoke
+  ([result JSON](claim-verification/results/aeronum_distributed_compare_guard_7900xtx_20260528T233403Z/claim_result.json)).
 - `aeronum-core` now parses GGUF metadata and tensor directory records before
   constructing a `LlamaModel`. The repo-owned command
   `cargo run -p aeronum-core --example gguf_header_smoke -- --model /home/rob/models/mistralai_Mistral-Small-3.1-24B-Instruct-2503-Q4_K_M.gguf --device rocm --max-tokens 16 --prompt "AeroNum GGUF directory smoke prompt"`
@@ -155,11 +156,12 @@ Blocked or omitted claims:
   heterogeneous run failed with RCCL `hipIpcGetMemHandle failed: invalid argument`.
   A `NCCL_P2P_DISABLE=1 NCCL_SHM_DISABLE=1` attempt failed with rank 1
   `invalid device function`. A two-rank single-XTX attempt was rejected by RCCL
-  as duplicate GPU usage. The current preflight also blocks the requested
-  two-device run because device 1 is integrated, the selected devices span ROCm
-  architectures 11.0 and 10.3, and the kernel command line lacks `iommu=pt`.
-  No compatible second discrete ROCm GPU was verified on this machine
-  ([debug result JSON](claim-verification/results/aeronum_nccl_debug_20260528T225759Z/claim_result.json)).
+  as duplicate GPU usage. The current `distributed_compare.py` guard now blocks
+  the requested two-device run before DDP launch because device 1 is
+  integrated, the selected devices span ROCm architectures 11.0 and 10.3, and
+  the kernel command line lacks `iommu=pt`. No compatible second discrete ROCm
+  GPU was verified on this machine
+  ([guard result JSON](claim-verification/results/aeronum_distributed_compare_guard_7900xtx_20260528T233403Z/claim_result.json)).
 - AeroNum-native GGUF token-inference throughput claims are omitted. The
   verified current AeroNum core result parses local GGUF metadata and tensor
   directory records and reaches placeholder generation, and the verified

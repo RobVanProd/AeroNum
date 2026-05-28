@@ -1,0 +1,98 @@
+{
+  "claim_id": "aeronum_distributed_compare_topology_guard_20260528",
+  "status": "verified_current_blocked_topology",
+  "claim": "labs/compare/distributed_compare.py now runs an integrated NCCL topology guard before spawning multi-rank DDP. On the local requested devices 0,1 the guard returned exit code 1, did not launch DDP, and reported blockers: requested NCCL ranks include a non-discrete/integrated GPU; requested NCCL ranks span different ROCm GPU architectures; kernel command line does not include iommu=pt. The same script still passed NCCL world size 1 on device 0 with exit code 0 and 191.244289 tokens/s for the one-step smoke. This is not a multi-GPU scaling result.",
+  "artifacts": [
+    "labs/compare/distributed_compare.py",
+    "claim-verification/results/aeronum_distributed_compare_guard_7900xtx_20260528T233403Z/claim_result.json",
+    "claim-verification/results/aeronum_distributed_compare_guard_7900xtx_20260528T233403Z/ddp_two_device_guard_result.json",
+    "claim-verification/results/aeronum_distributed_compare_guard_7900xtx_20260528T233403Z/ddp_two_device_guard.stdout.log",
+    "claim-verification/results/aeronum_distributed_compare_guard_7900xtx_20260528T233403Z/ddp_two_device_guard.stderr.log",
+    "claim-verification/results/aeronum_distributed_compare_guard_7900xtx_20260528T233403Z/ddp_two_device_guard.exit_code.txt",
+    "claim-verification/results/aeronum_distributed_compare_guard_7900xtx_20260528T233403Z/ddp_single_gpu_result.json",
+    "claim-verification/results/aeronum_distributed_compare_guard_7900xtx_20260528T233403Z/ddp_single_gpu.stdout.log",
+    "claim-verification/results/aeronum_distributed_compare_guard_7900xtx_20260528T233403Z/ddp_single_gpu.stderr.log",
+    "claim-verification/results/aeronum_distributed_compare_guard_7900xtx_20260528T233403Z/ddp_single_gpu.exit_code.txt",
+    "claim-verification/results/aeronum_distributed_compare_guard_7900xtx_20260528T233403Z/command_config.txt",
+    "claim-verification/results/aeronum_distributed_compare_guard_7900xtx_20260528T233403Z/hardware_software_metadata.txt"
+  ],
+  "two_device_guard": {
+    "benchmark": "pytorch_ddp_smoke",
+    "status": "blocked_by_topology_preflight",
+    "launched_ddp": false,
+    "preflight": {
+      "benchmark": "pytorch_ddp_smoke_topology_preflight",
+      "backend": "nccl",
+      "world_size": 2,
+      "requested_device_ids": [
+        0,
+        1
+      ],
+      "selected_device_ids": [
+        0,
+        1
+      ],
+      "visible_devices": [
+        {
+          "id": 0,
+          "name": "Radeon RX 7900 XTX",
+          "class": "discrete",
+          "gcn_arch": "11.0",
+          "total_memory_bytes": 25753026560
+        },
+        {
+          "id": 1,
+          "name": "AMD Radeon Graphics",
+          "class": "integrated",
+          "gcn_arch": "10.3",
+          "total_memory_bytes": 66282786816
+        }
+      ],
+      "selected_devices": [
+        {
+          "id": 0,
+          "name": "Radeon RX 7900 XTX",
+          "class": "discrete",
+          "gcn_arch": "11.0",
+          "total_memory_bytes": 25753026560
+        },
+        {
+          "id": 1,
+          "name": "AMD Radeon Graphics",
+          "class": "integrated",
+          "gcn_arch": "10.3",
+          "total_memory_bytes": 66282786816
+        }
+      ],
+      "kernel_cmdline": "BOOT_IMAGE=/boot/vmlinuz-6.8.0-111-generic root=UUID=be58515d-3329-49db-b130-a9a9ab83c43c ro quiet splash vt.handoff=7",
+      "compatible_for_requested_nccl": false,
+      "blocking_reasons": [
+        "requested NCCL ranks include a non-discrete/integrated GPU",
+        "requested NCCL ranks span different ROCm GPU architectures",
+        "kernel command line does not include iommu=pt"
+      ],
+      "torch": "2.5.1+rocm6.2",
+      "torch_hip": "6.2.41133-dd7f95766"
+    }
+  },
+  "single_gpu": {
+    "benchmark": "pytorch_ddp_smoke",
+    "backend": "nccl",
+    "world_size": 1,
+    "device_ids": [
+      0
+    ],
+    "steps": 1,
+    "batch_size": 2,
+    "seq_len": 32,
+    "vocab_size": 4096,
+    "d_model": 128,
+    "layers": 1,
+    "nhead": 4,
+    "mean_rank_seconds": 0.33465051651000977,
+    "mean_last_loss": 8.473597526550293,
+    "tokens_per_second": 191.2442887207846,
+    "torch": "2.5.1+rocm6.2",
+    "torch_hip": "6.2.41133-dd7f95766"
+  }
+}

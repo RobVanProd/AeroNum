@@ -164,19 +164,23 @@
       ]
     },
     {
-      "id": "aeronum_nccl_topology_preflight_20260528",
+      "id": "aeronum_distributed_compare_topology_guard_20260528",
       "status": "verified_current_blocked_topology",
-      "claim": "labs/compare/nccl_topology_preflight.py gates local multi-device NCCL runs before launching DDP. On this machine, the requested two-device topology is blocked because device 1 is integrated AMD Radeon Graphics, selected devices span ROCm architectures 11.0 and 10.3, and the kernel command line does not include iommu=pt. A fresh NCCL world-size-1 DDP smoke still passed on device 0 with 562.417411 tokens/s. This is not a multi-GPU scaling result.",
+      "claim": "labs/compare/distributed_compare.py now runs an integrated NCCL topology guard before spawning multi-rank DDP. On the local requested devices 0,1 the guard returned exit code 1, did not launch DDP, and reported blockers: requested NCCL ranks include a non-discrete/integrated GPU; requested NCCL ranks span different ROCm GPU architectures; kernel command line does not include iommu=pt. The same script still passed NCCL world size 1 on device 0 with exit code 0 and 191.244289 tokens/s for the one-step smoke. This is not a multi-GPU scaling result.",
       "artifacts": [
+        "labs/compare/distributed_compare.py",
         "labs/compare/nccl_topology_preflight.py",
-        "claim-verification/results/aeronum_nccl_preflight_7900xtx_20260528T231927Z/claim_result.json",
-        "claim-verification/results/aeronum_nccl_preflight_7900xtx_20260528T231927Z/nccl_preflight_result.json",
-        "claim-verification/results/aeronum_nccl_preflight_7900xtx_20260528T231927Z/nccl_preflight.stdout.log",
-        "claim-verification/results/aeronum_nccl_preflight_7900xtx_20260528T231927Z/nccl_preflight.stderr.log",
-        "claim-verification/results/aeronum_nccl_preflight_7900xtx_20260528T231927Z/nccl_single_gpu_result.json",
-        "claim-verification/results/aeronum_nccl_preflight_7900xtx_20260528T231927Z/nccl_single_gpu.stdout.log",
-        "claim-verification/results/aeronum_nccl_preflight_7900xtx_20260528T231927Z/nccl_single_gpu.stderr.log",
-        "claim-verification/results/aeronum_nccl_preflight_7900xtx_20260528T231927Z/command_config.txt"
+        "claim-verification/results/aeronum_distributed_compare_guard_7900xtx_20260528T233403Z/claim_result.json",
+        "claim-verification/results/aeronum_distributed_compare_guard_7900xtx_20260528T233403Z/ddp_two_device_guard_result.json",
+        "claim-verification/results/aeronum_distributed_compare_guard_7900xtx_20260528T233403Z/ddp_two_device_guard.stdout.log",
+        "claim-verification/results/aeronum_distributed_compare_guard_7900xtx_20260528T233403Z/ddp_two_device_guard.stderr.log",
+        "claim-verification/results/aeronum_distributed_compare_guard_7900xtx_20260528T233403Z/ddp_two_device_guard.exit_code.txt",
+        "claim-verification/results/aeronum_distributed_compare_guard_7900xtx_20260528T233403Z/ddp_single_gpu_result.json",
+        "claim-verification/results/aeronum_distributed_compare_guard_7900xtx_20260528T233403Z/ddp_single_gpu.stdout.log",
+        "claim-verification/results/aeronum_distributed_compare_guard_7900xtx_20260528T233403Z/ddp_single_gpu.stderr.log",
+        "claim-verification/results/aeronum_distributed_compare_guard_7900xtx_20260528T233403Z/ddp_single_gpu.exit_code.txt",
+        "claim-verification/results/aeronum_distributed_compare_guard_7900xtx_20260528T233403Z/command_config.txt",
+        "claim-verification/results/aeronum_distributed_compare_guard_7900xtx_20260528T233403Z/hardware_software_metadata.txt"
       ]
     },
     {
@@ -265,7 +269,7 @@
     {
       "id": "aeronum_gpt2_nccl_gguf_claims_20260528",
       "status": "blocked",
-      "claim": "AeroNum-vs-PyTorch GPT-2 training speedup, NCCL/MPI multi-GPU scaling, and AeroNum-native GGUF token-inference throughput claims are not included because no current AeroNum artifact or rerun verified them. A PyTorch/Hugging Face GPT-2 reference passed, an AeroNum-owned tiny language-model training analogue and tiny transformer-forward analogue passed but are not GPT-2, NCCL/DDP world size 1 passed, the current preflight blocks the local two-device NCCL topology before launch, post-reboot NCCL attempts failed on the local Radeon RX 7900 XTX plus integrated AMD Radeon Graphics topology, a two-rank single-XTX attempt was rejected by RCCL as duplicate GPU usage, the AeroNum GGUF core result parses metadata and tensor directory records but still reaches only placeholder generation, and the GGUF token-inference result is a llama.cpp reference through an AeroNum repo wrapper.",
+      "claim": "AeroNum-vs-PyTorch GPT-2 training speedup, NCCL/MPI multi-GPU scaling, and AeroNum-native GGUF token-inference throughput claims are not included because no current AeroNum artifact or rerun verified them. A PyTorch/Hugging Face GPT-2 reference passed, an AeroNum-owned tiny language-model training analogue and tiny transformer-forward analogue passed but are not GPT-2, NCCL/DDP world size 1 passed, the integrated distributed_compare.py guard blocks the local two-device NCCL topology before launch, post-reboot NCCL attempts failed on the local Radeon RX 7900 XTX plus integrated AMD Radeon Graphics topology, a two-rank single-XTX attempt was rejected by RCCL as duplicate GPU usage, the AeroNum GGUF core result parses metadata and tensor directory records but still reaches only placeholder generation, and the GGUF token-inference result is a llama.cpp reference through an AeroNum repo wrapper.",
       "artifacts": [
         "claim-verification/results/aeronum_pytorch_gpt2_reference_7900xtx_20260528T224500Z/claim_result.json",
         "claim-verification/results/aeronum_tiny_lm_train_7900xtx_20260528T231229Z/claim_result.json",
@@ -274,6 +278,7 @@
         "claim-verification/results/aeronum_llama_cpp_cli_gguf_7900xtx_20260528T230730Z/claim_result.json",
         "claim-verification/results/aeronum_nccl_ddp_single_gpu_7900xtx_20260528T224500Z/claim_result.json",
         "claim-verification/results/aeronum_nccl_preflight_7900xtx_20260528T231927Z/claim_result.json",
+        "claim-verification/results/aeronum_distributed_compare_guard_7900xtx_20260528T233403Z/claim_result.json",
         "claim-verification/results/aeronum_nccl_ddp_two_device_attempt_7900xtx_20260528T224500Z/distributed_compare.stdout.log",
         "claim-verification/results/aeronum_nccl_ddp_two_device_attempt_7900xtx_20260528T224500Z/distributed_compare.stderr.log",
         "claim-verification/results/aeronum_nccl_ddp_two_device_attempt_7900xtx_20260528T224500Z/hardware_software_metadata.txt",

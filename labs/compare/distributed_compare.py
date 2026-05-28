@@ -11,6 +11,66 @@ import torch.nn as nn
 from torch.nn.parallel import DistributedDataParallel as DDP
 
 
+def classify_device(name):
+    lower = name.lower()
+    if "graphics" in lower and "radeon rx" not in lower:
+        return "integrated"
+    if "radeon rx" in lower:
+        return "discrete"
+    return "unknown"
+
+
+def nccl_topology_check(args):
+    devices = []
+    if torch.cuda.is_available():
+        for idx in range(torch.cuda.device_count()):
+            props = torch.cuda.get_device_properties(idx)
+            name = torch.cuda.get_device_name(idx)
+            devices.append(
+                {
+                    "id": idx,
+                    "name": name,
+                    "class": classify_device(name),
+                    "gcn_arch": f"{props.major}.{props.minor}",
+                    "total_memory_bytes": props.total_memory,
+                }
+            )
+
+    selected_ids = args.device_ids[: args.world_size]
+    selected = [device for device in devices if device["id"] in selected_ids]
+    reasons = []
+    if not torch.cuda.is_available():
+        reasons.append("torch.cuda.is_available() is false")
+    if len(devices) < args.world_size:
+        reasons.append(f"only {len(devices)} ROCm-visible device(s), need {args.world_size}")
+    if len(set(selected_ids)) < args.world_size:
+        reasons.append("requested NCCL ranks include duplicate device IDs")
+    if len(selected) < args.world_size:
+        reasons.append("requested device IDs are not all visible")
+    if args.world_size > 1 and any(device["class"] != "discrete" for device in selected):
+        reasons.append("requested NCCL ranks include a non-discrete/integrated GPU")
+    if args.world_size > 1 and len({device["gcn_arch"] for device in selected}) > 1:
+        reasons.append("requested NCCL ranks span different ROCm GPU architectures")
+    kernel_cmdline = Path("/proc/cmdline").read_text(encoding="utf-8").strip()
+    if args.world_size > 1 and "iommu=pt" not in kernel_cmdline.split():
+        reasons.append("kernel command line does not include iommu=pt")
+
+    return {
+        "benchmark": "pytorch_ddp_smoke_topology_preflight",
+        "backend": args.backend,
+        "world_size": args.world_size,
+        "requested_device_ids": args.device_ids,
+        "selected_device_ids": selected_ids,
+        "visible_devices": devices,
+        "selected_devices": selected,
+        "kernel_cmdline": kernel_cmdline,
+        "compatible_for_requested_nccl": len(reasons) == 0,
+        "blocking_reasons": reasons,
+        "torch": torch.__version__,
+        "torch_hip": getattr(torch.version, "hip", None),
+    }
+
+
 def setup(rank, world_size, backend, master_port):
     os.environ["MASTER_ADDR"] = "127.0.0.1"
     os.environ["MASTER_PORT"] = str(master_port)
@@ -126,6 +186,11 @@ def parse_args():
     parser.add_argument("--nhead", type=int, default=4)
     parser.add_argument("--dim-feedforward", type=int, default=256)
     parser.add_argument("--learning-rate", type=float, default=3e-4)
+    parser.add_argument(
+        "--skip-topology-check",
+        action="store_true",
+        help="Launch NCCL even if local ROCm topology preflight reports a known blocker.",
+    )
     parser.add_argument("--output", default="", help="Optional JSON result output path")
     parsed = parser.parse_args()
     parsed.device_ids = [int(x) for x in parsed.device_ids.split(",") if x.strip()]
@@ -144,6 +209,21 @@ def main():
     print("PyTorch Reference: DistributedDataParallel Smoke Benchmark")
     print("============================================================================")
     print(f"Executing backend={args.backend} world_size={args.world_size} device_ids={args.device_ids}")
+
+    if args.backend == "nccl" and not args.skip_topology_check:
+        preflight = nccl_topology_check(args)
+        if not preflight["compatible_for_requested_nccl"]:
+            result = {
+                "benchmark": "pytorch_ddp_smoke",
+                "status": "blocked_by_topology_preflight",
+                "launched_ddp": False,
+                "preflight": preflight,
+            }
+            print(json.dumps(result, sort_keys=True))
+            if args.output:
+                Path(args.output).write_text(json.dumps(result, indent=2), encoding="utf-8")
+            return 1
+
     ctx = mp.get_context("spawn")
     result_queue = ctx.Queue()
     mp.spawn(demo_basic, args=(args.world_size, args, result_queue), nprocs=args.world_size, join=True)
@@ -154,4 +234,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main() or 0)

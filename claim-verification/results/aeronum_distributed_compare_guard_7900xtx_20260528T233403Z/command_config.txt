@@ -1,0 +1,6 @@
+Commands:
+python3 labs/compare/distributed_compare.py --backend nccl --world-size 2 --device-ids 0,1 --steps 1 --master-port 12420 --output claim-verification/results/aeronum_distributed_compare_guard_7900xtx_20260528T233403Z/ddp_two_device_guard_result.json
+python3 labs/compare/distributed_compare.py --backend nccl --world-size 1 --device-ids 0 --steps 1 --master-port 12421 --output claim-verification/results/aeronum_distributed_compare_guard_7900xtx_20260528T233403Z/ddp_single_gpu_result.json
+
+Purpose:
+Verify distributed_compare.py blocks incompatible local two-device NCCL topology before launching DDP while preserving the single-GPU NCCL smoke path.

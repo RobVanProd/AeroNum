@@ -1,0 +1,59 @@
+{
+  "benchmark": "pytorch_ddp_smoke",
+  "status": "blocked_by_topology_preflight",
+  "launched_ddp": false,
+  "preflight": {
+    "benchmark": "pytorch_ddp_smoke_topology_preflight",
+    "backend": "nccl",
+    "world_size": 2,
+    "requested_device_ids": [
+      0,
+      1
+    ],
+    "selected_device_ids": [
+      0,
+      1
+    ],
+    "visible_devices": [
+      {
+        "id": 0,
+        "name": "Radeon RX 7900 XTX",
+        "class": "discrete",
+        "gcn_arch": "11.0",
+        "total_memory_bytes": 25753026560
+      },
+      {
+        "id": 1,
+        "name": "AMD Radeon Graphics",
+        "class": "integrated",
+        "gcn_arch": "10.3",
+        "total_memory_bytes": 66282786816
+      }
+    ],
+    "selected_devices": [
+      {
+        "id": 0,
+        "name": "Radeon RX 7900 XTX",
+        "class": "discrete",
+        "gcn_arch": "11.0",
+        "total_memory_bytes": 25753026560
+      },
+      {
+        "id": 1,
+        "name": "AMD Radeon Graphics",
+        "class": "integrated",
+        "gcn_arch": "10.3",
+        "total_memory_bytes": 66282786816
+      }
+    ],
+    "kernel_cmdline": "BOOT_IMAGE=/boot/vmlinuz-6.8.0-111-generic root=UUID=be58515d-3329-49db-b130-a9a9ab83c43c ro quiet splash vt.handoff=7",
+    "compatible_for_requested_nccl": false,
+    "blocking_reasons": [
+      "requested NCCL ranks include a non-discrete/integrated GPU",
+      "requested NCCL ranks span different ROCm GPU architectures",
+      "kernel command line does not include iommu=pt"
+    ],
+    "torch": "2.5.1+rocm6.2",
+    "torch_hip": "6.2.41133-dd7f95766"
+  }
+}

@@ -1,0 +1,38 @@
+{
+  "benchmark": "aeronum_vs_pytorch_tiny_transformer_forward_comparison",
+  "scope": "deterministic_causal_self_attention_lm_forward_not_gpt2_training",
+  "aeronum": {
+    "benchmark": "aeronum_tiny_transformer_forward",
+    "training_scope": "causal_self_attention_lm_forward_not_gpt2_training",
+    "repeats": 1000,
+    "sequence_len": 4,
+    "dim": 8,
+    "vocab": 16,
+    "tokens_processed": 4000,
+    "loss": 2.79602051,
+    "checksum": 2.00722051,
+    "elapsed_seconds": 0.00301437,
+    "tokens_per_second": 1326976.672745
+  },
+  "pytorch": {
+    "benchmark": "pytorch_tiny_transformer_forward_reference",
+    "training_scope": "pytorch_reference_for_causal_self_attention_lm_forward_not_gpt2_training",
+    "device": "cuda",
+    "torch": "2.5.1+rocm6.2",
+    "torch_hip": "6.2.41133-dd7f95766",
+    "cuda_available": true,
+    "repeats": 1000,
+    "sequence_len": 4,
+    "dim": 8,
+    "vocab": 16,
+    "tokens_processed": 4000,
+    "loss": 2.796020269393921,
+    "checksum": 2.007218837738037,
+    "elapsed_seconds": 0.6110183849996247,
+    "tokens_per_second": 6546.447861797901
+  },
+  "loss_abs_diff": 2.4060607906051246e-07,
+  "checksum_abs_diff": 1.6722619626818869e-06,
+  "numeric_agreement": true,
+  "speedup_claimed": false
+}

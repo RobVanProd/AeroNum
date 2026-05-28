@@ -1,0 +1,6 @@
+Commands:
+cargo run --release -p aeronum-core --example tiny_transformer_forward -- --repeats 1000
+python3 labs/compare/tiny_transformer_forward_reference.py --repeats 1000 --device cuda --output claim-verification/results/aeronum_tiny_transformer_forward_7900xtx_20260528T233024Z/pytorch_tiny_transformer_result.json
+
+Purpose:
+Run a deterministic causal self-attention LM forward pass in AeroNum core and a PyTorch ROCm reference with matching tensors. This is a transformer-forward analogue, not GPT-2 training.

@@ -110,6 +110,26 @@
       ]
     },
     {
+      "id": "aeronum_tiny_transformer_forward_20260528",
+      "status": "verified_current_limited",
+      "claim": "core/examples/tiny_transformer_forward.rs ran a deterministic AeroNum core causal self-attention language-model forward pass, and labs/compare/tiny_transformer_forward_reference.py ran a matching PyTorch ROCm reference with the same tensors. The AeroNum loss was 2.79602051, the PyTorch loss was 2.79602027, the absolute loss difference was 0.0000002406060791, and the checksum absolute difference was 0.000001672261963. This verifies a tiny transformer-forward analogue, not GPT-2 training and not an AeroNum-vs-PyTorch GPT-2 speedup.",
+      "artifacts": [
+        "core/examples/tiny_transformer_forward.rs",
+        "labs/compare/tiny_transformer_forward_reference.py",
+        "claim-verification/results/aeronum_tiny_transformer_forward_7900xtx_20260528T233024Z/claim_result.json",
+        "claim-verification/results/aeronum_tiny_transformer_forward_7900xtx_20260528T233024Z/tiny_transformer_comparison.json",
+        "claim-verification/results/aeronum_tiny_transformer_forward_7900xtx_20260528T233024Z/aeronum_tiny_transformer.stdout.log",
+        "claim-verification/results/aeronum_tiny_transformer_forward_7900xtx_20260528T233024Z/aeronum_tiny_transformer.stderr.log",
+        "claim-verification/results/aeronum_tiny_transformer_forward_7900xtx_20260528T233024Z/aeronum_tiny_transformer.exit_code.txt",
+        "claim-verification/results/aeronum_tiny_transformer_forward_7900xtx_20260528T233024Z/pytorch_tiny_transformer_result.json",
+        "claim-verification/results/aeronum_tiny_transformer_forward_7900xtx_20260528T233024Z/pytorch_tiny_transformer.stdout.log",
+        "claim-verification/results/aeronum_tiny_transformer_forward_7900xtx_20260528T233024Z/pytorch_tiny_transformer.stderr.log",
+        "claim-verification/results/aeronum_tiny_transformer_forward_7900xtx_20260528T233024Z/pytorch_tiny_transformer.exit_code.txt",
+        "claim-verification/results/aeronum_tiny_transformer_forward_7900xtx_20260528T233024Z/command_config.txt",
+        "claim-verification/results/aeronum_tiny_transformer_forward_7900xtx_20260528T233024Z/hardware_software_metadata.txt"
+      ]
+    },
+    {
       "id": "aeronum_hip_sgemm_4096_20260528",
       "status": "verified_reference_only",
       "claim": "HIP/hipBLAS SGEMM passed on Radeon RX 7900 XTX for 4096x4096 float32 matrices with 10 measured runs, median 4.953900 ms, and 27.743587 TFLOP/s. This is a ROCm library reference benchmark, not an AeroNum-language matmul speedup claim.",
@@ -245,10 +265,11 @@
     {
       "id": "aeronum_gpt2_nccl_gguf_claims_20260528",
       "status": "blocked",
-      "claim": "AeroNum-vs-PyTorch GPT-2 training speedup, NCCL/MPI multi-GPU scaling, and AeroNum-native GGUF token-inference throughput claims are not included because no current AeroNum artifact or rerun verified them. A PyTorch/Hugging Face GPT-2 reference passed, an AeroNum-owned tiny language-model training analogue passed but is not GPT-2, NCCL/DDP world size 1 passed, the current preflight blocks the local two-device NCCL topology before launch, post-reboot NCCL attempts failed on the local Radeon RX 7900 XTX plus integrated AMD Radeon Graphics topology, a two-rank single-XTX attempt was rejected by RCCL as duplicate GPU usage, the AeroNum GGUF core result parses metadata and tensor directory records but still reaches only placeholder generation, and the GGUF token-inference result is a llama.cpp reference through an AeroNum repo wrapper.",
+      "claim": "AeroNum-vs-PyTorch GPT-2 training speedup, NCCL/MPI multi-GPU scaling, and AeroNum-native GGUF token-inference throughput claims are not included because no current AeroNum artifact or rerun verified them. A PyTorch/Hugging Face GPT-2 reference passed, an AeroNum-owned tiny language-model training analogue and tiny transformer-forward analogue passed but are not GPT-2, NCCL/DDP world size 1 passed, the current preflight blocks the local two-device NCCL topology before launch, post-reboot NCCL attempts failed on the local Radeon RX 7900 XTX plus integrated AMD Radeon Graphics topology, a two-rank single-XTX attempt was rejected by RCCL as duplicate GPU usage, the AeroNum GGUF core result parses metadata and tensor directory records but still reaches only placeholder generation, and the GGUF token-inference result is a llama.cpp reference through an AeroNum repo wrapper.",
       "artifacts": [
         "claim-verification/results/aeronum_pytorch_gpt2_reference_7900xtx_20260528T224500Z/claim_result.json",
         "claim-verification/results/aeronum_tiny_lm_train_7900xtx_20260528T231229Z/claim_result.json",
+        "claim-verification/results/aeronum_tiny_transformer_forward_7900xtx_20260528T233024Z/claim_result.json",
         "claim-verification/results/aeronum_core_gguf_directory_smoke_7900xtx_20260528T232438Z/claim_result.json",
         "claim-verification/results/aeronum_llama_cpp_cli_gguf_7900xtx_20260528T230730Z/claim_result.json",
         "claim-verification/results/aeronum_nccl_ddp_single_gpu_7900xtx_20260528T224500Z/claim_result.json",

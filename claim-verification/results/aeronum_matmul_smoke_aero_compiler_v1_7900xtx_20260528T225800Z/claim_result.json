@@ -1,0 +1,9 @@
+{
+  "claim_id": "aeronum_matmul_smoke_aero_compiler_v1_20260528",
+  "benchmark": "benches/matmul.aero",
+  "description": "2x2 integer matmul smoke benchmark checksum for current Aero compiler",
+  "process_exit_code": 134,
+  "reported_program_exit_code": 134,
+  "expected_checksum": 134,
+  "success_message": true
+}

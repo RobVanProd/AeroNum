@@ -1,0 +1,6 @@
+command: ./aero-compiler/aero run benches/matmul.aero
+repo: /home/rob/.openclaw.old/workspace/repos/AeroNum
+commit_before_run: 5c05976cbc6bd62675b251c64faaa7b149f474da
+aero_compiler_version: Aero compiler version 1.0.0
+aero_compiler_sha256: 2bf72d1965f0d515428a570044da134cd382e91c9550ddd015ddc4a8b95a1b3e
+timestamp_utc: 2026-05-28T22:47:20Z

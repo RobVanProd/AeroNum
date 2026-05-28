@@ -1,0 +1,31 @@
+timestamp_utc: 2026-05-28T22:47:21Z
+repo_commit: 5c05976cbc6bd62675b251c64faaa7b149f474da
+aero_compiler_version: Aero compiler version 1.0.0
+aero_compiler_sha256: 2bf72d1965f0d515428a570044da134cd382e91c9550ddd015ddc4a8b95a1b3e
+
+lspci_vga_3d_display:
+04:00.0 VGA compatible controller: Advanced Micro Devices, Inc. [AMD/ATI] Navi 31 [Radeon RX 7900 XT/7900 XTX/7900 GRE/7900M] (rev c8)
+7c:00.0 VGA compatible controller: Advanced Micro Devices, Inc. [AMD/ATI] Granite Ridge [Radeon Graphics] (rev c1)
+
+rocminfo_gpu_agents:
+  Name:                    AMD Ryzen 9 9950X 16-Core Processor
+  Marketing Name:          AMD Ryzen 9 9950X 16-Core Processor
+  Vendor Name:             CPU
+  Device Type:             CPU
+  Chip ID:                 0(0x0)
+  Max Clock Freq. (MHz):   5752
+  Compute Unit:            32
+  Name:                    gfx1100
+  Marketing Name:          Radeon RX 7900 XTX
+  Vendor Name:             AMD
+  Device Type:             GPU
+  Chip ID:                 29772(0x744c)
+  Max Clock Freq. (MHz):   2482
+  Compute Unit:            96
+  Name:                    gfx1036
+  Marketing Name:          AMD Radeon Graphics
+  Vendor Name:             AMD
+  Device Type:             GPU
+  Chip ID:                 5056(0x13c0)
+  Max Clock Freq. (MHz):   2200
+  Compute Unit:            2

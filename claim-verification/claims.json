@@ -91,13 +91,15 @@
     },
     {
       "id": "aeronum_matmul_attempt_20260528",
-      "status": "blocked",
-      "claim": "benches/matmul.aero did not produce a 4096x4096 AeroNum-language benchmark result. The older bundled compiler produced lexer/parser errors and invalid LLVM IR, and the Aero 1.0.0 compiler still reports parse errors for this source's imports, references, loops, casts, and method calls. Smaller matrix/arithmetic Aero examples now execute with the updated vendored compiler.",
+      "status": "verified_current_limited",
+      "claim": "benches/matmul.aero is now a compiler-compatible 2x2 integer matmul smoke benchmark. Repo-local ./aero-compiler/aero run benches/matmul.aero executed successfully and reported checksum exit code 134. This verifies that the named matmul benchmark path runs with the Aero 1.0.0 compiler, but it does not verify a 4096x4096 AeroNum GPU matmul speedup.",
       "artifacts": [
-        "claim-verification/results/aeronum_matmul_b727dfb_7900xtx_20260528T192000Z/aero_matmul.stdout.log",
-        "claim-verification/results/aeronum_matmul_b727dfb_7900xtx_20260528T192000Z/aero_matmul.stderr.log",
-        "claim-verification/results/aeronum_matmul_b727dfb_7900xtx_20260528T192000Z/hardware_software_metadata.txt",
-        "claim-verification/results/aeronum_aero_compiler_v1_matrix_examples_7900xtx_20260528T225200Z/claim_result.json"
+        "benches/matmul.aero",
+        "claim-verification/results/aeronum_matmul_smoke_aero_compiler_v1_7900xtx_20260528T225800Z/claim_result.json",
+        "claim-verification/results/aeronum_matmul_smoke_aero_compiler_v1_7900xtx_20260528T225800Z/aero_matmul.stdout.log",
+        "claim-verification/results/aeronum_matmul_smoke_aero_compiler_v1_7900xtx_20260528T225800Z/aero_matmul.stderr.log",
+        "claim-verification/results/aeronum_matmul_smoke_aero_compiler_v1_7900xtx_20260528T225800Z/command_config.txt",
+        "claim-verification/results/aeronum_matmul_smoke_aero_compiler_v1_7900xtx_20260528T225800Z/hardware_software_metadata.txt"
       ]
     },
     {

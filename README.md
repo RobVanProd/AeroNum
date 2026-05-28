@@ -66,6 +66,10 @@ Verified current results:
   `labs/benchmarks/aero/real_matrix_operations.aero` reported exit code 234,
   and `tests/aero/test_matrix_operations.aero` reported exit code 42
   ([result JSON](claim-verification/results/aeronum_aero_compiler_v1_matrix_examples_7900xtx_20260528T225200Z/claim_result.json)).
+- `benches/matmul.aero` is now a compiler-compatible 2x2 integer matmul smoke
+  benchmark. It executed with the repo-local Aero 1.0.0 compiler and reported
+  checksum exit code 134
+  ([result JSON](claim-verification/results/aeronum_matmul_smoke_aero_compiler_v1_7900xtx_20260528T225800Z/claim_result.json)).
 - `benchmarks/run_benchmarks.sh` completed on the rebased commit, but redirects
   command output to `/dev/null` and does not emit fresh raw timings
   ([raw log](claim-verification/results/aeronum_runner_b727dfb_7900xtx_20260528T192000Z/run_benchmarks.stdout.log)).
@@ -77,12 +81,9 @@ Blocked or omitted claims:
   `labs/compare/transformer_compare.py` result is a PyTorch/Hugging Face
   reference only.
 - GPU 4096x4096 AeroNum-language matmul speedup is omitted.
-  `benches/core_ops.aero` contains simulated timings, and
-  `benches/matmul.aero` still does not run with the Aero 1.0.0 compiler because
-  the source uses language/library constructs this compiler does not parse.
-  Smaller matrix/arithmetic Aero examples now execute successfully with the
-  updated vendored compiler
-  ([failed attempt](claim-verification/results/aeronum_matmul_b727dfb_7900xtx_20260528T192000Z/)).
+  `benches/core_ops.aero` contains simulated timings. The current
+  `benches/matmul.aero` is a 2x2 integer smoke benchmark that proves the path
+  executes, not a 4096x4096 GPU benchmark.
 - NCCL/MPI multi-GPU scaling is omitted. A real NCCL/DDP single-GPU smoke test
   passed, but the local two-device attempt using the Radeon RX 7900 XTX plus
   integrated AMD Radeon Graphics failed with RCCL `hipIpcGetMemHandle failed:

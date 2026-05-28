@@ -1,0 +1,35 @@
+Compiling with performance optimizations enabled (target: cpu, gpu: x86_64)
+Lexing completed in 11.432µs
+Optimized parsing completed in 17.503µs
+Semantic Analysis Result: Semantic analysis completed successfully
+Optimized semantic analysis completed in 25.328µs
+Optimized IR generation completed in 26.139µs
+Optimized code generation completed in 114.756µs
+Advanced graph compilation completed in 91.522µs (backend: cpu, gpu: n/a, fused kernels: 4, executable: 4, total fused ops: 8)
+Optimized LLVM IR written to /home/rob/.openclaw.old/workspace/repos/AeroNum/target/aero-run/matmul-1780008440969029443/matmul.ll
+Total compilation time: 243.687µs
+=== Aero Compiler Performance Report ===
+
+Function Call Optimization:
+  Average time: 0.000000s
+  Total calls: 0
+
+Control Flow Optimization:
+  Total optimizations: 0
+
+Parser Optimization:
+  Total parses: 0
+
+Semantic Analysis Optimization:
+  Total analyses: 0
+
+Compilation Cache:
+  Hits: 0
+  Misses: 1
+  Hit Rate: 0.00%
+
+Total Compilation Time: 0.000000s
+
+Performance-optimized compilation process completed successfully.
+Program executed successfully.
+Exit code: 134

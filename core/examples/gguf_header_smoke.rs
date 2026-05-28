@@ -38,6 +38,15 @@ fn json_string_array(values: &[String]) -> String {
     format!("[{items}]")
 }
 
+fn json_f32_array(values: &[f32]) -> String {
+    let items = values
+        .iter()
+        .map(|value| format!("{value:.8}"))
+        .collect::<Vec<_>>()
+        .join(",");
+    format!("[{items}]")
+}
+
 fn main() {
     let model_path = parse_arg("--model", "");
     if model_path.is_empty() {
@@ -98,6 +107,20 @@ fn main() {
         .max()
         .unwrap_or(0);
     let tensor_layout_within_file = max_tensor_end <= header.file_size;
+    let tensor_byte_sample = header
+        .read_tensor_prefix("output_norm.weight", 64)
+        .expect("read output_norm.weight tensor prefix");
+    let tensor_byte_sample_json = format!(
+        "{{\"name\":\"{}\",\"type\":{},\"absolute_offset\":{},\"tensor_nbytes\":{},\"bytes_read\":{},\"byte_checksum\":{},\"first_bytes_hex\":{},\"f32_samples\":{}}}",
+        json_escape(&tensor_byte_sample.name),
+        tensor_byte_sample.tensor_type,
+        tensor_byte_sample.absolute_offset,
+        tensor_byte_sample.tensor_nbytes,
+        tensor_byte_sample.bytes_read,
+        tensor_byte_sample.byte_checksum,
+        json_string_array(&tensor_byte_sample.first_bytes_hex),
+        json_f32_array(&tensor_byte_sample.f32_samples)
+    );
     let architecture = header
         .metadata_value("general.architecture")
         .map(|value| value.summary())
@@ -124,7 +147,7 @@ fn main() {
     let elapsed_ms = start.elapsed().as_secs_f64() * 1000.0;
 
     println!(
-        "{{\"benchmark\":\"aeronum_core_gguf_directory_smoke\",\"model_path\":\"{}\",\"gguf_version\":{},\"tensor_count\":{},\"metadata_kv_count\":{},\"parsed_tensor_infos\":{},\"parsed_metadata_entries\":{},\"alignment\":{},\"data_offset\":{},\"file_size\":{},\"tensors_with_known_nbytes\":{},\"max_tensor_end\":{},\"tensor_layout_within_file\":{},\"architecture\":\"{}\",\"quantization_version\":\"{}\",\"tokenizer_model\":\"{}\",\"tokenizer_token_count\":{},\"sample_tokenizer_tokens\":{},\"sample_metadata_keys\":{},\"sample_tensor_names\":{},\"sample_tensor_layouts\":[{}],\"device\":\"{}\",\"max_tokens\":{},\"elapsed_ms\":{:.6},\"output_kind\":\"placeholder\",\"output\":\"{}\"}}",
+        "{{\"benchmark\":\"aeronum_core_gguf_directory_smoke\",\"model_path\":\"{}\",\"gguf_version\":{},\"tensor_count\":{},\"metadata_kv_count\":{},\"parsed_tensor_infos\":{},\"parsed_metadata_entries\":{},\"alignment\":{},\"data_offset\":{},\"file_size\":{},\"tensors_with_known_nbytes\":{},\"max_tensor_end\":{},\"tensor_layout_within_file\":{},\"tensor_byte_sample\":{},\"architecture\":\"{}\",\"quantization_version\":\"{}\",\"tokenizer_model\":\"{}\",\"tokenizer_token_count\":{},\"sample_tokenizer_tokens\":{},\"sample_metadata_keys\":{},\"sample_tensor_names\":{},\"sample_tensor_layouts\":[{}],\"device\":\"{}\",\"max_tokens\":{},\"elapsed_ms\":{:.6},\"output_kind\":\"placeholder\",\"output\":\"{}\"}}",
         json_escape(&model_path),
         header.version,
         header.tensor_count,
@@ -137,6 +160,7 @@ fn main() {
         tensors_with_known_nbytes,
         max_tensor_end,
         tensor_layout_within_file,
+        tensor_byte_sample_json,
         json_escape(&architecture),
         json_escape(&quantization_version),
         json_escape(&tokenizer_model),

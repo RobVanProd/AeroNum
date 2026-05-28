@@ -3,7 +3,7 @@ use crate::NdArray;
 use std::error::Error;
 use std::fmt;
 use std::fs::File;
-use std::io::{self, Read, Seek};
+use std::io::{self, Read, Seek, SeekFrom};
 use std::path::PathBuf;
 use std::time::Instant;
 
@@ -74,6 +74,18 @@ pub struct GgufTensorInfo {
     pub nbytes: Option<u64>,
 }
 
+#[derive(Clone, Debug, PartialEq)]
+pub struct GgufTensorByteSample {
+    pub name: String,
+    pub tensor_type: u32,
+    pub absolute_offset: u64,
+    pub tensor_nbytes: u64,
+    pub bytes_read: usize,
+    pub byte_checksum: u64,
+    pub first_bytes_hex: Vec<String>,
+    pub f32_samples: Vec<f32>,
+}
+
 #[derive(Debug)]
 pub enum GgufError {
     Io(io::Error),
@@ -82,6 +94,9 @@ pub enum GgufError {
     InvalidUtf8(String),
     UnsupportedValueType(u32),
     InvalidArrayElementType(u32),
+    TensorNotFound(String),
+    UnknownTensorByteSize(String),
+    InvalidTensorRange(String),
 }
 
 impl fmt::Display for GgufError {
@@ -99,6 +114,11 @@ impl fmt::Display for GgufError {
             Self::InvalidArrayElementType(value_type) => {
                 write!(f, "unsupported GGUF array element type: {value_type}")
             }
+            Self::TensorNotFound(name) => write!(f, "GGUF tensor not found: {name}"),
+            Self::UnknownTensorByteSize(name) => {
+                write!(f, "cannot determine byte size for GGUF tensor: {name}")
+            }
+            Self::InvalidTensorRange(name) => write!(f, "invalid GGUF tensor byte range: {name}"),
         }
     }
 }
@@ -111,7 +131,10 @@ impl Error for GgufError {
             | Self::UnsupportedVersion(_)
             | Self::InvalidUtf8(_)
             | Self::UnsupportedValueType(_)
-            | Self::InvalidArrayElementType(_) => None,
+            | Self::InvalidArrayElementType(_)
+            | Self::TensorNotFound(_)
+            | Self::UnknownTensorByteSize(_)
+            | Self::InvalidTensorRange(_) => None,
         }
     }
 }
@@ -273,6 +296,64 @@ impl GgufHeader {
             .iter()
             .find(|entry| entry.key == key)
             .map(|entry| &entry.value)
+    }
+
+    pub fn read_tensor_prefix(
+        &self,
+        tensor_name: &str,
+        max_bytes: usize,
+    ) -> Result<GgufTensorByteSample, GgufError> {
+        let tensor = self
+            .tensors
+            .iter()
+            .find(|tensor| tensor.name == tensor_name)
+            .ok_or_else(|| GgufError::TensorNotFound(tensor_name.to_string()))?;
+        let tensor_nbytes = tensor
+            .nbytes
+            .ok_or_else(|| GgufError::UnknownTensorByteSize(tensor_name.to_string()))?;
+        let tensor_end = tensor
+            .absolute_offset
+            .checked_add(tensor_nbytes)
+            .ok_or_else(|| GgufError::InvalidTensorRange(tensor_name.to_string()))?;
+        if tensor_end > self.file_size {
+            return Err(GgufError::InvalidTensorRange(tensor_name.to_string()));
+        }
+
+        let bytes_to_read = max_bytes.min(tensor_nbytes as usize);
+        let mut file = File::open(&self.path)?;
+        file.seek(SeekFrom::Start(tensor.absolute_offset))?;
+        let mut bytes = vec![0u8; bytes_to_read];
+        file.read_exact(&mut bytes)?;
+        let byte_checksum = bytes
+            .iter()
+            .enumerate()
+            .map(|(idx, byte)| (idx as u64 + 1) * (*byte as u64))
+            .sum();
+        let first_bytes_hex = bytes
+            .iter()
+            .take(16)
+            .map(|byte| format!("{byte:02x}"))
+            .collect();
+        let f32_samples = if tensor.tensor_type == 0 {
+            bytes
+                .chunks_exact(4)
+                .take(8)
+                .map(|chunk| f32::from_le_bytes([chunk[0], chunk[1], chunk[2], chunk[3]]))
+                .collect()
+        } else {
+            Vec::new()
+        };
+
+        Ok(GgufTensorByteSample {
+            name: tensor.name.clone(),
+            tensor_type: tensor.tensor_type,
+            absolute_offset: tensor.absolute_offset,
+            tensor_nbytes,
+            bytes_read: bytes_to_read,
+            byte_checksum,
+            first_bytes_hex,
+            f32_samples,
+        })
     }
 }
 

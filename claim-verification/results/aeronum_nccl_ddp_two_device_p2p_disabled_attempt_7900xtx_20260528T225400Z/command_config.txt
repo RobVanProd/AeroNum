@@ -1,0 +1,4 @@
+command: NCCL_DEBUG=INFO NCCL_P2P_DISABLE=1 timeout 120s python3 labs/compare/distributed_compare.py --backend nccl --world-size 2 --device-ids 0,1 --master-port 12358 --steps 1 --batch-size 1 --seq-len 16 --vocab-size 1024 --d-model 32 --layers 1 --nhead 4 --output claim-verification/results/aeronum_nccl_ddp_two_device_p2p_disabled_attempt_7900xtx_20260528T225400Z/claim_result.json
+repo: /home/rob/.openclaw.old/workspace/repos/AeroNum
+commit_before_run: 65bc9bfaa2dbb3bae4c0cb3b5af848c7b215ad85
+timestamp_utc: 2026-05-28T22:44:50Z

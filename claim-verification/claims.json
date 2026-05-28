@@ -2,7 +2,7 @@
   "schema_version": 1,
   "verified_on": "2026-05-28",
   "repo": "AeroNum",
-  "repo_commit": "594d33cb9d1ac4d605fc7d148a1119511cbf4433",
+  "repo_commit": "65bc9bfaa2dbb3bae4c0cb3b5af848c7b215ad85",
   "hardware_summary": {
     "cpu": "AMD Ryzen 9 9950X 16-Core Processor",
     "gpu_0": "Radeon RX 7900 XTX / gfx1100 / PCI device 1002:744c",
@@ -76,13 +76,28 @@
       ]
     },
     {
+      "id": "aeronum_aero_compiler_v1_matrix_examples_20260528",
+      "status": "verified_current_limited",
+      "claim": "After updating the vendored aero-compiler/aero binary from Aero compiler version 0.1.0 to 1.0.0, SHA-256 2bf72d1965f0d515428a570044da134cd382e91c9550ddd015ddc4a8b95a1b3e, repo-local ./aero-compiler/aero run executed matrix/arithmetic Aero examples that previously hit the old compiler's binary-expression failure: examples/aero/minimal_aeronum.aero reported exit code 60, labs/benchmarks/aero/real_matrix_operations.aero reported exit code 234, and tests/aero/test_matrix_operations.aero reported exit code 42. This does not verify a 4096x4096 AeroNum GPU matmul speedup.",
+      "artifacts": [
+        "aero-compiler/aero",
+        "claim-verification/results/aeronum_aero_compiler_v1_matrix_examples_7900xtx_20260528T225200Z/claim_result.json",
+        "claim-verification/results/aeronum_aero_compiler_v1_matrix_examples_7900xtx_20260528T225200Z/command_config.txt",
+        "claim-verification/results/aeronum_aero_compiler_v1_matrix_examples_7900xtx_20260528T225200Z/minimal_aeronum.stdout.log",
+        "claim-verification/results/aeronum_aero_compiler_v1_matrix_examples_7900xtx_20260528T225200Z/real_matrix_operations.stdout.log",
+        "claim-verification/results/aeronum_aero_compiler_v1_matrix_examples_7900xtx_20260528T225200Z/test_matrix_operations.stdout.log",
+        "claim-verification/results/aeronum_aero_compiler_v1_matrix_examples_7900xtx_20260528T225200Z/hardware_software_metadata.txt"
+      ]
+    },
+    {
       "id": "aeronum_matmul_attempt_20260528",
       "status": "blocked",
-      "claim": "benches/matmul.aero did not produce a benchmark result with the current bundled Aero compiler because lexing/parsing reported errors and llc rejected the generated LLVM IR.",
+      "claim": "benches/matmul.aero did not produce a 4096x4096 AeroNum-language benchmark result. The older bundled compiler produced lexer/parser errors and invalid LLVM IR, and the Aero 1.0.0 compiler still reports parse errors for this source's imports, references, loops, casts, and method calls. Smaller matrix/arithmetic Aero examples now execute with the updated vendored compiler.",
       "artifacts": [
         "claim-verification/results/aeronum_matmul_b727dfb_7900xtx_20260528T192000Z/aero_matmul.stdout.log",
         "claim-verification/results/aeronum_matmul_b727dfb_7900xtx_20260528T192000Z/aero_matmul.stderr.log",
-        "claim-verification/results/aeronum_matmul_b727dfb_7900xtx_20260528T192000Z/hardware_software_metadata.txt"
+        "claim-verification/results/aeronum_matmul_b727dfb_7900xtx_20260528T192000Z/hardware_software_metadata.txt",
+        "claim-verification/results/aeronum_aero_compiler_v1_matrix_examples_7900xtx_20260528T225200Z/claim_result.json"
       ]
     },
     {
@@ -114,13 +129,16 @@
     {
       "id": "aeronum_gpt2_nccl_gguf_claims_20260528",
       "status": "blocked",
-      "claim": "AeroNum-vs-PyTorch GPT-2 training speedup, NCCL/MPI multi-GPU scaling, and GGUF inference claims are not included because no current AeroNum artifact or rerun verified them. A PyTorch/Hugging Face GPT-2 reference passed, NCCL/DDP world size 1 passed, and the local two-device NCCL attempt failed between the 7900 XTX and integrated AMD Radeon Graphics with RCCL hipIpcGetMemHandle invalid argument.",
+      "claim": "AeroNum-vs-PyTorch GPT-2 training speedup, NCCL/MPI multi-GPU scaling, and GGUF inference claims are not included because no current AeroNum artifact or rerun verified them. A PyTorch/Hugging Face GPT-2 reference passed, NCCL/DDP world size 1 passed, the default local two-device NCCL attempt failed between the 7900 XTX and integrated AMD Radeon Graphics with RCCL hipIpcGetMemHandle invalid argument, and the NCCL_P2P_DISABLE=1 attempt failed on rank 1 with invalid device function.",
       "artifacts": [
         "claim-verification/results/aeronum_pytorch_gpt2_reference_7900xtx_20260528T224500Z/claim_result.json",
         "claim-verification/results/aeronum_nccl_ddp_single_gpu_7900xtx_20260528T224500Z/claim_result.json",
         "claim-verification/results/aeronum_nccl_ddp_two_device_attempt_7900xtx_20260528T224500Z/distributed_compare.stdout.log",
         "claim-verification/results/aeronum_nccl_ddp_two_device_attempt_7900xtx_20260528T224500Z/distributed_compare.stderr.log",
-        "claim-verification/results/aeronum_nccl_ddp_two_device_attempt_7900xtx_20260528T224500Z/hardware_software_metadata.txt"
+        "claim-verification/results/aeronum_nccl_ddp_two_device_attempt_7900xtx_20260528T224500Z/hardware_software_metadata.txt",
+        "claim-verification/results/aeronum_nccl_ddp_two_device_p2p_disabled_attempt_7900xtx_20260528T225400Z/distributed_compare.stdout.log",
+        "claim-verification/results/aeronum_nccl_ddp_two_device_p2p_disabled_attempt_7900xtx_20260528T225400Z/distributed_compare.stderr.log",
+        "claim-verification/results/aeronum_nccl_ddp_two_device_p2p_disabled_attempt_7900xtx_20260528T225400Z/hardware_software_metadata.txt"
       ]
     }
   ]

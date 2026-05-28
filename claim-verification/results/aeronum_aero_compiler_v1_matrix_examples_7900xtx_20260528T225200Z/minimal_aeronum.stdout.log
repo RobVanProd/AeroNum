@@ -1,0 +1,35 @@
+Compiling with performance optimizations enabled (target: cpu, gpu: x86_64)
+Lexing completed in 14.487µs
+Optimized parsing completed in 18.425µs
+Semantic Analysis Result: Semantic analysis completed successfully
+Optimized semantic analysis completed in 27.592µs
+Optimized IR generation completed in 23.795µs
+Optimized code generation completed in 87.574µs
+Advanced graph compilation completed in 66.244µs (backend: cpu, gpu: n/a, fused kernels: 5, executable: 5, total fused ops: 13)
+Optimized LLVM IR written to /home/rob/.openclaw.old/workspace/repos/AeroNum/target/aero-run/minimal_aeronum-1780008254709850669/minimal_aeronum.ll
+Total compilation time: 195.116µs
+=== Aero Compiler Performance Report ===
+
+Function Call Optimization:
+  Average time: 0.000000s
+  Total calls: 0
+
+Control Flow Optimization:
+  Total optimizations: 0
+
+Parser Optimization:
+  Total parses: 0
+
+Semantic Analysis Optimization:
+  Total analyses: 0
+
+Compilation Cache:
+  Hits: 0
+  Misses: 1
+  Hit Rate: 0.00%
+
+Total Compilation Time: 0.000000s
+
+Performance-optimized compilation process completed successfully.
+Program executed successfully.
+Exit code: 60

@@ -1,0 +1,35 @@
+Compiling with performance optimizations enabled (target: cpu, gpu: x86_64)
+Lexing completed in 48.441µs
+Optimized parsing completed in 46.548µs
+Semantic Analysis Result: Semantic analysis completed successfully
+Optimized semantic analysis completed in 71.374µs
+Optimized IR generation completed in 89.017µs
+Optimized code generation completed in 1.757278ms
+Advanced graph compilation completed in 1.680374ms (backend: cpu, gpu: n/a, fused kernels: 90, executable: 90, total fused ops: 180)
+Optimized LLVM IR written to /home/rob/.openclaw.old/workspace/repos/AeroNum/target/aero-run/real_matrix_operations-1780008254757395825/real_matrix_operations.ll
+Total compilation time: 2.073952ms
+=== Aero Compiler Performance Report ===
+
+Function Call Optimization:
+  Average time: 0.000000s
+  Total calls: 0
+
+Control Flow Optimization:
+  Total optimizations: 0
+
+Parser Optimization:
+  Total parses: 0
+
+Semantic Analysis Optimization:
+  Total analyses: 0
+
+Compilation Cache:
+  Hits: 0
+  Misses: 1
+  Hit Rate: 0.00%
+
+Total Compilation Time: 0.000000s
+
+Performance-optimized compilation process completed successfully.
+Program executed successfully.
+Exit code: 234

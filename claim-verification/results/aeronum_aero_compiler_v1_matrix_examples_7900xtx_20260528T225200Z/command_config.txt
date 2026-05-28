@@ -1,0 +1,9 @@
+command_1: ./aero-compiler/aero run examples/aero/minimal_aeronum.aero
+command_2: ./aero-compiler/aero run labs/benchmarks/aero/real_matrix_operations.aero
+command_3: ./aero-compiler/aero run tests/aero/test_matrix_operations.aero
+repo: /home/rob/.openclaw.old/workspace/repos/AeroNum
+commit_before_run: 65bc9bfaa2dbb3bae4c0cb3b5af848c7b215ad85
+aero_compiler_version: Aero compiler version 1.0.0
+aero_compiler_sha256: 2bf72d1965f0d515428a570044da134cd382e91c9550ddd015ddc4a8b95a1b3e
+source_aero_public_commit: 388307da8cec8d461fc95c82c3f48b846da7247b
+timestamp_utc: 2026-05-28T22:44:14Z

@@ -1,0 +1,55 @@
+timestamp_utc: 2026-05-28T22:44:54Z
+repo_commit: 65bc9bfaa2dbb3bae4c0cb3b5af848c7b215ad85
+
+lspci_vga_3d_display:
+04:00.0 VGA compatible controller: Advanced Micro Devices, Inc. [AMD/ATI] Navi 31 [Radeon RX 7900 XT/7900 XTX/7900 GRE/7900M] (rev c8)
+7c:00.0 VGA compatible controller: Advanced Micro Devices, Inc. [AMD/ATI] Granite Ridge [Radeon Graphics] (rev c1)
+
+rocminfo_gpu_agents:
+  Name:                    AMD Ryzen 9 9950X 16-Core Processor
+  Marketing Name:          AMD Ryzen 9 9950X 16-Core Processor
+  Vendor Name:             CPU
+  Device Type:             CPU
+  Chip ID:                 0(0x0)
+  Max Clock Freq. (MHz):   5752
+  Compute Unit:            32
+  Name:                    gfx1100
+  Marketing Name:          Radeon RX 7900 XTX
+  Vendor Name:             AMD
+  Device Type:             GPU
+  Chip ID:                 29772(0x744c)
+  Max Clock Freq. (MHz):   2482
+  Compute Unit:            96
+  Name:                    gfx1036
+  Marketing Name:          AMD Radeon Graphics
+  Vendor Name:             AMD
+  Device Type:             GPU
+  Chip ID:                 5056(0x13c0)
+  Max Clock Freq. (MHz):   2200
+  Compute Unit:            2
+
+rocm_smi_topology:
+
+
+============================ ROCm System Management Interface ============================
+================================ Weight between two GPUs =================================
+       GPU0         GPU1
+GPU0   0            40
+GPU1   40           0
+
+================================= Hops between two GPUs ==================================
+       GPU0         GPU1
+GPU0   0            2
+GPU1   2            0
+
+=============================== Link Type between two GPUs ===============================
+       GPU0         GPU1
+GPU0   0            PCIE
+GPU1   PCIE         0
+
+======================================= Numa Nodes =======================================
+GPU[0]		: (Topology) Numa Node: 0
+GPU[0]		: (Topology) Numa Affinity: -1
+GPU[1]		: (Topology) Numa Node: 0
+GPU[1]		: (Topology) Numa Affinity: -1
+================================== End of ROCm SMI Log ===================================

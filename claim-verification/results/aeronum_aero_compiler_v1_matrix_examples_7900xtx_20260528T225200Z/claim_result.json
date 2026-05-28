@@ -1,0 +1,24 @@
+{
+  "claim_id": "aeronum_aero_compiler_v1_matrix_examples_20260528",
+  "benchmark": "aero_language_matrix_examples",
+  "items": [
+    {
+      "name": "minimal_aeronum",
+      "process_exit_code": 60,
+      "reported_program_exit_code": 60,
+      "success_message": true
+    },
+    {
+      "name": "real_matrix_operations",
+      "process_exit_code": 234,
+      "reported_program_exit_code": 234,
+      "success_message": true
+    },
+    {
+      "name": "test_matrix_operations",
+      "process_exit_code": 42,
+      "reported_program_exit_code": 42,
+      "success_message": true
+    }
+  ]
+}

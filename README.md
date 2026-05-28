@@ -10,6 +10,9 @@ benchmark scripts, and historical benchmark artifacts.
 Current repo contents include:
 
 - `aeronum-core` GPU runtime metadata and HIP buffer plumbing.
+- A vendored Aero compiler at `aero-compiler/aero`. Current tracked binary:
+  `Aero compiler version 1.0.0`, SHA-256
+  `2bf72d1965f0d515428a570044da134cd382e91c9550ddd015ddc4a8b95a1b3e`.
 - `aeronn::LlamaModel` device-offload paths for `rocm`, `gpu`, and `cuda`
   target strings.
 - A HIP vector-add benchmark runner at
@@ -56,6 +59,13 @@ Verified current results:
   benchmark instead of a simulated message. NCCL world size 1 passed on GPU 0
   with 3 steps, mean rank time 0.3393106461 s, and 565.853156 tokens/s
   ([result JSON](claim-verification/results/aeronum_nccl_ddp_single_gpu_7900xtx_20260528T224500Z/claim_result.json)).
+- After updating the vendored compiler from Aero `0.1.0` to `1.0.0`, the
+  repo-local command `./aero-compiler/aero run` executed matrix/arithmetic Aero
+  examples that previously hit the old compiler's binary-expression failure:
+  `examples/aero/minimal_aeronum.aero` reported exit code 60,
+  `labs/benchmarks/aero/real_matrix_operations.aero` reported exit code 234,
+  and `tests/aero/test_matrix_operations.aero` reported exit code 42
+  ([result JSON](claim-verification/results/aeronum_aero_compiler_v1_matrix_examples_7900xtx_20260528T225200Z/claim_result.json)).
 - `benchmarks/run_benchmarks.sh` completed on the rebased commit, but redirects
   command output to `/dev/null` and does not emit fresh raw timings
   ([raw log](claim-verification/results/aeronum_runner_b727dfb_7900xtx_20260528T192000Z/run_benchmarks.stdout.log)).
@@ -68,14 +78,17 @@ Blocked or omitted claims:
   reference only.
 - GPU 4096x4096 AeroNum-language matmul speedup is omitted.
   `benches/core_ops.aero` contains simulated timings, and
-  `benches/matmul.aero` did not run with the bundled Aero compiler; the
-  compiler reported lexer/parser errors and `llc` rejected the generated LLVM IR
+  `benches/matmul.aero` still does not run with the Aero 1.0.0 compiler because
+  the source uses language/library constructs this compiler does not parse.
+  Smaller matrix/arithmetic Aero examples now execute successfully with the
+  updated vendored compiler
   ([failed attempt](claim-verification/results/aeronum_matmul_b727dfb_7900xtx_20260528T192000Z/)).
 - NCCL/MPI multi-GPU scaling is omitted. A real NCCL/DDP single-GPU smoke test
   passed, but the local two-device attempt using the Radeon RX 7900 XTX plus
   integrated AMD Radeon Graphics failed with RCCL `hipIpcGetMemHandle failed:
-  invalid argument`
-  ([failed attempt](claim-verification/results/aeronum_nccl_ddp_two_device_attempt_7900xtx_20260528T224500Z/)).
+  invalid argument`; with `NCCL_P2P_DISABLE=1`, initialization progressed
+  further but rank 1 failed with `invalid device function`
+  ([failed attempt](claim-verification/results/aeronum_nccl_ddp_two_device_p2p_disabled_attempt_7900xtx_20260528T225400Z/)).
 - GGUF/inference benchmark claims are omitted because no current raw GGUF
   inference benchmark result was found or rerun.
 

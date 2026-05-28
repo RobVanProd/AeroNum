@@ -1,0 +1,8 @@
+command: python3 benchmarks/hip/run_hip_sgemm.py --arch gfx1100 --n 4096 --runs 10 --warmup 3 --output claim-verification/results/aeronum_hip_sgemm_4096_7900xtx_20260528T222200Z/claim_result.json
+repo: /home/rob/.openclaw.old/workspace/repos/AeroNum
+commit_before_run: 594d33cb9d1ac4d605fc7d148a1119511cbf4433
+timestamp_utc: 2026-05-28T22:22:10Z
+source: benchmarks/hip/sgemm_4096.hip.cpp
+660101c9cc9343463b4371dfd5ab2b5dd60e606ed7077c3fef534f2533f62cb0  benchmarks/hip/sgemm_4096.hip.cpp
+runner: benchmarks/hip/run_hip_sgemm.py
+c55c262a669da018748038baac1573ecca51c5a228259a24ca3e116ab955e129  benchmarks/hip/run_hip_sgemm.py

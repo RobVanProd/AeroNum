@@ -1,25 +1,27 @@
-# HIP Vector-Add Benchmark
+# HIP ROCm Benchmarks
 
-This benchmark compiles and runs a real HIP kernel (`vector_add`) on ROCm.
+These benchmarks compile and run ROCm workloads on a HIP-visible AMD GPU.
 
 ## Prerequisites
 - ROCm HIP SDK installed (`hipcc` available in PATH)
-- AMD GPU supported by ROCm (for this project: `gfx1101` / RX 7800 XT)
+- AMD GPU supported by ROCm
 
 ## Run
 
-```powershell
-python benchmarks/hip/run_hip_vector_add.py --arch gfx1101 --size 16777216 --runs 20 --warmup 5
+```bash
+python3 benchmarks/hip/run_hip_vector_add.py --arch gfx1100 --size 16777216 --runs 20 --warmup 5
+python3 benchmarks/hip/run_hip_sgemm.py --arch gfx1100 --n 4096 --runs 10 --warmup 3
 ```
 
-The runner writes JSON output to:
+The runners write JSON output to:
 
 - `benchmarks/results/hip/hip_vector_add_<timestamp>.json`
+- `benchmarks/results/hip/hip_sgemm_<timestamp>.json`
 
 ## Output Metrics
 - `mean_ms`
 - `median_ms`
 - `min_ms`
 - `max_ms`
-- `gflops`
-- `bandwidth_gbps`
+- vector add: `gflops`, `bandwidth_gbps`
+- SGEMM: `median_tflops`

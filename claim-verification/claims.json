@@ -2,7 +2,7 @@
   "schema_version": 1,
   "verified_on": "2026-05-28",
   "repo": "AeroNum",
-  "repo_commit": "b727dfb9942c1665f342e84a403e92132128ea96",
+  "repo_commit": "594d33cb9d1ac4d605fc7d148a1119511cbf4433",
   "hardware_summary": {
     "cpu": "AMD Ryzen 9 9950X 16-Core Processor",
     "gpu_0": "Radeon RX 7900 XTX / gfx1100 / PCI device 1002:744c",
@@ -27,6 +27,18 @@
         "claim-verification/results/aeronum_pytorch_matmul_reference_7900xtx_20260528T191500Z/aeronn_gpu_compare.stdout.log",
         "claim-verification/results/aeronum_pytorch_matmul_reference_7900xtx_20260528T191500Z/aeronn_gpu_compare.stderr.log",
         "claim-verification/results/aeronum_pytorch_matmul_reference_7900xtx_20260528T191500Z/hardware_software_metadata.txt"
+      ]
+    },
+    {
+      "id": "aeronum_hip_sgemm_4096_20260528",
+      "status": "verified_reference_only",
+      "claim": "HIP/hipBLAS SGEMM passed on Radeon RX 7900 XTX for 4096x4096 float32 matrices with 10 measured runs, median 4.953900 ms, and 27.743587 TFLOP/s. This is a ROCm library reference benchmark, not an AeroNum-language matmul speedup claim.",
+      "artifacts": [
+        "claim-verification/results/aeronum_hip_sgemm_4096_7900xtx_20260528T222200Z/claim_result.json",
+        "claim-verification/results/aeronum_hip_sgemm_4096_7900xtx_20260528T222200Z/run_hip_sgemm.stdout.log",
+        "claim-verification/results/aeronum_hip_sgemm_4096_7900xtx_20260528T222200Z/run_hip_sgemm.stderr.log",
+        "claim-verification/results/aeronum_hip_sgemm_4096_7900xtx_20260528T222200Z/command_config.txt",
+        "claim-verification/results/aeronum_hip_sgemm_4096_7900xtx_20260528T222200Z/hardware_software_metadata.txt"
       ]
     },
     {

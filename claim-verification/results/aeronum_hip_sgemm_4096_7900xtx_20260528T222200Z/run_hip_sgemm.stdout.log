@@ -1,0 +1,6 @@
+Compiling: /usr/bin/hipcc /home/rob/.openclaw.old/workspace/repos/AeroNum/benchmarks/hip/sgemm_4096.hip.cpp -O3 --offload-arch=gfx1100 -lhipblas -o /home/rob/.openclaw.old/workspace/repos/AeroNum/benchmarks/results/hip/sgemm_4096_hip.exe
+Running: /home/rob/.openclaw.old/workspace/repos/AeroNum/benchmarks/results/hip/sgemm_4096_hip.exe --n 4096 --runs 10 --warmup 3
+hip_sgemm: n=4096 runs=10 median_ms=4.9539 median_tflops=27.7436
+{"backend":"hipblas_rocm","kernel":"sgemm","n":4096,"runs":10,"warmup":3,"mean_ms":4.917824,"median_ms":4.953900,"min_ms":4.517524,"max_ms":5.213853,"median_tflops":27.743587,"validation":"sampled_all_ones_expected_n"}
+
+Saved result: claim-verification/results/aeronum_hip_sgemm_4096_7900xtx_20260528T222200Z/claim_result.json

@@ -1,0 +1,6 @@
+Commands:
+cargo run --release -p aeronum-core --example tiny_transformer_train -- --epochs 80 --runs 5
+python3 labs/compare/tiny_transformer_train_reference.py --epochs 80 --runs 5 --device cuda --output claim-verification/results/aeronum_tiny_transformer_train_7900xtx_20260528T233801Z/pytorch_tiny_transformer_train_result.json
+
+Purpose:
+Run a deterministic causal self-attention language-model output-projection training analogue in AeroNum core and a PyTorch ROCm reference with matching tensors. This is not GPT-2 training.

@@ -89,6 +89,15 @@ Verified current results:
   transformer-forward analogue, not GPT-2 training and not an
   AeroNum-vs-PyTorch GPT-2 speedup
   ([result JSON](claim-verification/results/aeronum_tiny_transformer_forward_7900xtx_20260528T233024Z/claim_result.json)).
+- `core/examples/tiny_transformer_train.rs` and
+  `labs/compare/tiny_transformer_train_reference.py` ran a deterministic
+  causal self-attention language-model output-projection training analogue and
+  matching PyTorch ROCm reference with the same tensors. AeroNum loss decreased
+  from `2.79611373` to `0.28436375`; PyTorch loss decreased from `2.79611397`
+  to `0.28436361`; the final-loss absolute difference was `0.0000001375`.
+  This is a tiny transformer-training analogue, not GPT-2 training and not an
+  AeroNum-vs-PyTorch GPT-2 speedup
+  ([result JSON](claim-verification/results/aeronum_tiny_transformer_train_7900xtx_20260528T233801Z/claim_result.json)).
 - `labs/compare/aeronn_gpu_compare.py` measured a PyTorch reference 4096x4096
   matmul on the same machine: CPU 0.1620 s, GPU 0.0067 s, relative speedup
   24.28x. This is a PyTorch CPU-vs-GPU reference only, not an AeroNum matmul
@@ -145,7 +154,8 @@ Blocked or omitted claims:
   GPT-2 training result was produced. The current
   `labs/compare/transformer_compare.py` result is a PyTorch/Hugging Face
   reference only. The current AeroNum-owned language-model results are a tiny
-  explicit-gradient training analogue and a tiny causal self-attention forward
+  explicit-gradient training analogue, a tiny causal self-attention forward
+  analogue, and a tiny causal self-attention output-projection training
   analogue, not GPT-2.
 - Broad GPU 4096x4096 speedup claims are omitted. The verified current
   same-run AeroNum core hipBLAS vs PyTorch ROCm measurement is near parity

@@ -1,0 +1,1 @@
+{"benchmark":"aeronum_tiny_transformer_train","training_scope":"causal_self_attention_lm_output_projection_training_not_gpt2","epochs":80,"runs":5,"sequence_len":4,"dim":8,"vocab":16,"total_tokens":1600,"first_loss":2.79611373,"last_loss":0.28436375,"loss_decreased":true,"checksum":7.50399017,"elapsed_seconds":0.00262540,"tokens_per_second":609430.479599}

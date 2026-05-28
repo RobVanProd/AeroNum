@@ -1,0 +1,20 @@
+{
+  "benchmark": "pytorch_tiny_transformer_train_reference",
+  "training_scope": "pytorch_reference_for_causal_self_attention_lm_output_projection_training_not_gpt2",
+  "device": "cuda",
+  "torch": "2.5.1+rocm6.2",
+  "torch_hip": "6.2.41133-dd7f95766",
+  "cuda_available": true,
+  "epochs": 80,
+  "runs": 5,
+  "sequence_len": 4,
+  "dim": 8,
+  "vocab": 16,
+  "total_tokens": 1600,
+  "first_loss": 2.796113967895508,
+  "last_loss": 0.28436361253261566,
+  "loss_decreased": true,
+  "checksum": 7.504032135009766,
+  "elapsed_seconds": 0.24360170300042228,
+  "tokens_per_second": 6568.098581795327
+}

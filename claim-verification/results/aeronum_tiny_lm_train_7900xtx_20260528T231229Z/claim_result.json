@@ -1,0 +1,48 @@
+{
+  "claim_id": "aeronum_tiny_lm_train_reference_20260528",
+  "status": "verified_current_limited",
+  "benchmark": "AeroNum explicit-gradient tiny language-model training with PyTorch reference",
+  "repo_commit_before_run": "ee4f1a029624c1dcca48a1709d80e33e3f41c34d",
+  "commands": {
+    "aeronum": "cargo run --release -p aeronum-core --example tiny_lm_train -- --epochs 80 --runs 5",
+    "pytorch": "python3 labs/compare/tiny_lm_train_reference.py --epochs 80 --runs 5 --device cuda --output claim-verification/results/aeronum_tiny_lm_train_7900xtx_20260528T231229Z/pytorch_tiny_lm_result.json",
+    "test": "cargo test -p aeronum-core"
+  },
+  "exit_codes": {
+    "aeronum": 0,
+    "pytorch": 0,
+    "test": 0
+  },
+  "aeronum_result": {
+    "benchmark": "aeronum_tiny_lm_train",
+    "epochs": 80,
+    "runs": 5,
+    "vocab": 16,
+    "dim": 8,
+    "sequence_len": 64,
+    "total_tokens": 25600,
+    "first_loss": 2.759950,
+    "last_loss": 0.516646,
+    "loss_decreased": true,
+    "elapsed_seconds": 0.032390,
+    "tokens_per_second": 790368.788238
+  },
+  "pytorch_result": {
+    "benchmark": "pytorch_tiny_lm_train_reference",
+    "device": "cuda",
+    "torch": "2.5.1+rocm6.2",
+    "torch_hip": "6.2.41133-dd7f95766",
+    "epochs": 80,
+    "runs": 5,
+    "vocab": 16,
+    "dim": 8,
+    "sequence_len": 64,
+    "total_tokens": 25600,
+    "first_loss": 2.759950987994671,
+    "last_loss": 0.5166460103355348,
+    "loss_decreased": true,
+    "elapsed_seconds": 3.069791548000012,
+    "tokens_per_second": 8339.328452669224
+  },
+  "claim_scope": "Verifies a tiny explicit-gradient language-model training loop and a matching PyTorch ROCm reference. This is not GPT-2, not an autograd benchmark, and not evidence for an AeroNum-vs-PyTorch GPT-2 speedup."
+}

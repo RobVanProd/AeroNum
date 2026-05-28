@@ -1,0 +1,2 @@
+aeronum_tiny_lm_train: epochs=80 runs=5 total_tokens=25600 first_loss=2.759950 last_loss=0.516646 tokens_per_second=790368.788238
+{"benchmark":"aeronum_tiny_lm_train","epochs":80,"runs":5,"vocab":16,"dim":8,"sequence_len":64,"total_tokens":25600,"first_loss":2.759950,"last_loss":0.516646,"loss_decreased":true,"elapsed_seconds":0.032390,"tokens_per_second":790368.788238,"training_scope":"explicit_gradient_tiny_language_model_not_gpt2"}

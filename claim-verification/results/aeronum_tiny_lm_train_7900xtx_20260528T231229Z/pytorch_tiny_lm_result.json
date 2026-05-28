@@ -1,0 +1,18 @@
+{
+  "benchmark": "pytorch_tiny_lm_train_reference",
+  "device": "cuda",
+  "torch": "2.5.1+rocm6.2",
+  "torch_hip": "6.2.41133-dd7f95766",
+  "epochs": 80,
+  "runs": 5,
+  "vocab": 16,
+  "dim": 8,
+  "sequence_len": 64,
+  "total_tokens": 25600,
+  "first_loss": 2.759950987994671,
+  "last_loss": 0.5166460103355348,
+  "loss_decreased": true,
+  "elapsed_seconds": 3.069791548000012,
+  "tokens_per_second": 8339.328452669224,
+  "training_scope": "pytorch_reference_for_explicit_gradient_tiny_language_model_not_gpt2"
+}

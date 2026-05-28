@@ -65,6 +65,14 @@ Verified current results:
   6-head, 384-dim run completed on the Radeon RX 7900 XTX with 24,576 total
   tokens in 0.7213051319 s, or 34,071.572366 tokens/s
   ([result JSON](claim-verification/results/aeronum_pytorch_gpt2_reference_7900xtx_20260528T224500Z/claim_result.json)).
+- `core/examples/tiny_lm_train.rs` now runs an AeroNum-owned explicit-gradient
+  tiny language-model training loop, with a matching PyTorch ROCm reference in
+  `labs/compare/tiny_lm_train_reference.py`. Both commands trained 25,600
+  tokens and reduced loss from about 2.75995 to 0.516646. The release AeroNum
+  example reported 790,368.788238 tokens/s; the PyTorch ROCm reference reported
+  8,339.328453 tokens/s. This is a tiny training analogue, not GPT-2 and not an
+  AeroNum-vs-PyTorch GPT-2 speedup
+  ([result JSON](claim-verification/results/aeronum_tiny_lm_train_7900xtx_20260528T231229Z/claim_result.json)).
 - `labs/compare/aeronn_gpu_compare.py` measured a PyTorch reference 4096x4096
   matmul on the same machine: CPU 0.1620 s, GPU 0.0067 s, relative speedup
   24.28x. This is a PyTorch CPU-vs-GPU reference only, not an AeroNum matmul
@@ -111,7 +119,8 @@ Blocked or omitted claims:
 - GPT-2 training vs PyTorch is omitted because no current AeroNum-vs-PyTorch
   GPT-2 training result was produced. The current
   `labs/compare/transformer_compare.py` result is a PyTorch/Hugging Face
-  reference only.
+  reference only. The current AeroNum-owned training result is a tiny
+  explicit-gradient language-model analogue, not GPT-2.
 - GPU 4096x4096 speedup versus another framework is omitted. The verified
   current result is an AeroNum core HIP/hipBLAS 4096x4096 SGEMM measurement
   without a same-run baseline comparison.

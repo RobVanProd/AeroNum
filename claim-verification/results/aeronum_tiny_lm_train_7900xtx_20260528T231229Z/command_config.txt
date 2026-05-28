@@ -1,0 +1,6 @@
+aeronum_command: cargo run --release -p aeronum-core --example tiny_lm_train -- --epochs 80 --runs 5
+pytorch_command: python3 labs/compare/tiny_lm_train_reference.py --epochs 80 --runs 5 --device cuda --output claim-verification/results/aeronum_tiny_lm_train_7900xtx_20260528T231229Z/pytorch_tiny_lm_result.json
+test_command: cargo test -p aeronum-core
+repo: /home/rob/.openclaw.old/workspace/repos/AeroNum
+commit_before_run: ee4f1a029624c1dcca48a1709d80e33e3f41c34d
+timestamp_utc: 2026-05-28T23:12:29Z

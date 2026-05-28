@@ -1,0 +1,5 @@
+Command:
+cargo run -p aeronum-core --example gguf_header_smoke -- --model /home/rob/models/mistralai_Mistral-Small-3.1-24B-Instruct-2503-Q4_K_M.gguf --device rocm --max-tokens 16 --prompt "AeroNum GGUF directory smoke prompt"
+
+Purpose:
+Parse GGUF metadata and tensor directory with AeroNum core, then run existing placeholder generation path. This is not token inference throughput.

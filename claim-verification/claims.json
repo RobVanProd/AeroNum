@@ -160,19 +160,19 @@
       ]
     },
     {
-      "id": "aeronum_core_gguf_header_smoke_20260528",
-      "status": "verified_current_smoke",
-      "claim": "aeronum-core validates GGUF file headers before constructing a LlamaModel. The repo-owned command `cargo run -p aeronum-core --example gguf_header_smoke -- --model /home/rob/models/mistralai_Mistral-Small-3.1-24B-Instruct-2503-Q4_K_M.gguf --device rocm --max-tokens 16 --prompt AeroNum GGUF smoke prompt` passed against local model SHA-256 c5743c1bf39db0ae8a5ade5df0374b8e9e492754a199cfdad7ef393c1590f7c0 and reported GGUF version 3, 363 tensors, and 45 metadata entries. This is a header/load smoke result with placeholder generation, not real GGUF token inference throughput.",
+      "id": "aeronum_core_gguf_directory_smoke_20260528",
+      "status": "verified_current_limited",
+      "claim": "aeronum-core parses GGUF metadata and tensor directory records before constructing a LlamaModel. The repo-owned command `cargo run -p aeronum-core --example gguf_header_smoke -- --model /home/rob/models/mistralai_Mistral-Small-3.1-24B-Instruct-2503-Q4_K_M.gguf --device rocm --max-tokens 16 --prompt AeroNum GGUF directory smoke prompt` passed against local model SHA-256 c5743c1bf39db0ae8a5ade5df0374b8e9e492754a199cfdad7ef393c1590f7c0 and reported GGUF version 3, 363 parsed tensor infos, 45 parsed metadata entries, architecture llama, and quantization version 2. This is a directory/load smoke result with placeholder generation, not real GGUF token inference throughput.",
       "artifacts": [
         "core/src/aeronn/model.rs",
         "core/examples/gguf_header_smoke.rs",
-        "claim-verification/results/aeronum_core_gguf_header_smoke_7900xtx_20260528T230321Z/claim_result.json",
-        "claim-verification/results/aeronum_core_gguf_header_smoke_7900xtx_20260528T230321Z/gguf_header_smoke.stdout.log",
-        "claim-verification/results/aeronum_core_gguf_header_smoke_7900xtx_20260528T230321Z/gguf_header_smoke.stderr.log",
-        "claim-verification/results/aeronum_core_gguf_header_smoke_7900xtx_20260528T230321Z/cargo_test_gguf.stdout.log",
-        "claim-verification/results/aeronum_core_gguf_header_smoke_7900xtx_20260528T230321Z/cargo_test_gguf.stderr.log",
-        "claim-verification/results/aeronum_core_gguf_header_smoke_7900xtx_20260528T230321Z/command_config.txt",
-        "claim-verification/results/aeronum_core_gguf_header_smoke_7900xtx_20260528T230321Z/hardware_software_metadata.txt"
+        "claim-verification/results/aeronum_core_gguf_directory_smoke_7900xtx_20260528T232438Z/claim_result.json",
+        "claim-verification/results/aeronum_core_gguf_directory_smoke_7900xtx_20260528T232438Z/gguf_directory_smoke_result.json",
+        "claim-verification/results/aeronum_core_gguf_directory_smoke_7900xtx_20260528T232438Z/gguf_directory_smoke.stdout.log",
+        "claim-verification/results/aeronum_core_gguf_directory_smoke_7900xtx_20260528T232438Z/gguf_directory_smoke.stderr.log",
+        "claim-verification/results/aeronum_core_gguf_directory_smoke_7900xtx_20260528T232438Z/gguf_directory_smoke.exit_code.txt",
+        "claim-verification/results/aeronum_core_gguf_directory_smoke_7900xtx_20260528T232438Z/command_config.txt",
+        "claim-verification/results/aeronum_core_gguf_directory_smoke_7900xtx_20260528T232438Z/hardware_software_metadata.txt"
       ]
     },
     {
@@ -245,11 +245,11 @@
     {
       "id": "aeronum_gpt2_nccl_gguf_claims_20260528",
       "status": "blocked",
-      "claim": "AeroNum-vs-PyTorch GPT-2 training speedup, NCCL/MPI multi-GPU scaling, and AeroNum-native GGUF token-inference throughput claims are not included because no current AeroNum artifact or rerun verified them. A PyTorch/Hugging Face GPT-2 reference passed, an AeroNum-owned tiny language-model training analogue passed but is not GPT-2, NCCL/DDP world size 1 passed, the current preflight blocks the local two-device NCCL topology before launch, post-reboot NCCL attempts failed on the local Radeon RX 7900 XTX plus integrated AMD Radeon Graphics topology, a two-rank single-XTX attempt was rejected by RCCL as duplicate GPU usage, the AeroNum GGUF core result is only a header/load smoke with placeholder generation, and the GGUF token-inference result is a llama.cpp reference through an AeroNum repo wrapper.",
+      "claim": "AeroNum-vs-PyTorch GPT-2 training speedup, NCCL/MPI multi-GPU scaling, and AeroNum-native GGUF token-inference throughput claims are not included because no current AeroNum artifact or rerun verified them. A PyTorch/Hugging Face GPT-2 reference passed, an AeroNum-owned tiny language-model training analogue passed but is not GPT-2, NCCL/DDP world size 1 passed, the current preflight blocks the local two-device NCCL topology before launch, post-reboot NCCL attempts failed on the local Radeon RX 7900 XTX plus integrated AMD Radeon Graphics topology, a two-rank single-XTX attempt was rejected by RCCL as duplicate GPU usage, the AeroNum GGUF core result parses metadata and tensor directory records but still reaches only placeholder generation, and the GGUF token-inference result is a llama.cpp reference through an AeroNum repo wrapper.",
       "artifacts": [
         "claim-verification/results/aeronum_pytorch_gpt2_reference_7900xtx_20260528T224500Z/claim_result.json",
         "claim-verification/results/aeronum_tiny_lm_train_7900xtx_20260528T231229Z/claim_result.json",
-        "claim-verification/results/aeronum_core_gguf_header_smoke_7900xtx_20260528T230321Z/claim_result.json",
+        "claim-verification/results/aeronum_core_gguf_directory_smoke_7900xtx_20260528T232438Z/claim_result.json",
         "claim-verification/results/aeronum_llama_cpp_cli_gguf_7900xtx_20260528T230730Z/claim_result.json",
         "claim-verification/results/aeronum_nccl_ddp_single_gpu_7900xtx_20260528T224500Z/claim_result.json",
         "claim-verification/results/aeronum_nccl_preflight_7900xtx_20260528T231927Z/claim_result.json",

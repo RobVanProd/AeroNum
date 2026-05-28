@@ -1,0 +1,54 @@
+{
+  "claim_id": "aeronum_core_gguf_directory_smoke_20260528",
+  "status": "verified_current_limited",
+  "claim": "aeronum-core parses the GGUF metadata table and tensor directory for the local Mistral GGUF file. The fresh run reported GGUF version 3, 363 tensor infos parsed, 45 metadata entries parsed, architecture llama, and quantization version 2. The generation path remains placeholder output, so this is not AeroNum-native GGUF token inference throughput.",
+  "result": {
+    "benchmark": "aeronum_core_gguf_directory_smoke",
+    "model_path": "/home/rob/models/mistralai_Mistral-Small-3.1-24B-Instruct-2503-Q4_K_M.gguf",
+    "gguf_version": 3,
+    "tensor_count": 363,
+    "metadata_kv_count": 45,
+    "parsed_tensor_infos": 363,
+    "parsed_metadata_entries": 45,
+    "architecture": "llama",
+    "quantization_version": "2",
+    "sample_metadata_keys": [
+      "general.architecture",
+      "general.type",
+      "general.name",
+      "general.version",
+      "general.finetune",
+      "general.basename",
+      "general.size_label",
+      "general.license",
+      "general.base_model.count",
+      "general.base_model.0.name",
+      "general.base_model.0.version",
+      "general.base_model.0.organization"
+    ],
+    "sample_tensor_names": [
+      "output.weight",
+      "output_norm.weight",
+      "token_embd.weight",
+      "blk.0.attn_k.weight",
+      "blk.0.attn_norm.weight",
+      "blk.0.attn_output.weight",
+      "blk.0.attn_q.weight",
+      "blk.0.attn_v.weight"
+    ],
+    "device": "rocm",
+    "max_tokens": 16,
+    "elapsed_ms": 168.594407,
+    "output_kind": "placeholder",
+    "output": "(ROCm output placeholder)"
+  },
+  "artifacts": [
+    "claim-verification/results/aeronum_core_gguf_directory_smoke_7900xtx_20260528T232438Z/claim_result.json",
+    "claim-verification/results/aeronum_core_gguf_directory_smoke_7900xtx_20260528T232438Z/gguf_directory_smoke_result.json",
+    "claim-verification/results/aeronum_core_gguf_directory_smoke_7900xtx_20260528T232438Z/gguf_directory_smoke.stdout.log",
+    "claim-verification/results/aeronum_core_gguf_directory_smoke_7900xtx_20260528T232438Z/gguf_directory_smoke.stderr.log",
+    "claim-verification/results/aeronum_core_gguf_directory_smoke_7900xtx_20260528T232438Z/gguf_directory_smoke.exit_code.txt",
+    "claim-verification/results/aeronum_core_gguf_directory_smoke_7900xtx_20260528T232438Z/command_config.txt",
+    "claim-verification/results/aeronum_core_gguf_directory_smoke_7900xtx_20260528T232438Z/hardware_software_metadata.txt"
+  ]
+}

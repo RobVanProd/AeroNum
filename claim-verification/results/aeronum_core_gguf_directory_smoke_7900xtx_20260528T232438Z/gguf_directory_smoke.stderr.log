@@ -1,0 +1,3 @@
+   Compiling aeronum-core v0.0.0 (/home/rob/.openclaw.old/workspace/repos/AeroNum/core)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.23s
+     Running `target/debug/examples/gguf_header_smoke --model /home/rob/models/mistralai_Mistral-Small-3.1-24B-Instruct-2503-Q4_K_M.gguf --device rocm --max-tokens 16 --prompt 'AeroNum GGUF directory smoke prompt'`

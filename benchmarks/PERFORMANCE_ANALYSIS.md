@@ -119,7 +119,7 @@ All implementations performed identical operations:
 
 ### For Numerical Computing
 1. **Development Velocity**: 157× faster compilation enables rapid iteration
-2. **Production Performance**: C++-equivalent runtime performance
+2. **Measured Performance**: C++-equivalent runtime performance
 3. **Memory Safety**: Zero-cost safety guarantees
 4. **Scalability**: Linear compilation scaling vs C++'s quadratic
 
@@ -127,7 +127,7 @@ All implementations performed identical operations:
 1. **Interactive Development**: Near-instant compilation feedback
 2. **Large-Scale Simulations**: C++-level performance with safety
 3. **Prototyping Speed**: Python-like development experience
-4. **Production Deployment**: No performance penalty
+4. **Deployment**: No performance penalty
 
 ### For High-Performance Computing
 1. **Build System Efficiency**: Massive compilation time savings

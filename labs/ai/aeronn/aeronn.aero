@@ -1,7 +1,7 @@
 // ============================================================================
 // AERO AI: AeroNN Modular Deep Learning Framework (v0.3.0)
 // ============================================================================
-// AeroNN is a production-grade neural network framework built natively in the
+// AeroNN is a repo-local neural network framework built natively in the
 // Aero programming language. It leverages the underlying AeroNum substrate
 // and the reverse-mode Tape Autodiff engine.
 //

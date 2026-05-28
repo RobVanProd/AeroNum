@@ -29,6 +29,15 @@ fn json_escape(value: &str) -> String {
     value.replace('\\', "\\\\").replace('"', "\\\"")
 }
 
+fn json_string_array(values: &[String]) -> String {
+    let items = values
+        .iter()
+        .map(|value| format!("\"{}\"", json_escape(value)))
+        .collect::<Vec<_>>()
+        .join(",");
+    format!("[{items}]")
+}
+
 fn main() {
     let model_path = parse_arg("--model", "");
     if model_path.is_empty() {
@@ -44,16 +53,42 @@ fn main() {
     let start = Instant::now();
     let mut model = LlamaModel::try_load_gguf(&model_path).expect("load GGUF header");
     let header = model.gguf_header.clone().expect("GGUF header present");
+    let metadata_keys = header
+        .metadata
+        .iter()
+        .take(12)
+        .map(|entry| entry.key.clone())
+        .collect::<Vec<_>>();
+    let tensor_names = header
+        .tensors
+        .iter()
+        .take(8)
+        .map(|tensor| tensor.name.clone())
+        .collect::<Vec<_>>();
+    let architecture = header
+        .metadata_value("general.architecture")
+        .map(|value| value.summary())
+        .unwrap_or_default();
+    let quantization_version = header
+        .metadata_value("general.quantization_version")
+        .map(|value| value.summary())
+        .unwrap_or_default();
     model.to(&device);
     let output = model.generate(&prompt, max_tokens, temperature);
     let elapsed_ms = start.elapsed().as_secs_f64() * 1000.0;
 
     println!(
-        "{{\"benchmark\":\"aeronum_core_gguf_header_smoke\",\"model_path\":\"{}\",\"gguf_version\":{},\"tensor_count\":{},\"metadata_kv_count\":{},\"device\":\"{}\",\"max_tokens\":{},\"elapsed_ms\":{:.6},\"output_kind\":\"placeholder\",\"output\":\"{}\"}}",
+        "{{\"benchmark\":\"aeronum_core_gguf_directory_smoke\",\"model_path\":\"{}\",\"gguf_version\":{},\"tensor_count\":{},\"metadata_kv_count\":{},\"parsed_tensor_infos\":{},\"parsed_metadata_entries\":{},\"architecture\":\"{}\",\"quantization_version\":\"{}\",\"sample_metadata_keys\":{},\"sample_tensor_names\":{},\"device\":\"{}\",\"max_tokens\":{},\"elapsed_ms\":{:.6},\"output_kind\":\"placeholder\",\"output\":\"{}\"}}",
         json_escape(&model_path),
         header.version,
         header.tensor_count,
         header.metadata_kv_count,
+        header.tensors.len(),
+        header.metadata.len(),
+        json_escape(&architecture),
+        json_escape(&quantization_version),
+        json_string_array(&metadata_keys),
+        json_string_array(&tensor_names),
         json_escape(&device),
         max_tokens,
         elapsed_ms,

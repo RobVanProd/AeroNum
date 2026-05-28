@@ -111,6 +111,22 @@
       ]
     },
     {
+      "id": "aeronum_core_gguf_header_smoke_20260528",
+      "status": "verified_current_smoke",
+      "claim": "aeronum-core validates GGUF file headers before constructing a LlamaModel. The repo-owned command `cargo run -p aeronum-core --example gguf_header_smoke -- --model /home/rob/models/mistralai_Mistral-Small-3.1-24B-Instruct-2503-Q4_K_M.gguf --device rocm --max-tokens 16 --prompt AeroNum GGUF smoke prompt` passed against local model SHA-256 c5743c1bf39db0ae8a5ade5df0374b8e9e492754a199cfdad7ef393c1590f7c0 and reported GGUF version 3, 363 tensors, and 45 metadata entries. This is a header/load smoke result with placeholder generation, not real GGUF token inference throughput.",
+      "artifacts": [
+        "core/src/aeronn/model.rs",
+        "core/examples/gguf_header_smoke.rs",
+        "claim-verification/results/aeronum_core_gguf_header_smoke_7900xtx_20260528T230321Z/claim_result.json",
+        "claim-verification/results/aeronum_core_gguf_header_smoke_7900xtx_20260528T230321Z/gguf_header_smoke.stdout.log",
+        "claim-verification/results/aeronum_core_gguf_header_smoke_7900xtx_20260528T230321Z/gguf_header_smoke.stderr.log",
+        "claim-verification/results/aeronum_core_gguf_header_smoke_7900xtx_20260528T230321Z/cargo_test_gguf.stdout.log",
+        "claim-verification/results/aeronum_core_gguf_header_smoke_7900xtx_20260528T230321Z/cargo_test_gguf.stderr.log",
+        "claim-verification/results/aeronum_core_gguf_header_smoke_7900xtx_20260528T230321Z/command_config.txt",
+        "claim-verification/results/aeronum_core_gguf_header_smoke_7900xtx_20260528T230321Z/hardware_software_metadata.txt"
+      ]
+    },
+    {
       "id": "aeronum_aero_compiler_v1_matrix_examples_20260528",
       "status": "verified_current_limited",
       "claim": "After updating the vendored aero-compiler/aero binary from Aero compiler version 0.1.0 to 1.0.0, SHA-256 2bf72d1965f0d515428a570044da134cd382e91c9550ddd015ddc4a8b95a1b3e, repo-local ./aero-compiler/aero run executed matrix/arithmetic Aero examples that previously hit the old compiler's binary-expression failure: examples/aero/minimal_aeronum.aero reported exit code 60, labs/benchmarks/aero/real_matrix_operations.aero reported exit code 234, and tests/aero/test_matrix_operations.aero reported exit code 42. This does not verify a 4096x4096 AeroNum GPU matmul speedup.",
@@ -166,9 +182,10 @@
     {
       "id": "aeronum_gpt2_nccl_gguf_claims_20260528",
       "status": "blocked",
-      "claim": "AeroNum-vs-PyTorch GPT-2 training speedup, NCCL/MPI multi-GPU scaling, and GGUF inference claims are not included because no current AeroNum artifact or rerun verified them. A PyTorch/Hugging Face GPT-2 reference passed, NCCL/DDP world size 1 passed, post-reboot NCCL attempts failed on the local Radeon RX 7900 XTX plus integrated AMD Radeon Graphics topology, and a two-rank single-XTX attempt was rejected by RCCL as duplicate GPU usage.",
+      "claim": "AeroNum-vs-PyTorch GPT-2 training speedup, NCCL/MPI multi-GPU scaling, and GGUF token-inference throughput claims are not included because no current AeroNum artifact or rerun verified them. A PyTorch/Hugging Face GPT-2 reference passed, NCCL/DDP world size 1 passed, post-reboot NCCL attempts failed on the local Radeon RX 7900 XTX plus integrated AMD Radeon Graphics topology, a two-rank single-XTX attempt was rejected by RCCL as duplicate GPU usage, and the AeroNum GGUF result is only a header/load smoke with placeholder generation.",
       "artifacts": [
         "claim-verification/results/aeronum_pytorch_gpt2_reference_7900xtx_20260528T224500Z/claim_result.json",
+        "claim-verification/results/aeronum_core_gguf_header_smoke_7900xtx_20260528T230321Z/claim_result.json",
         "claim-verification/results/aeronum_nccl_ddp_single_gpu_7900xtx_20260528T224500Z/claim_result.json",
         "claim-verification/results/aeronum_nccl_ddp_two_device_attempt_7900xtx_20260528T224500Z/distributed_compare.stdout.log",
         "claim-verification/results/aeronum_nccl_ddp_two_device_attempt_7900xtx_20260528T224500Z/distributed_compare.stderr.log",

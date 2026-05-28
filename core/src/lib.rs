@@ -5,7 +5,7 @@
 pub mod aeronn;
 pub mod gpu;
 
-pub use aeronn::LlamaModel;
+pub use aeronn::{GgufError, GgufHeader, LlamaModel};
 pub use gpu::{Backend, Device, GpuDevice, GpuError, HipBlas, HipBuffer, HipRuntime};
 #[derive(Clone, Debug, PartialEq)]
 pub struct NdArray {

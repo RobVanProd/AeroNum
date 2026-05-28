@@ -1,0 +1,5 @@
+command: cargo run -p aeronum-core --example gguf_header_smoke -- --model /home/rob/models/mistralai_Mistral-Small-3.1-24B-Instruct-2503-Q4_K_M.gguf --device rocm --max-tokens 16 --prompt AeroNum GGUF smoke prompt
+test_command: cargo test -p aeronum-core gguf -- --nocapture
+repo: /home/rob/.openclaw.old/workspace/repos/AeroNum
+commit_before_run: 7a12c9d3e8ad0bd7340073ffa673f48759f3e244
+timestamp_utc: 2026-05-28T23:03:21Z

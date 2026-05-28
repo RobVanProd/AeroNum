@@ -74,6 +74,15 @@ Verified current results:
   benchmark instead of a simulated message. NCCL world size 1 passed on GPU 0
   with 3 steps, mean rank time 0.3393106461 s, and 565.853156 tokens/s
   ([result JSON](claim-verification/results/aeronum_nccl_ddp_single_gpu_7900xtx_20260528T224500Z/claim_result.json)).
+- `aeronum-core` now validates GGUF file headers before constructing a
+  `LlamaModel`. The repo-owned command
+  `cargo run -p aeronum-core --example gguf_header_smoke -- --model /home/rob/models/mistralai_Mistral-Small-3.1-24B-Instruct-2503-Q4_K_M.gguf --device rocm --max-tokens 16 --prompt "AeroNum GGUF smoke prompt"`
+  passed against the local Mistral GGUF file, SHA-256
+  `c5743c1bf39db0ae8a5ade5df0374b8e9e492754a199cfdad7ef393c1590f7c0`, and
+  reported GGUF version 3, 363 tensors, and 45 metadata entries. This is a
+  header/load smoke result with placeholder generation, not real GGUF token
+  inference throughput
+  ([result JSON](claim-verification/results/aeronum_core_gguf_header_smoke_7900xtx_20260528T230321Z/claim_result.json)).
 - After updating the vendored compiler from Aero `0.1.0` to `1.0.0`, the
   repo-local command `./aero-compiler/aero run` executed matrix/arithmetic Aero
   examples that previously hit the old compiler's binary-expression failure:
@@ -107,8 +116,9 @@ Blocked or omitted claims:
   as duplicate GPU usage. No compatible second discrete ROCm GPU was verified
   on this machine
   ([debug result JSON](claim-verification/results/aeronum_nccl_debug_20260528T225759Z/claim_result.json)).
-- GGUF/inference benchmark claims are omitted because no current raw GGUF
-  inference benchmark result was found or rerun.
+- GGUF token-inference throughput claims are omitted. The verified current
+  AeroNum result validates a local GGUF header and reaches placeholder
+  generation, but does not load GGUF tensors or run real token inference.
 
 Historical benchmark CSVs remain in the repo, but README claims above only use
 fresh local reruns and captured artifacts.

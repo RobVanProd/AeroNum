@@ -1,0 +1,6 @@
+
+running 2 tests
+test aeronn::model::tests::reads_minimal_gguf_header ... ok
+test aeronn::model::tests::rejects_non_gguf_magic ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 32 filtered out; finished in 0.00s

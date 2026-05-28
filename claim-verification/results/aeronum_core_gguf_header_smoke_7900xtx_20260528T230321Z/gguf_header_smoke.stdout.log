@@ -1,0 +1,4 @@
+Loaded GGUF header from /home/rob/models/mistralai_Mistral-Small-3.1-24B-Instruct-2503-Q4_K_M.gguf (version 3, tensors 363, metadata kvs 45)
+Offloaded 0 tensors to ROCm device 0 (Radeon RX 7900 XTX)
+Generated 16 tokens in 0.0000s on Rocm
+{"benchmark":"aeronum_core_gguf_header_smoke","model_path":"/home/rob/models/mistralai_Mistral-Small-3.1-24B-Instruct-2503-Q4_K_M.gguf","gguf_version":3,"tensor_count":363,"metadata_kv_count":45,"device":"rocm","max_tokens":16,"elapsed_ms":27.885454,"output_kind":"placeholder","output":"(ROCm output placeholder)"}

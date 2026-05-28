@@ -1,0 +1,27 @@
+{
+  "claim_id": "aeronum_core_gguf_header_smoke_20260528",
+  "status": "verified_current_smoke",
+  "benchmark": "aeronum-core GGUF header smoke",
+  "command": "cargo run -p aeronum-core --example gguf_header_smoke -- --model /home/rob/models/mistralai_Mistral-Small-3.1-24B-Instruct-2503-Q4_K_M.gguf --device rocm --max-tokens 16 --prompt AeroNum GGUF smoke prompt",
+  "test_command": "cargo test -p aeronum-core gguf -- --nocapture",
+  "repo_commit_before_run": "7a12c9d3e8ad0bd7340073ffa673f48759f3e244",
+  "test_exit_code": 0,
+  "run_exit_code": 0,
+  "model": {
+    "path": "/home/rob/models/mistralai_Mistral-Small-3.1-24B-Instruct-2503-Q4_K_M.gguf",
+    "sha256": "c5743c1bf39db0ae8a5ade5df0374b8e9e492754a199cfdad7ef393c1590f7c0",
+    "size": "14G"
+  },
+  "result": {
+    "benchmark": "aeronum_core_gguf_header_smoke",
+    "gguf_version": 3,
+    "tensor_count": 363,
+    "metadata_kv_count": 45,
+    "device": "rocm",
+    "max_tokens": 16,
+    "elapsed_ms": 27.885454,
+    "output_kind": "placeholder",
+    "output": "(ROCm output placeholder)"
+  },
+  "claim_scope": "Verifies that aeronum-core validates a local GGUF file header and reaches the current placeholder generate path on ROCm. This does not verify real GGUF tensor loading or token inference throughput."
+}

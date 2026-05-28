@@ -55,6 +55,21 @@
       ]
     },
     {
+      "id": "aeronum_core_hipblas_vs_pytorch_sgemm_4096_20260528",
+      "status": "verified_current_limited",
+      "claim": "labs/compare/sgemm_4096_compare.py ran a same-run 4096x4096 float32 all-ones comparison between AeroNum core hipBLAS SGEMM and PyTorch ROCm torch.matmul. On the Radeon RX 7900 XTX with 10 measured runs, AeroNum median was 4.955240 ms and PyTorch median was 4.981353 ms, a 1.005270x median-time ratio. This is a near-parity same-run measurement, not a broader speedup claim.",
+      "artifacts": [
+        "labs/compare/sgemm_4096_compare.py",
+        "claim-verification/results/aeronum_sgemm_vs_pytorch_4096_7900xtx_20260528T231630Z/claim_result.json",
+        "claim-verification/results/aeronum_sgemm_vs_pytorch_4096_7900xtx_20260528T231630Z/sgemm_4096_compare_result.json",
+        "claim-verification/results/aeronum_sgemm_vs_pytorch_4096_7900xtx_20260528T231630Z/sgemm_4096_compare.stdout.log",
+        "claim-verification/results/aeronum_sgemm_vs_pytorch_4096_7900xtx_20260528T231630Z/sgemm_4096_compare.stderr.log",
+        "claim-verification/results/aeronum_sgemm_vs_pytorch_4096_7900xtx_20260528T231630Z/cargo_test_core.stdout.log",
+        "claim-verification/results/aeronum_sgemm_vs_pytorch_4096_7900xtx_20260528T231630Z/command_config.txt",
+        "claim-verification/results/aeronum_sgemm_vs_pytorch_4096_7900xtx_20260528T231630Z/hardware_software_metadata.txt"
+      ]
+    },
+    {
       "id": "aeronum_pytorch_matmul_reference_20260528",
       "status": "verified_reference_only",
       "claim": "labs/compare/aeronn_gpu_compare.py measured a PyTorch 4096x4096 CPU-vs-GPU reference: CPU 0.1620 s, GPU 0.0067 s, relative speedup 24.28x. This is not an AeroNum matmul result.",

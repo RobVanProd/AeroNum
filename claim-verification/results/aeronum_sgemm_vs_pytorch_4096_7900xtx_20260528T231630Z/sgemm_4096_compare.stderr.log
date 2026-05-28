@@ -1,0 +1,2 @@
+/home/rob/.openclaw.old/workspace/repos/AeroNum/labs/compare/sgemm_4096_compare.py:82: UserWarning: Attempting to use hipBLASLt on an unsupported architecture! Overriding blas backend to hipblas (Triggered internally at ../aten/src/ATen/Context.cpp:296.)
+  _ = torch.matmul(a, b)

@@ -55,6 +55,13 @@ Verified current results:
   This verifies an AeroNum core HIP/hipBLAS 4096x4096 matmul path, not a
   speedup versus another framework
   ([result JSON](claim-verification/results/aeronum_core_hipblas_sgemm_4096_7900xtx_20260528T232000Z/claim_result.json)).
+- `labs/compare/sgemm_4096_compare.py` now runs a same-run 4096x4096 float32
+  all-ones comparison between AeroNum core hipBLAS SGEMM and PyTorch ROCm
+  `torch.matmul`. On the Radeon RX 7900 XTX with 10 measured runs, AeroNum
+  median was 4.955240 ms and PyTorch median was 4.981353 ms, a 1.005270x
+  median-time ratio. This is a near-parity same-run measurement, not a broader
+  speedup claim
+  ([result JSON](claim-verification/results/aeronum_sgemm_vs_pytorch_4096_7900xtx_20260528T231630Z/claim_result.json)).
 - HIP/hipBLAS SGEMM passed on the Radeon RX 7900 XTX for 4096x4096 float32
   matrices with 10 measured runs, median 4.953900 ms, and 27.743587 TFLOP/s.
   This is a ROCm library reference benchmark, not an AeroNum-language matmul
@@ -121,9 +128,9 @@ Blocked or omitted claims:
   `labs/compare/transformer_compare.py` result is a PyTorch/Hugging Face
   reference only. The current AeroNum-owned training result is a tiny
   explicit-gradient language-model analogue, not GPT-2.
-- GPU 4096x4096 speedup versus another framework is omitted. The verified
-  current result is an AeroNum core HIP/hipBLAS 4096x4096 SGEMM measurement
-  without a same-run baseline comparison.
+- Broad GPU 4096x4096 speedup claims are omitted. The verified current
+  same-run AeroNum core hipBLAS vs PyTorch ROCm measurement is near parity
+  with a 1.005270x median-time ratio on an all-ones SGEMM workload.
 - NCCL/MPI multi-GPU scaling is omitted. A real NCCL/DDP single-GPU smoke test
   passed, but the local two-device attempts using the Radeon RX 7900 XTX plus
   integrated AMD Radeon Graphics failed. After reboot, the default

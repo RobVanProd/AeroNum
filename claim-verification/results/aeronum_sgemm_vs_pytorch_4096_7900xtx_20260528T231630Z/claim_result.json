@@ -1,0 +1,39 @@
+{
+  "claim_id": "aeronum_core_hipblas_vs_pytorch_sgemm_4096_20260528",
+  "status": "verified_current_limited",
+  "benchmark": "same-run AeroNum core hipBLAS SGEMM versus PyTorch ROCm matmul",
+  "repo_commit_before_run": "8c32aed33f3abd9ff778f3f5912ae089a0ff61e1",
+  "commands": {
+    "compare": "python3 labs/compare/sgemm_4096_compare.py --n 4096 --runs 10 --warmup 3 --output claim-verification/results/aeronum_sgemm_vs_pytorch_4096_7900xtx_20260528T231630Z/sgemm_4096_compare_result.json",
+    "test": "cargo test -p aeronum-core"
+  },
+  "exit_codes": {
+    "compare": 0,
+    "test": 0
+  },
+  "aeronum_result": {
+    "backend": "aeronum_core_hipblas",
+    "kernel": "sgemm",
+    "n": 4096,
+    "runs": 10,
+    "warmup": 3,
+    "median_ms": 4.95524,
+    "median_tflops": 27.736087,
+    "validation": "sampled_all_ones_expected_n"
+  },
+  "pytorch_result": {
+    "backend": "pytorch_rocm",
+    "kernel": "torch.matmul",
+    "n": 4096,
+    "runs": 10,
+    "warmup": 3,
+    "median_ms": 4.981352999948285,
+    "median_tflops": 27.59068740429093,
+    "torch": "2.5.1+rocm6.2",
+    "torch_hip": "6.2.41133-dd7f95766",
+    "device": "Radeon RX 7900 XTX",
+    "validation": "sampled_all_ones_expected_n"
+  },
+  "median_ms_ratio_pytorch_over_aeronum": 1.0052697750155968,
+  "claim_scope": "Verifies a same-run 4096x4096 float32 all-ones matmul comparison on the local Radeon RX 7900 XTX. The measured median ratio is near parity; no broader or larger speedup is claimed."
+}

@@ -1,0 +1,5 @@
+command: python3 labs/compare/sgemm_4096_compare.py --n 4096 --runs 10 --warmup 3 --output claim-verification/results/aeronum_sgemm_vs_pytorch_4096_7900xtx_20260528T231630Z/sgemm_4096_compare_result.json
+test_command: cargo test -p aeronum-core
+repo: /home/rob/.openclaw.old/workspace/repos/AeroNum
+commit_before_run: 8c32aed33f3abd9ff778f3f5912ae089a0ff61e1
+timestamp_utc: 2026-05-28T23:16:30Z

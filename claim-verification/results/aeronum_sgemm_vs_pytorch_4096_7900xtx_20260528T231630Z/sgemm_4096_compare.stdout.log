@@ -1,0 +1,60 @@
+{
+  "benchmark": "aeronum_core_hipblas_vs_pytorch_rocm_sgemm_4096",
+  "n": 4096,
+  "runs": 10,
+  "warmup": 3,
+  "aeronum": {
+    "command": [
+      "cargo",
+      "run",
+      "--release",
+      "-p",
+      "aeronum-core",
+      "--example",
+      "hip_sgemm_4096",
+      "--",
+      "--n",
+      "4096",
+      "--runs",
+      "10",
+      "--warmup",
+      "3"
+    ],
+    "exit_code": 0,
+    "stdout": "aeronum_core_hipblas_sgemm: n=4096 runs=10 median_ms=4.955240 median_tflops=27.736087\n{\"backend\":\"aeronum_core_hipblas\",\"kernel\":\"sgemm\",\"n\":4096,\"runs\":10,\"warmup\":3,\"mean_ms\":4.928454,\"median_ms\":4.955240,\"min_ms\":4.606299,\"max_ms\":5.218548,\"median_tflops\":27.736087,\"validation\":\"sampled_all_ones_expected_n\"}\n",
+    "stderr": "    Finished `release` profile [optimized] target(s) in 0.00s\n     Running `target/release/examples/hip_sgemm_4096 --n 4096 --runs 10 --warmup 3`\n",
+    "metrics": {
+      "backend": "aeronum_core_hipblas",
+      "kernel": "sgemm",
+      "n": 4096,
+      "runs": 10,
+      "warmup": 3,
+      "mean_ms": 4.928454,
+      "median_ms": 4.95524,
+      "min_ms": 4.606299,
+      "max_ms": 5.218548,
+      "median_tflops": 27.736087,
+      "validation": "sampled_all_ones_expected_n"
+    }
+  },
+  "pytorch": {
+    "metrics": {
+      "mean_ms": 4.934329800107662,
+      "median_ms": 4.981352999948285,
+      "min_ms": 4.715324000244436,
+      "max_ms": 5.101518000628857,
+      "backend": "pytorch_rocm",
+      "kernel": "torch.matmul",
+      "n": 4096,
+      "runs": 10,
+      "warmup": 3,
+      "median_tflops": 27.59068740429093,
+      "validation": "sampled_all_ones_expected_n",
+      "torch": "2.5.1+rocm6.2",
+      "torch_hip": "6.2.41133-dd7f95766",
+      "device": "Radeon RX 7900 XTX"
+    }
+  },
+  "median_ms_ratio_pytorch_over_aeronum": 1.0052697750155968,
+  "aeronum_faster_than_pytorch": true
+}

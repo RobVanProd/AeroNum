@@ -1,0 +1,5 @@
+Command:
+cargo run -p aeronum-core --example gguf_header_smoke -- --model /home/rob/models/mistralai_Mistral-Small-3.1-24B-Instruct-2503-Q4_K_M.gguf --device rocm --max-tokens 16 --prompt "AeroNum GGUF F32 tensor load prompt"
+
+Purpose:
+Parse GGUF layout and load output_norm.weight, a complete F32 tensor, into an AeroNum NdArray from the computed tensor byte range. This is not native token inference throughput.

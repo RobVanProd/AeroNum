@@ -204,21 +204,21 @@
       ]
     },
     {
-      "id": "aeronum_core_gguf_tensor_byte_sample_20260528",
+      "id": "aeronum_core_gguf_f32_tensor_load_20260528",
       "status": "verified_current_limited",
-      "claim": "aeronum-core parses GGUF metadata, sampled tokenizer string-array metadata, tensor directory records, tensor data byte ranges, and a bounded tensor byte sample before constructing a LlamaModel. The repo-owned command `cargo run -p aeronum-core --example gguf_header_smoke -- --model /home/rob/models/mistralai_Mistral-Small-3.1-24B-Instruct-2503-Q4_K_M.gguf --device rocm --max-tokens 16 --prompt AeroNum GGUF tensor byte sample prompt` passed against local model SHA-256 c5743c1bf39db0ae8a5ade5df0374b8e9e492754a199cfdad7ef393c1590f7c0 and reported GGUF version 3, 363 parsed tensor infos, 45 parsed metadata entries, alignment 32, data offset 7884256, file size 14333910496, 363 tensors with known byte sizes, max tensor end 14333910496, and tensor_layout_within_file=true. It also read 64 bytes from output_norm.weight at absolute offset 558386656, with byte checksum 105461 and F32 samples 4.21875, 4.46875, 4.34375, 4.3125, 4.21875, 4.28125, 4.3125, and 4.34375. This is a metadata/directory/layout/tensor-byte smoke result with placeholder generation, not real GGUF token inference throughput.",
+      "claim": "aeronum-core parses GGUF metadata, sampled tokenizer string-array metadata, tensor directory records, tensor data byte ranges, and a complete small F32 tensor before constructing a LlamaModel. The repo-owned command `cargo run -p aeronum-core --example gguf_header_smoke -- --model /home/rob/models/mistralai_Mistral-Small-3.1-24B-Instruct-2503-Q4_K_M.gguf --device rocm --max-tokens 16 --prompt AeroNum GGUF F32 tensor load prompt` passed against local model SHA-256 c5743c1bf39db0ae8a5ade5df0374b8e9e492754a199cfdad7ef393c1590f7c0 and reported GGUF version 3, 363 parsed tensor infos, 45 parsed metadata entries, alignment 32, data offset 7884256, file size 14333910496, 363 tensors with known byte sizes, max tensor end 14333910496, and tensor_layout_within_file=true. It loaded all 5120 F32 values from output_norm.weight into an AeroNum NdArray, with checksum 57094807.65625 and F32 samples 4.21875, 4.46875, 4.34375, 4.3125, 4.21875, 4.28125, 4.3125, and 4.34375. This is a metadata/directory/layout/F32-tensor-load smoke result with placeholder generation, not real GGUF token inference throughput.",
       "artifacts": [
         "core/src/aeronn/model.rs",
         "core/src/aeronn/mod.rs",
         "core/src/lib.rs",
         "core/examples/gguf_header_smoke.rs",
-        "claim-verification/results/aeronum_core_gguf_tensor_byte_sample_7900xtx_20260528T235005Z/claim_result.json",
-        "claim-verification/results/aeronum_core_gguf_tensor_byte_sample_7900xtx_20260528T235005Z/gguf_tensor_byte_sample_result.json",
-        "claim-verification/results/aeronum_core_gguf_tensor_byte_sample_7900xtx_20260528T235005Z/gguf_tensor_byte_sample.stdout.log",
-        "claim-verification/results/aeronum_core_gguf_tensor_byte_sample_7900xtx_20260528T235005Z/gguf_tensor_byte_sample.stderr.log",
-        "claim-verification/results/aeronum_core_gguf_tensor_byte_sample_7900xtx_20260528T235005Z/gguf_tensor_byte_sample.exit_code.txt",
-        "claim-verification/results/aeronum_core_gguf_tensor_byte_sample_7900xtx_20260528T235005Z/command_config.txt",
-        "claim-verification/results/aeronum_core_gguf_tensor_byte_sample_7900xtx_20260528T235005Z/hardware_software_metadata.txt"
+        "claim-verification/results/aeronum_core_gguf_f32_tensor_load_7900xtx_20260528T235402Z/claim_result.json",
+        "claim-verification/results/aeronum_core_gguf_f32_tensor_load_7900xtx_20260528T235402Z/gguf_f32_tensor_load_result.json",
+        "claim-verification/results/aeronum_core_gguf_f32_tensor_load_7900xtx_20260528T235402Z/gguf_f32_tensor_load.stdout.log",
+        "claim-verification/results/aeronum_core_gguf_f32_tensor_load_7900xtx_20260528T235402Z/gguf_f32_tensor_load.stderr.log",
+        "claim-verification/results/aeronum_core_gguf_f32_tensor_load_7900xtx_20260528T235402Z/gguf_f32_tensor_load.exit_code.txt",
+        "claim-verification/results/aeronum_core_gguf_f32_tensor_load_7900xtx_20260528T235402Z/command_config.txt",
+        "claim-verification/results/aeronum_core_gguf_f32_tensor_load_7900xtx_20260528T235402Z/hardware_software_metadata.txt"
       ]
     },
     {
@@ -291,13 +291,13 @@
     {
       "id": "aeronum_gpt2_nccl_gguf_claims_20260528",
       "status": "blocked",
-      "claim": "AeroNum-vs-PyTorch GPT-2 training speedup, NCCL/MPI multi-GPU scaling, and AeroNum-native GGUF token-inference throughput claims are not included because no current AeroNum artifact or rerun verified them. A PyTorch/Hugging Face GPT-2 reference passed, AeroNum-owned tiny language-model, tiny transformer-forward, and tiny transformer output-projection training analogues passed but are not GPT-2, NCCL/DDP world size 1 passed, the integrated distributed_compare.py guard blocks the local two-device NCCL topology before launch, post-reboot NCCL attempts failed on the local Radeon RX 7900 XTX plus integrated AMD Radeon Graphics topology, a two-rank single-XTX attempt was rejected by RCCL as duplicate GPU usage, the AeroNum GGUF core result parses metadata, tokenizer string-array samples, tensor directory records, tensor byte ranges, and a bounded tensor byte sample but still reaches only placeholder generation, and the GGUF token-inference result is a llama.cpp reference through an AeroNum repo wrapper.",
+      "claim": "AeroNum-vs-PyTorch GPT-2 training speedup, NCCL/MPI multi-GPU scaling, and AeroNum-native GGUF token-inference throughput claims are not included because no current AeroNum artifact or rerun verified them. A PyTorch/Hugging Face GPT-2 reference passed, AeroNum-owned tiny language-model, tiny transformer-forward, and tiny transformer output-projection training analogues passed but are not GPT-2, NCCL/DDP world size 1 passed, the integrated distributed_compare.py guard blocks the local two-device NCCL topology before launch, post-reboot NCCL attempts failed on the local Radeon RX 7900 XTX plus integrated AMD Radeon Graphics topology, a two-rank single-XTX attempt was rejected by RCCL as duplicate GPU usage, the AeroNum GGUF core result parses metadata, tokenizer string-array samples, tensor directory records, tensor byte ranges, and a complete small F32 tensor but still reaches only placeholder generation, and the GGUF token-inference result is a llama.cpp reference through an AeroNum repo wrapper.",
       "artifacts": [
         "claim-verification/results/aeronum_pytorch_gpt2_reference_7900xtx_20260528T224500Z/claim_result.json",
         "claim-verification/results/aeronum_tiny_lm_train_7900xtx_20260528T231229Z/claim_result.json",
         "claim-verification/results/aeronum_tiny_transformer_forward_7900xtx_20260528T233024Z/claim_result.json",
         "claim-verification/results/aeronum_tiny_transformer_train_7900xtx_20260528T233801Z/claim_result.json",
-        "claim-verification/results/aeronum_core_gguf_tensor_byte_sample_7900xtx_20260528T235005Z/claim_result.json",
+        "claim-verification/results/aeronum_core_gguf_f32_tensor_load_7900xtx_20260528T235402Z/claim_result.json",
         "claim-verification/results/aeronum_llama_cpp_cli_gguf_7900xtx_20260528T230730Z/claim_result.json",
         "claim-verification/results/aeronum_nccl_ddp_single_gpu_7900xtx_20260528T224500Z/claim_result.json",
         "claim-verification/results/aeronum_nccl_preflight_7900xtx_20260528T231927Z/claim_result.json",

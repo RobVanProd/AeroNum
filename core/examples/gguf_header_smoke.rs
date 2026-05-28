@@ -121,6 +121,32 @@ fn main() {
         json_string_array(&tensor_byte_sample.first_bytes_hex),
         json_f32_array(&tensor_byte_sample.f32_samples)
     );
+    let output_norm = header
+        .load_f32_tensor("output_norm.weight")
+        .expect("load output_norm.weight F32 tensor");
+    let output_norm_values = output_norm.to_vec();
+    let output_norm_checksum = output_norm_values
+        .iter()
+        .enumerate()
+        .map(|(idx, value)| (idx as f64 + 1.0) * (*value as f64))
+        .sum::<f64>();
+    let output_norm_samples = output_norm_values
+        .iter()
+        .take(8)
+        .copied()
+        .collect::<Vec<_>>();
+    let output_norm_tensor_json = format!(
+        "{{\"name\":\"output_norm.weight\",\"shape\":[{}],\"len\":{},\"checksum\":{:.8},\"f32_samples\":{}}}",
+        output_norm
+            .shape()
+            .iter()
+            .map(|dim| dim.to_string())
+            .collect::<Vec<_>>()
+            .join(","),
+        output_norm.len(),
+        output_norm_checksum,
+        json_f32_array(&output_norm_samples)
+    );
     let architecture = header
         .metadata_value("general.architecture")
         .map(|value| value.summary())
@@ -147,7 +173,7 @@ fn main() {
     let elapsed_ms = start.elapsed().as_secs_f64() * 1000.0;
 
     println!(
-        "{{\"benchmark\":\"aeronum_core_gguf_directory_smoke\",\"model_path\":\"{}\",\"gguf_version\":{},\"tensor_count\":{},\"metadata_kv_count\":{},\"parsed_tensor_infos\":{},\"parsed_metadata_entries\":{},\"alignment\":{},\"data_offset\":{},\"file_size\":{},\"tensors_with_known_nbytes\":{},\"max_tensor_end\":{},\"tensor_layout_within_file\":{},\"tensor_byte_sample\":{},\"architecture\":\"{}\",\"quantization_version\":\"{}\",\"tokenizer_model\":\"{}\",\"tokenizer_token_count\":{},\"sample_tokenizer_tokens\":{},\"sample_metadata_keys\":{},\"sample_tensor_names\":{},\"sample_tensor_layouts\":[{}],\"device\":\"{}\",\"max_tokens\":{},\"elapsed_ms\":{:.6},\"output_kind\":\"placeholder\",\"output\":\"{}\"}}",
+        "{{\"benchmark\":\"aeronum_core_gguf_directory_smoke\",\"model_path\":\"{}\",\"gguf_version\":{},\"tensor_count\":{},\"metadata_kv_count\":{},\"parsed_tensor_infos\":{},\"parsed_metadata_entries\":{},\"alignment\":{},\"data_offset\":{},\"file_size\":{},\"tensors_with_known_nbytes\":{},\"max_tensor_end\":{},\"tensor_layout_within_file\":{},\"tensor_byte_sample\":{},\"loaded_f32_tensor\":{},\"architecture\":\"{}\",\"quantization_version\":\"{}\",\"tokenizer_model\":\"{}\",\"tokenizer_token_count\":{},\"sample_tokenizer_tokens\":{},\"sample_metadata_keys\":{},\"sample_tensor_names\":{},\"sample_tensor_layouts\":[{}],\"device\":\"{}\",\"max_tokens\":{},\"elapsed_ms\":{:.6},\"output_kind\":\"placeholder\",\"output\":\"{}\"}}",
         json_escape(&model_path),
         header.version,
         header.tensor_count,
@@ -161,6 +187,7 @@ fn main() {
         max_tensor_end,
         tensor_layout_within_file,
         tensor_byte_sample_json,
+        output_norm_tensor_json,
         json_escape(&architecture),
         json_escape(&quantization_version),
         json_escape(&tokenizer_model),

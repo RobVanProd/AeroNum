@@ -97,6 +97,8 @@ pub enum GgufError {
     TensorNotFound(String),
     UnknownTensorByteSize(String),
     InvalidTensorRange(String),
+    UnsupportedTensorType { name: String, tensor_type: u32 },
+    TensorShapeTooLarge(String),
 }
 
 impl fmt::Display for GgufError {
@@ -119,6 +121,13 @@ impl fmt::Display for GgufError {
                 write!(f, "cannot determine byte size for GGUF tensor: {name}")
             }
             Self::InvalidTensorRange(name) => write!(f, "invalid GGUF tensor byte range: {name}"),
+            Self::UnsupportedTensorType { name, tensor_type } => {
+                write!(
+                    f,
+                    "unsupported GGUF tensor type {tensor_type} for tensor: {name}"
+                )
+            }
+            Self::TensorShapeTooLarge(name) => write!(f, "GGUF tensor shape too large: {name}"),
         }
     }
 }
@@ -134,7 +143,9 @@ impl Error for GgufError {
             | Self::InvalidArrayElementType(_)
             | Self::TensorNotFound(_)
             | Self::UnknownTensorByteSize(_)
-            | Self::InvalidTensorRange(_) => None,
+            | Self::InvalidTensorRange(_)
+            | Self::UnsupportedTensorType { .. }
+            | Self::TensorShapeTooLarge(_) => None,
         }
     }
 }
@@ -354,6 +365,54 @@ impl GgufHeader {
             first_bytes_hex,
             f32_samples,
         })
+    }
+
+    pub fn load_f32_tensor(&self, tensor_name: &str) -> Result<NdArray, GgufError> {
+        let tensor = self
+            .tensors
+            .iter()
+            .find(|tensor| tensor.name == tensor_name)
+            .ok_or_else(|| GgufError::TensorNotFound(tensor_name.to_string()))?;
+        if tensor.tensor_type != 0 {
+            return Err(GgufError::UnsupportedTensorType {
+                name: tensor_name.to_string(),
+                tensor_type: tensor.tensor_type,
+            });
+        }
+        let tensor_nbytes = tensor
+            .nbytes
+            .ok_or_else(|| GgufError::UnknownTensorByteSize(tensor_name.to_string()))?;
+        let tensor_end = tensor
+            .absolute_offset
+            .checked_add(tensor_nbytes)
+            .ok_or_else(|| GgufError::InvalidTensorRange(tensor_name.to_string()))?;
+        if tensor_end > self.file_size || tensor_nbytes % 4 != 0 {
+            return Err(GgufError::InvalidTensorRange(tensor_name.to_string()));
+        }
+
+        let shape = tensor
+            .dimensions
+            .iter()
+            .map(|dim| usize::try_from(*dim))
+            .collect::<Result<Vec<_>, _>>()
+            .map_err(|_| GgufError::TensorShapeTooLarge(tensor_name.to_string()))?;
+        let element_count = shape
+            .iter()
+            .try_fold(1usize, |acc, dim| acc.checked_mul(*dim))
+            .ok_or_else(|| GgufError::TensorShapeTooLarge(tensor_name.to_string()))?;
+        if element_count * 4 != tensor_nbytes as usize {
+            return Err(GgufError::InvalidTensorRange(tensor_name.to_string()));
+        }
+
+        let mut file = File::open(&self.path)?;
+        file.seek(SeekFrom::Start(tensor.absolute_offset))?;
+        let mut bytes = vec![0u8; tensor_nbytes as usize];
+        file.read_exact(&mut bytes)?;
+        let values = bytes
+            .chunks_exact(4)
+            .map(|chunk| f32::from_le_bytes([chunk[0], chunk[1], chunk[2], chunk[3]]))
+            .collect::<Vec<_>>();
+        Ok(NdArray::from_list(values, Some(&shape)))
     }
 }
 

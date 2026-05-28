@@ -1,0 +1,32 @@
+Compiling with performance optimizations enabled
+Lexing completed in 132.93µs
+Optimized parsing completed in 73.669µs
+Semantic Analysis Result: Semantic analysis completed successfully
+Optimized semantic analysis completed in 1.453µs
+Optimized IR generation completed in 2.544µs
+Optimized code generation completed in 1.664µs
+Optimized LLVM IR written to benches/matmul.ll
+Total compilation time: 301.066µs
+=== Aero Compiler Performance Report ===
+
+Function Call Optimization:
+  Average time: 0.000000s
+  Total calls: 0
+
+Control Flow Optimization:
+  Total optimizations: 0
+
+Parser Optimization:
+  Total parses: 0
+
+Semantic Analysis Optimization:
+  Total analyses: 0
+
+Compilation Cache:
+  Hits: 0
+  Misses: 1
+  Hit Rate: 0.00%
+
+Total Compilation Time: 0.000000s
+
+Performance-optimized compilation process completed successfully.

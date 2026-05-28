@@ -1,0 +1,56 @@
+Unexpected character: [ at 17:21
+Unexpected character: ] at 17:45
+Unexpected character: & at 19:10
+Unexpected character: & at 19:19
+Unexpected character: & at 31:38
+Unexpected character: [ at 31:38
+Unexpected character: ] at 31:49
+Unexpected character: & at 32:38
+Unexpected character: [ at 32:38
+Unexpected character: ] at 32:49
+Unexpected character: & at 35:25
+Unexpected character: & at 35:29
+Unexpected character: & at 43:34
+Unexpected character: & at 43:38
+Unexpected character: & at 102:34
+Unexpected character: [ at 102:34
+Unexpected character: ] at 102:45
+Unexpected character: & at 103:34
+Unexpected character: [ at 103:34
+Unexpected character: ] at 103:45
+Unexpected character: & at 106:26
+Unexpected character: & at 106:30
+Unexpected character: & at 131:34
+Unexpected character: [ at 131:34
+Unexpected character: ] at 131:45
+Unexpected character: & at 132:34
+Unexpected character: [ at 132:34
+Unexpected character: ] at 132:45
+Unexpected character: & at 135:26
+Unexpected character: & at 135:30
+Unexpected character: & at 157:41
+Unexpected character: [ at 157:41
+Unexpected character: ] at 157:52
+Unexpected character: & at 164:21
+Unexpected character: & at 164:32
+Unexpected character: & at 170:21
+Unexpected character: & at 170:32
+Unexpected character: [ at 176:21
+Unexpected character: ] at 176:50
+Unexpected character: & at 178:10
+Unexpected character: & at 178:19
+Unexpected character: & at 189:46
+Unexpected character: [ at 189:46
+Unexpected character: ] at 189:51
+Unexpected character: & at 190:46
+Unexpected character: [ at 190:46
+Unexpected character: ] at 190:51
+Unexpected character: & at 194:48
+Unexpected character: & at 194:52
+Unexpected character: & at 204:33
+Unexpected character: & at 214:33
+Parse error: Error at 0:0: Expected Semicolon, found Identifier("aeronum")
+Error running llc: llc: error: llc: benches/matmul.ll:10:1: error: expected instruction opcode
+}
+^
+

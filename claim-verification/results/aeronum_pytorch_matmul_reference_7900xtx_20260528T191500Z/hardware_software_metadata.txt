@@ -1,0 +1,16 @@
+2026-05-28T18:14:06-04:00
+b727dfb9942c1665f342e84a403e92132128ea96
+Python 3.10.12
+04:00.0 VGA compatible controller [0300]: Advanced Micro Devices, Inc. [AMD/ATI] Navi 31 [Radeon RX 7900 XT/7900 XTX/7900 GRE/7900M] [1002:744c] (rev c8)
+7c:00.0 VGA compatible controller [0300]: Advanced Micro Devices, Inc. [AMD/ATI] Granite Ridge [Radeon Graphics] [1002:13c0] (rev c1)
+
+
+=========================================== ROCm System Management Interface ===========================================
+===================================================== Concise Info =====================================================
+Device  Node  IDs              Temp    Power   Partitions          SCLK   MCLK     Fan  Perf  PwrCap       VRAM%  GPU%  
+[3m              (DID,     GUID)  (Edge)  (Avg)   (Mem, Compute, ID)                                                       [0m
+========================================================================================================================
+0       1     0x744c,   49057  25.0°C  9.0W    N/A, N/A, 0         26Mhz  96Mhz    0%   auto  327.0W       0%     0%    
+1       2     0x13c0,   18715  43.0°C  0.018W  N/A, N/A, 0         None   1800Mhz  0%   auto  Unsupported  20%    0%    
+========================================================================================================================
+================================================= End of ROCm SMI Log ==================================================

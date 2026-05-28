@@ -1,0 +1,87 @@
+{
+  "schema_version": 1,
+  "verified_on": "2026-05-28",
+  "repo": "AeroNum",
+  "repo_commit": "b727dfb9942c1665f342e84a403e92132128ea96",
+  "hardware_summary": {
+    "cpu": "AMD Ryzen 9 9950X 16-Core Processor",
+    "gpu_0": "Radeon RX 7900 XTX / gfx1100 / PCI device 1002:744c",
+    "gpu_1": "AMD Radeon Graphics / gfx1036 / PCI device 1002:13c0"
+  },
+  "claims": [
+    {
+      "id": "aeronum_hip_vector_add_20260528",
+      "status": "verified_current",
+      "claim": "HIP vector_add passed on Radeon RX 7900 XTX with 16,777,216 float32 elements, 20 measured runs, median 0.259509 ms, 64.649967 GFLOP/s, and 775.799606 GB/s.",
+      "artifacts": [
+        "claim-verification/results/aeronum_hip_vector_add_7900xtx_20260528T191500Z/hip_vector_add_result.json",
+        "claim-verification/results/aeronum_hip_vector_add_7900xtx_20260528T191500Z/run_hip_vector_add.stdout.log",
+        "claim-verification/results/aeronum_hip_vector_add_7900xtx_20260528T191500Z/hardware_software_metadata.txt"
+      ]
+    },
+    {
+      "id": "aeronum_pytorch_matmul_reference_20260528",
+      "status": "verified_reference_only",
+      "claim": "labs/compare/aeronn_gpu_compare.py measured a PyTorch 4096x4096 CPU-vs-GPU reference: CPU 0.1620 s, GPU 0.0067 s, relative speedup 24.28x. This is not an AeroNum matmul result.",
+      "artifacts": [
+        "claim-verification/results/aeronum_pytorch_matmul_reference_7900xtx_20260528T191500Z/aeronn_gpu_compare.stdout.log",
+        "claim-verification/results/aeronum_pytorch_matmul_reference_7900xtx_20260528T191500Z/aeronn_gpu_compare.stderr.log",
+        "claim-verification/results/aeronum_pytorch_matmul_reference_7900xtx_20260528T191500Z/hardware_software_metadata.txt"
+      ]
+    },
+    {
+      "id": "aeronum_current_runner_20260528",
+      "status": "verified_current_limited",
+      "claim": "benchmarks/run_benchmarks.sh completed on the rebased commit, but it suppresses command output and did not emit fresh raw timings.",
+      "artifacts": [
+        "claim-verification/results/aeronum_runner_b727dfb_7900xtx_20260528T192000Z/run_benchmarks.stdout.log",
+        "claim-verification/results/aeronum_runner_b727dfb_7900xtx_20260528T192000Z/run_benchmarks.stderr.log",
+        "claim-verification/results/aeronum_runner_b727dfb_7900xtx_20260528T192000Z/hardware_software_metadata.txt"
+      ]
+    },
+    {
+      "id": "aeronum_matmul_attempt_20260528",
+      "status": "blocked",
+      "claim": "benches/matmul.aero did not produce a benchmark result with the current bundled Aero compiler because lexing/parsing reported errors and llc rejected the generated LLVM IR.",
+      "artifacts": [
+        "claim-verification/results/aeronum_matmul_b727dfb_7900xtx_20260528T192000Z/aero_matmul.stdout.log",
+        "claim-verification/results/aeronum_matmul_b727dfb_7900xtx_20260528T192000Z/aero_matmul.stderr.log",
+        "claim-verification/results/aeronum_matmul_b727dfb_7900xtx_20260528T192000Z/hardware_software_metadata.txt"
+      ]
+    },
+    {
+      "id": "aeronum_historical_benchmark_results_csv",
+      "status": "historical_artifact",
+      "claim": "benchmarks/results/benchmark_results.csv reports Aero compilation 2177.11us, Aero execution 1440.42us, C++ compilation 342923.55us, C++ execution 1436.32us, and Python execution 12786.84us.",
+      "artifacts": [
+        "benchmarks/results/benchmark_results.csv",
+        "benchmarks/PERFORMANCE_ANALYSIS.md"
+      ],
+      "metadata": {
+        "introduced_by_commits": [
+          "e007cff13247c9a37183bbe6af432b52c4579559",
+          "c6bf494a6830b1fc0f0e7706f0bbf9136f16e54d"
+        ],
+        "reported_platform": "Ubuntu 22.04 x86_64",
+        "reported_compilers": "Aero v0.3.0, GCC 11.4.0, Python 3.10"
+      }
+    },
+    {
+      "id": "aeronum_historical_computational_csv",
+      "status": "historical_artifact",
+      "claim": "labs/benchmarks/results/computational_results/computational_comparison.csv reports matching result value 30 for Aero and NumPy in a small computational check.",
+      "artifacts": [
+        "labs/benchmarks/results/computational_results/computational_comparison.csv",
+        "labs/benchmarks/COMPUTATIONAL_VALIDATION.md"
+      ]
+    },
+    {
+      "id": "aeronum_gpt2_nccl_gguf_claims_20260528",
+      "status": "blocked",
+      "claim": "GPT-2 training versus PyTorch, NCCL/MPI multi-GPU scaling, and GGUF inference claims are not included because no current AeroNum artifact or rerun verified them.",
+      "artifacts": [
+        "claim-verification/results/aeronum_hip_vector_add_7900xtx_20260528T191500Z/hardware_software_metadata.txt"
+      ]
+    }
+  ]
+}

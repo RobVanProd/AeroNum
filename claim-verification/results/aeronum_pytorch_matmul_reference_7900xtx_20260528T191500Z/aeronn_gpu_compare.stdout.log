@@ -1,0 +1,15 @@
+============================================================================
+PYTORCH AERONN GPU BASELINE: MatMul Benchmark & MLP Gradient Equivalence
+============================================================================
+Executing Baseline on defined device: cuda
+
+--- PERFORMANCE BENCHMARK ---
+CPU MatMul (4096x4096): 0.1620 seconds
+GPU MatMul (4096x4096): 0.0067 seconds
+Relative Speedup: 24.28x
+
+--- MLP GRADIENT EQUIVALENCE (1e-7 Tolerance) ---
+CPU Loss: 0.375786
+GPU Loss: 0.375786
+Max Gradient Difference (fc1.W): 0.00e+00
+Verification Check: PASSED (Tolerance <= 1e-7)

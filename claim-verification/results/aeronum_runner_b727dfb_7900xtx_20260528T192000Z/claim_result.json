@@ -1,0 +1,15 @@
+{
+  "claim_id": "aeronum_runner_b727dfb_20260528",
+  "status": "verified_current_limited",
+  "timestamp": "2026-05-28T18:20:00-04:00",
+  "repo_commit": "b727dfb9942c1665f342e84a403e92132128ea96",
+  "command": "./benchmarks/run_benchmarks.sh",
+  "exit_code": 0,
+  "result": "The runner completed, but it redirects benchmark command output to /dev/null and did not emit fresh raw timings.",
+  "raw_artifacts": [
+    "hardware_software_metadata.txt",
+    "run_benchmarks.stdout.log",
+    "run_benchmarks.stderr.log",
+    "exit_code.txt"
+  ]
+}

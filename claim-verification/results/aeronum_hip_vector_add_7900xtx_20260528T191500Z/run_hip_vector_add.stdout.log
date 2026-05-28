@@ -1,0 +1,6 @@
+Compiling: /usr/bin/hipcc /home/rob/.openclaw.old/workspace/repos/AeroNum/benchmarks/hip/vector_add.hip.cpp -O3 --offload-arch=gfx1100 -o /home/rob/.openclaw.old/workspace/repos/AeroNum/benchmarks/results/hip/vector_add_hip.exe
+Running: /home/rob/.openclaw.old/workspace/repos/AeroNum/benchmarks/results/hip/vector_add_hip.exe --size 16777216 --runs 20 --warmup 5 --block-size 256
+hip_vector_add: size=16777216 runs=20 median_ms=0.259509 gflops=64.65 bandwidth_gbps=775.8
+{"backend":"hip_rocm","kernel":"vector_add","size":16777216,"runs":20,"warmup":5,"block_size":256,"mean_ms":0.283265,"median_ms":0.259509,"min_ms":0.258897,"max_ms":0.427554,"gflops":64.649967,"bandwidth_gbps":775.799606}
+
+Saved result: claim-verification/results/aeronum_hip_vector_add_7900xtx_20260528T191500Z/hip_vector_add_result.json

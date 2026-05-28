@@ -1,0 +1,25 @@
+{
+  "claim_id": "aeronum_pytorch_matmul_reference_20260528",
+  "status": "verified_reference_only",
+  "timestamp": "2026-05-28T18:14:06-04:00",
+  "repo_commit": "b727dfb9942c1665f342e84a403e92132128ea96",
+  "command": "python3 labs/compare/aeronn_gpu_compare.py",
+  "exit_code": 0,
+  "hardware_summary": {
+    "gpu_0": "Radeon RX 7900 XTX / gfx1100 / PCI device 1002:744c",
+    "gpu_1": "AMD Radeon Graphics / gfx1036 / PCI device 1002:13c0"
+  },
+  "result": {
+    "cpu_matmul_4096_seconds": 0.1620,
+    "gpu_matmul_4096_seconds": 0.0067,
+    "relative_speedup": 24.28,
+    "gradient_check": "PASSED"
+  },
+  "note": "This is a PyTorch CPU-vs-GPU reference run, not an AeroNum matmul result.",
+  "raw_artifacts": [
+    "hardware_software_metadata.txt",
+    "aeronn_gpu_compare.stdout.log",
+    "aeronn_gpu_compare.stderr.log",
+    "exit_code.txt"
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "claim_id": "aeronum_matmul_b727dfb_20260528",
+  "status": "blocked",
+  "timestamp": "2026-05-28T18:20:00-04:00",
+  "repo_commit": "b727dfb9942c1665f342e84a403e92132128ea96",
+  "command": "./aero-compiler/aero run benches/matmul.aero",
+  "exit_code": 0,
+  "result": "No benchmark timing was produced. stderr contains lexer/parser errors and an llc failure on generated LLVM IR.",
+  "raw_artifacts": [
+    "hardware_software_metadata.txt",
+    "aero_matmul.stdout.log",
+    "aero_matmul.stderr.log",
+    "exit_code.txt"
+  ]
+}

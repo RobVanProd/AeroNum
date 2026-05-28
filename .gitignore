@@ -35,9 +35,12 @@ results/
 *_results/
 **/results/*.csv
 **/results/*.png
+!claim-verification/results/
+!claim-verification/results/**
 
 # Local notes
 *.log
+!claim-verification/results/**/*.log
 
 # Rust build artifacts
 /target/

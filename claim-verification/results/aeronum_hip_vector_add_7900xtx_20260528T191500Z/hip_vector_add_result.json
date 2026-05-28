@@ -1,0 +1,14 @@
+{
+  "backend": "hip_rocm",
+  "kernel": "vector_add",
+  "size": 16777216,
+  "runs": 20,
+  "warmup": 5,
+  "block_size": 256,
+  "mean_ms": 0.283265,
+  "median_ms": 0.259509,
+  "min_ms": 0.258897,
+  "max_ms": 0.427554,
+  "gflops": 64.649967,
+  "bandwidth_gbps": 775.799606
+}

@@ -37,6 +37,7 @@ pub enum GgufMetadataValue {
     Array {
         element_type: GgufValueType,
         len: u64,
+        string_samples: Vec<String>,
     },
     U64(u64),
     I64(i64),
@@ -282,10 +283,22 @@ impl GgufMetadataValue {
                     return Err(GgufError::InvalidArrayElementType(element_type_raw));
                 }
                 let len = read_u64_le(reader)?;
+                let mut string_samples = Vec::new();
                 for _ in 0..len {
-                    skip_value(reader, element_type)?;
+                    if element_type == GgufValueType::String {
+                        let value = read_gguf_string(reader, "array string value")?;
+                        if string_samples.len() < 8 {
+                            string_samples.push(value);
+                        }
+                    } else {
+                        skip_value(reader, element_type)?;
+                    }
                 }
-                Self::Array { element_type, len }
+                Self::Array {
+                    element_type,
+                    len,
+                    string_samples,
+                }
             }
             GgufValueType::U64 => Self::U64(read_u64_le(reader)?),
             GgufValueType::I64 => Self::I64(read_i64_le(reader)?),
@@ -304,7 +317,20 @@ impl GgufMetadataValue {
             Self::F32(value) => value.to_string(),
             Self::Bool(value) => value.to_string(),
             Self::String(value) => value.clone(),
-            Self::Array { element_type, len } => format!("array<{element_type:?}>[{len}]"),
+            Self::Array {
+                element_type,
+                len,
+                string_samples,
+            } => {
+                if string_samples.is_empty() {
+                    format!("array<{element_type:?}>[{len}]")
+                } else {
+                    format!(
+                        "array<{element_type:?}>[{len}] sample_count={}",
+                        string_samples.len()
+                    )
+                }
+            }
             Self::U64(value) => value.to_string(),
             Self::I64(value) => value.to_string(),
             Self::F64(value) => value.to_string(),
@@ -525,7 +551,8 @@ mod tests {
             header.metadata_value("tokenizer.ggml.tokens"),
             Some(&GgufMetadataValue::Array {
                 element_type: GgufValueType::String,
-                len: 2
+                len: 2,
+                string_samples: vec!["<s>".to_string(), "</s>".to_string()]
             })
         );
         assert_eq!(header.tensors[0].name, "token_embd.weight");

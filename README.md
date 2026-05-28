@@ -115,16 +115,18 @@ Verified current results:
   still passed an NCCL world-size-1 DDP smoke on device 0 with 191.244289
   tokens/s for the one-step smoke
   ([result JSON](claim-verification/results/aeronum_distributed_compare_guard_7900xtx_20260528T233403Z/claim_result.json)).
-- `aeronum-core` now parses GGUF metadata and tensor directory records before
-  constructing a `LlamaModel`. The repo-owned command
-  `cargo run -p aeronum-core --example gguf_header_smoke -- --model /home/rob/models/mistralai_Mistral-Small-3.1-24B-Instruct-2503-Q4_K_M.gguf --device rocm --max-tokens 16 --prompt "AeroNum GGUF directory smoke prompt"`
+- `aeronum-core` now parses GGUF metadata, tensor directory records, and
+  sampled tokenizer string-array metadata before constructing a `LlamaModel`.
+  The repo-owned command
+  `cargo run -p aeronum-core --example gguf_header_smoke -- --model /home/rob/models/mistralai_Mistral-Small-3.1-24B-Instruct-2503-Q4_K_M.gguf --device rocm --max-tokens 16 --prompt "AeroNum GGUF tokenizer smoke prompt"`
   passed against the local Mistral GGUF file, SHA-256
   `c5743c1bf39db0ae8a5ade5df0374b8e9e492754a199cfdad7ef393c1590f7c0`, and
   reported GGUF version 3, 363 parsed tensor infos, 45 parsed metadata entries,
-  architecture `llama`, and quantization version `2`. This is a
-  directory/load smoke result with placeholder generation, not real GGUF token
-  inference throughput
-  ([result JSON](claim-verification/results/aeronum_core_gguf_directory_smoke_7900xtx_20260528T232438Z/claim_result.json)).
+  architecture `llama`, quantization version `2`, tokenizer model `gpt2`,
+  tokenizer token count `131072`, and sampled tokenizer tokens including
+  `<unk>`, `<s>`, `</s>`, and `[INST]`. This is a metadata/directory/load smoke
+  result with placeholder generation, not real GGUF token inference throughput
+  ([result JSON](claim-verification/results/aeronum_core_gguf_tokenizer_metadata_7900xtx_20260528T234151Z/claim_result.json)).
 - `benchmarks/gguf/run_llama_cpp_cli.py` ran a real local llama.cpp CLI ROCm
   GGUF inference reference on the same Mistral GGUF file. The llama.cpp build
   reported version 7074 (`22e1ce2f8`) with HIP 6.2.41133-dd7f95766, offloaded
@@ -173,10 +175,10 @@ Blocked or omitted claims:
   GPU was verified on this machine
   ([guard result JSON](claim-verification/results/aeronum_distributed_compare_guard_7900xtx_20260528T233403Z/claim_result.json)).
 - AeroNum-native GGUF token-inference throughput claims are omitted. The
-  verified current AeroNum core result parses local GGUF metadata and tensor
-  directory records and reaches placeholder generation, and the verified
-  token-inference result is a llama.cpp reference through an AeroNum repo
-  wrapper.
+  verified current AeroNum core result parses local GGUF metadata, tokenizer
+  string-array samples, and tensor directory records, then reaches placeholder
+  generation. The verified token-inference result is a llama.cpp reference
+  through an AeroNum repo wrapper.
 
 Historical benchmark CSVs remain in the repo, but README claims above only use
 fresh local reruns and captured artifacts.

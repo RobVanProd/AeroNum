@@ -1,4 +1,4 @@
-use aeronum_core::LlamaModel;
+use aeronum_core::{GgufMetadataValue, LlamaModel};
 use std::time::Instant;
 
 fn parse_arg(name: &str, default: &str) -> String {
@@ -73,12 +73,25 @@ fn main() {
         .metadata_value("general.quantization_version")
         .map(|value| value.summary())
         .unwrap_or_default();
+    let tokenizer_model = header
+        .metadata_value("tokenizer.ggml.model")
+        .map(|value| value.summary())
+        .unwrap_or_default();
+    let (tokenizer_token_count, tokenizer_token_samples) =
+        match header.metadata_value("tokenizer.ggml.tokens") {
+            Some(GgufMetadataValue::Array {
+                len,
+                string_samples,
+                ..
+            }) => (*len, string_samples.clone()),
+            _ => (0, Vec::new()),
+        };
     model.to(&device);
     let output = model.generate(&prompt, max_tokens, temperature);
     let elapsed_ms = start.elapsed().as_secs_f64() * 1000.0;
 
     println!(
-        "{{\"benchmark\":\"aeronum_core_gguf_directory_smoke\",\"model_path\":\"{}\",\"gguf_version\":{},\"tensor_count\":{},\"metadata_kv_count\":{},\"parsed_tensor_infos\":{},\"parsed_metadata_entries\":{},\"architecture\":\"{}\",\"quantization_version\":\"{}\",\"sample_metadata_keys\":{},\"sample_tensor_names\":{},\"device\":\"{}\",\"max_tokens\":{},\"elapsed_ms\":{:.6},\"output_kind\":\"placeholder\",\"output\":\"{}\"}}",
+        "{{\"benchmark\":\"aeronum_core_gguf_directory_smoke\",\"model_path\":\"{}\",\"gguf_version\":{},\"tensor_count\":{},\"metadata_kv_count\":{},\"parsed_tensor_infos\":{},\"parsed_metadata_entries\":{},\"architecture\":\"{}\",\"quantization_version\":\"{}\",\"tokenizer_model\":\"{}\",\"tokenizer_token_count\":{},\"sample_tokenizer_tokens\":{},\"sample_metadata_keys\":{},\"sample_tensor_names\":{},\"device\":\"{}\",\"max_tokens\":{},\"elapsed_ms\":{:.6},\"output_kind\":\"placeholder\",\"output\":\"{}\"}}",
         json_escape(&model_path),
         header.version,
         header.tensor_count,
@@ -87,6 +100,9 @@ fn main() {
         header.metadata.len(),
         json_escape(&architecture),
         json_escape(&quantization_version),
+        json_escape(&tokenizer_model),
+        tokenizer_token_count,
+        json_string_array(&tokenizer_token_samples),
         json_string_array(&metadata_keys),
         json_string_array(&tensor_names),
         json_escape(&device),

@@ -1,0 +1,9 @@
+
+running 5 tests
+test tests::matmul_2d ... ok
+test tests::matmul_inner_dim_mismatch_panics - should panic ... ok
+test tests::matmul_rectangular_identity_right ... ok
+test tests::matmul_non_2d_panics - should panic ... ok
+test tests::matmul_with_transposed_view_uses_strides ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 26 filtered out; finished in 0.00s

@@ -9,7 +9,9 @@ benchmark scripts, and historical benchmark artifacts.
 
 Current repo contents include:
 
-- `aeronum-core` GPU runtime metadata and HIP buffer plumbing.
+- `aeronum-core` GPU runtime metadata and HIP buffer plumbing. The HIP runtime
+  loader now supports Linux `libamdhip64.so` in addition to Windows
+  `amdhip64.dll`.
 - A vendored Aero compiler at `aero-compiler/aero`. Current tracked binary:
   `Aero compiler version 1.0.0`, SHA-256
   `2bf72d1965f0d515428a570044da134cd382e91c9550ddd015ddc4a8b95a1b3e`.
@@ -40,6 +42,12 @@ Verified current results:
   elements, 20 measured runs, median 0.259509 ms, 64.649967 GFLOP/s, and
   775.799606 GB/s
   ([result JSON](claim-verification/results/aeronum_hip_vector_add_7900xtx_20260528T191500Z/hip_vector_add_result.json)).
+- `aeronum-core` HIP runtime tests passed on Linux/ROCm. The new
+  `runtime_can_roundtrip_device_copy_when_available` test created a HIP runtime
+  on device 0 and round-tripped a float32 host buffer through device memory;
+  the filtered GPU test set passed 3/3 tests, and the filtered core matmul test
+  set passed 5/5 tests. The full `aeronum-core` suite passed 31/31 tests
+  ([result JSON](claim-verification/results/aeronum_core_linux_hip_runtime_7900xtx_20260528T231000Z/claim_result.json)).
 - HIP/hipBLAS SGEMM passed on the Radeon RX 7900 XTX for 4096x4096 float32
   matrices with 10 measured runs, median 4.953900 ms, and 27.743587 TFLOP/s.
   This is a ROCm library reference benchmark, not an AeroNum-language matmul

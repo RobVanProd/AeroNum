@@ -1,0 +1,13 @@
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.00s
+     Running unittests src/lib.rs (target/debug/deps/aeronum_core-4120dc2448c7489e)
+
+thread 'tests::matmul_inner_dim_mismatch_panics' (37852) panicked at core/src/lib.rs:200:9:
+assertion `left == right` failed
+  left: 3
+ right: 4
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+thread 'tests::matmul_non_2d_panics' (37853) panicked at core/src/lib.rs:196:9:
+assertion `left == right` failed
+  left: 1
+ right: 2

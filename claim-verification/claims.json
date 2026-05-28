@@ -20,6 +20,23 @@
       ]
     },
     {
+      "id": "aeronum_core_linux_hip_runtime_20260528",
+      "status": "verified_current",
+      "claim": "aeronum-core HIP runtime tests passed on Linux/ROCm. The runtime_can_roundtrip_device_copy_when_available test created a HIP runtime on device 0 and round-tripped a float32 host buffer through device memory; the filtered GPU test set passed 3/3 tests, the filtered core matmul test set passed 5/5 tests, and the full aeronum-core suite passed 31/31 tests.",
+      "artifacts": [
+        "core/src/gpu.rs",
+        "claim-verification/results/aeronum_core_linux_hip_runtime_7900xtx_20260528T231000Z/claim_result.json",
+        "claim-verification/results/aeronum_core_linux_hip_runtime_7900xtx_20260528T231000Z/cargo_test_gpu.stdout.log",
+        "claim-verification/results/aeronum_core_linux_hip_runtime_7900xtx_20260528T231000Z/cargo_test_gpu.stderr.log",
+        "claim-verification/results/aeronum_core_linux_hip_runtime_7900xtx_20260528T231000Z/cargo_test_matmul.stdout.log",
+        "claim-verification/results/aeronum_core_linux_hip_runtime_7900xtx_20260528T231000Z/cargo_test_matmul.stderr.log",
+        "claim-verification/results/aeronum_core_linux_hip_runtime_7900xtx_20260528T231000Z/cargo_test_full.stdout.log",
+        "claim-verification/results/aeronum_core_linux_hip_runtime_7900xtx_20260528T231000Z/cargo_test_full.stderr.log",
+        "claim-verification/results/aeronum_core_linux_hip_runtime_7900xtx_20260528T231000Z/command_config.txt",
+        "claim-verification/results/aeronum_core_linux_hip_runtime_7900xtx_20260528T231000Z/hardware_software_metadata.txt"
+      ]
+    },
+    {
       "id": "aeronum_pytorch_matmul_reference_20260528",
       "status": "verified_reference_only",
       "claim": "labs/compare/aeronn_gpu_compare.py measured a PyTorch 4096x4096 CPU-vs-GPU reference: CPU 0.1620 s, GPU 0.0067 s, relative speedup 24.28x. This is not an AeroNum matmul result.",

@@ -1,0 +1,11 @@
+{
+  "claim_id": "aeronum_core_linux_hip_runtime_20260528",
+  "benchmark": "aeronum-core HIP runtime tests",
+  "gpu_test_exit_code": 0,
+  "matmul_test_exit_code": 0,
+  "gpu_tests_passed": true,
+  "matmul_tests_passed": true,
+  "linux_hip_runtime_test": true,
+  "full_core_test_exit_code": 0,
+  "full_core_tests_passed": true
+}

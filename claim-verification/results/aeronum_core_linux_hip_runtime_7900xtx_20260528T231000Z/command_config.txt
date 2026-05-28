@@ -1,0 +1,4 @@
+command: cargo test -p aeronum-core gpu -- --nocapture
+repo: /home/rob/.openclaw.old/workspace/repos/AeroNum
+commit_before_run: 4c1ab783e5db5edbd85844bca32272e634bbc095
+timestamp_utc: 2026-05-28T22:49:45Z

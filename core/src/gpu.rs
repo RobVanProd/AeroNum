@@ -24,10 +24,8 @@ pub enum GpuError {
 impl fmt::Display for GpuError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
-            Self::UnsupportedPlatform => {
-                write!(f, "ROCm runtime is only wired for Windows right now")
-            }
-            Self::LibraryNotFound => write!(f, "Could not load amdhip64.dll from PATH"),
+            Self::UnsupportedPlatform => write!(f, "ROCm runtime loading is not wired for this OS"),
+            Self::LibraryNotFound => write!(f, "Could not load HIP runtime library"),
             Self::SymbolNotFound(name) => write!(f, "Missing HIP runtime symbol: {}", name),
             Self::HipCallFailed { call, code } => {
                 write!(f, "HIP call {} failed with code {}", call, code)
@@ -151,21 +149,32 @@ extern "system" {
 }
 
 #[cfg(not(target_os = "windows"))]
-#[allow(non_snake_case)]
-unsafe fn LoadLibraryA(_name: *const c_char) -> LibraryHandle {
-    ptr::null_mut()
+const RTLD_NOW: i32 = 2;
+
+#[cfg(not(target_os = "windows"))]
+#[link(name = "dl")]
+extern "C" {
+    fn dlopen(filename: *const c_char, flags: i32) -> LibraryHandle;
+    fn dlsym(handle: LibraryHandle, symbol: *const c_char) -> *mut c_void;
+    fn dlclose(handle: LibraryHandle) -> i32;
 }
 
 #[cfg(not(target_os = "windows"))]
 #[allow(non_snake_case)]
-unsafe fn GetProcAddress(_module: LibraryHandle, _name: *const c_char) -> *mut c_void {
-    ptr::null_mut()
+unsafe fn LoadLibraryA(name: *const c_char) -> LibraryHandle {
+    dlopen(name, RTLD_NOW)
 }
 
 #[cfg(not(target_os = "windows"))]
 #[allow(non_snake_case)]
-unsafe fn FreeLibrary(_module: LibraryHandle) -> i32 {
-    0
+unsafe fn GetProcAddress(module: LibraryHandle, name: *const c_char) -> *mut c_void {
+    dlsym(module, name)
+}
+
+#[cfg(not(target_os = "windows"))]
+#[allow(non_snake_case)]
+unsafe fn FreeLibrary(module: LibraryHandle) -> i32 {
+    dlclose(module)
 }
 
 #[derive(Debug)]
@@ -183,15 +192,24 @@ struct HipApi {
 
 impl HipApi {
     fn load() -> Result<Self, GpuError> {
-        if !cfg!(target_os = "windows") {
+        if !(cfg!(target_os = "windows") || cfg!(target_os = "linux")) {
             return Err(GpuError::UnsupportedPlatform);
         }
 
-        let module = unsafe {
-            let name = CString::new("amdhip64.dll").expect("static cstring");
-            LoadLibraryA(name.as_ptr())
+        let library_names: &[&str] = if cfg!(target_os = "windows") {
+            &["amdhip64.dll"]
+        } else {
+            &["libamdhip64.so", "libamdhip64.so.6"]
         };
 
+        let mut module = ptr::null_mut();
+        for library_name in library_names {
+            let name = CString::new(*library_name).expect("static cstring");
+            module = unsafe { LoadLibraryA(name.as_ptr()) };
+            if !module.is_null() {
+                break;
+            }
+        }
         if module.is_null() {
             return Err(GpuError::LibraryNotFound);
         }
@@ -424,5 +442,24 @@ mod tests {
             let name = rt.device_name().unwrap_or_default();
             assert!(!name.is_empty());
         }
+    }
+
+    #[test]
+    fn runtime_can_roundtrip_device_copy_when_available() {
+        let Ok(runtime) = HipRuntime::new(0) else {
+            return;
+        };
+
+        let input = [1.0f32, 2.5, 4.0, 8.0];
+        let buffer = runtime.copy_to_device(&input).expect("copy host to HIP device");
+        runtime.synchronize().expect("synchronize after host to device copy");
+
+        let mut output = [0.0f32; 4];
+        runtime
+            .copy_to_host(&buffer, &mut output)
+            .expect("copy HIP device to host");
+        runtime.synchronize().expect("synchronize after device to host copy");
+
+        assert_eq!(output, input);
     }
 }

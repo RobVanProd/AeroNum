@@ -3,7 +3,7 @@ use crate::NdArray;
 use std::error::Error;
 use std::fmt;
 use std::fs::File;
-use std::io::{self, Read};
+use std::io::{self, Read, Seek};
 use std::path::PathBuf;
 use std::time::Instant;
 
@@ -15,6 +15,9 @@ pub struct GgufHeader {
     pub metadata_kv_count: u64,
     pub metadata: Vec<GgufMetadataEntry>,
     pub tensors: Vec<GgufTensorInfo>,
+    pub alignment: u64,
+    pub data_offset: u64,
+    pub file_size: u64,
 }
 
 #[derive(Clone, Debug, PartialEq)]
@@ -67,6 +70,8 @@ pub struct GgufTensorInfo {
     pub dimensions: Vec<u64>,
     pub tensor_type: u32,
     pub offset: u64,
+    pub absolute_offset: u64,
+    pub nbytes: Option<u64>,
 }
 
 #[derive(Debug)]
@@ -231,9 +236,23 @@ impl GgufHeader {
             metadata.push(GgufMetadataEntry::read(&mut file)?);
         }
 
+        let alignment = metadata
+            .iter()
+            .find(|entry| entry.key == "general.alignment")
+            .and_then(|entry| entry.value.as_u64())
+            .unwrap_or(32);
+
         let mut tensors = Vec::with_capacity(tensor_count.min(usize::MAX as u64) as usize);
         for _ in 0..tensor_count {
             tensors.push(GgufTensorInfo::read(&mut file)?);
+        }
+        let directory_end = file.stream_position()?;
+        let data_offset = align_to(directory_end, alignment);
+        let file_size = file.metadata()?.len();
+
+        for tensor in &mut tensors {
+            tensor.absolute_offset = data_offset + tensor.offset;
+            tensor.nbytes = tensor_nbytes(tensor.tensor_type, &tensor.dimensions);
         }
 
         Ok(Self {
@@ -243,6 +262,9 @@ impl GgufHeader {
             metadata_kv_count,
             metadata,
             tensors,
+            alignment,
+            data_offset,
+            file_size,
         })
     }
 
@@ -336,6 +358,16 @@ impl GgufMetadataValue {
             Self::F64(value) => value.to_string(),
         }
     }
+
+    fn as_u64(&self) -> Option<u64> {
+        match self {
+            Self::U8(value) => Some(*value as u64),
+            Self::U16(value) => Some(*value as u64),
+            Self::U32(value) => Some(*value as u64),
+            Self::U64(value) => Some(*value),
+            _ => None,
+        }
+    }
 }
 
 impl GgufValueType {
@@ -379,7 +411,47 @@ impl GgufTensorInfo {
             dimensions,
             tensor_type,
             offset,
+            absolute_offset: 0,
+            nbytes: None,
         })
+    }
+}
+
+fn align_to(value: u64, alignment: u64) -> u64 {
+    if alignment == 0 {
+        return value;
+    }
+    value.div_ceil(alignment) * alignment
+}
+
+fn tensor_nbytes(tensor_type: u32, dimensions: &[u64]) -> Option<u64> {
+    let elements = dimensions
+        .iter()
+        .try_fold(1u64, |acc, dim| acc.checked_mul(*dim))?;
+    let (block_size, type_size) = ggml_type_layout(tensor_type)?;
+    Some(elements.div_ceil(block_size) * type_size)
+}
+
+fn ggml_type_layout(tensor_type: u32) -> Option<(u64, u64)> {
+    match tensor_type {
+        0 => Some((1, 4)),      // F32
+        1 => Some((1, 2)),      // F16
+        2 => Some((32, 18)),    // Q4_0
+        3 => Some((32, 20)),    // Q4_1
+        6 => Some((32, 22)),    // Q5_0
+        7 => Some((32, 24)),    // Q5_1
+        8 => Some((32, 34)),    // Q8_0
+        9 => Some((32, 40)),    // Q8_1
+        10 => Some((256, 84)),  // Q2_K
+        11 => Some((256, 110)), // Q3_K
+        12 => Some((256, 144)), // Q4_K
+        13 => Some((256, 176)), // Q5_K
+        14 => Some((256, 210)), // Q6_K
+        15 => Some((256, 292)), // Q8_K
+        16 => Some((1, 8)),     // I8
+        17 => Some((1, 2)),     // I16
+        18 => Some((1, 4)),     // I32
+        _ => None,
     }
 }
 

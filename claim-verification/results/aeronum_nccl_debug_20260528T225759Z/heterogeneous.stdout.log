@@ -1,0 +1,75 @@
+============================================================================
+PyTorch Reference: DistributedDataParallel Smoke Benchmark
+============================================================================
+Executing backend=nccl world_size=2 device_ids=[0, 1]
+ubuntu:42505:42505 [0] NCCL INFO Bootstrap : Using enp13s0:192.168.1.203<0>
+ubuntu:42505:42505 [0] NCCL INFO NET/Plugin : dlerror=librccl-net.so: cannot open shared object file: No such file or directory No plugin found (librccl-net.so), using internal implementation
+ubuntu:42505:42505 [0] NCCL INFO Kernel version: 6.8.0-111-generic
+
+ubuntu:42505:42505 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/init.cc:136 NCCL WARN Missing "iommu=pt" from kernel command line which can lead to system instablity or hang!
+ubuntu:42505:42505 [0] NCCL INFO ROCr version 1.14
+ubuntu:42505:42505 [0] NCCL INFO Dmabuf feature disabled without NCCL_DMABUF_ENABLE=1
+RCCL version 2.20.5+hip6.2 HEAD:45b618a+
+ubuntu:42505:42589 [0] NCCL INFO NET/IB : No device found.
+ubuntu:42505:42589 [0] NCCL INFO NET/Socket : Using [0]enp13s0:192.168.1.203<0> [1]br-1452710f0bff:172.18.0.1<0> [2]br-4aef8a8c979c:172.19.0.1<0> [3]vethae2c213:fe80::8c91:baff:fe43:a6d%vethae2c213<0>
+ubuntu:42505:42589 [0] NCCL INFO Using non-device net plugin version 0
+ubuntu:42505:42589 [0] NCCL INFO Using network Socket
+ubuntu:42505:42589 [0] NCCL INFO comm 0x5eda1dd2aa10 rank 0 nranks 2 cudaDev 0 busId 4000 commId 0xe9d9f8e884733564 - Init START
+ubuntu:42505:42589 [0] NCCL INFO [node_id = 2; gpu_id = 18715; unique_id = 0; location_id = 31744; bdf = 31744; domain = 0; partition = 0],
+ubuntu:42505:42589 [0] NCCL INFO [node_id = 1; gpu_id = 49057; unique_id = 14929398841655351226; location_id = 1024; bdf = 1024; domain = 0; partition = 0],
+ubuntu:42505:42589 [0] NCCL INFO initialized internal alternative rsmi functionality
+ubuntu:42505:42589 [0] NCCL INFO Setting affinity for GPU 0 to ffffffff
+ubuntu:42505:42589 [0] NCCL INFO comm 0x5eda1dd2aa10 rank 0 nRanks 2 nNodes 1 localRanks 2 localRank 0 MNNVL 0
+ubuntu:42505:42589 [0] NCCL INFO Channel 00/02 :    0   1
+ubuntu:42505:42589 [0] NCCL INFO Channel 01/02 :    0   1
+ubuntu:42505:42589 [0] NCCL INFO Trees [0] 1/-1/-1->0->-1 [1] 1/-1/-1->0->-1 comm 0x5eda1dd2aa10 nRanks 02 busId 4000
+ubuntu:42505:42589 [0] NCCL INFO P2P Chunksize set to 131072
+
+ubuntu:42505:42591 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/p2p.cc:235 NCCL WARN hipIpcGetMemHandle failed : invalid argument
+
+ubuntu:42505:42591 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/p2p.cc:237 NCCL WARN Cuda failure 'invalid argument'
+ubuntu:42505:42591 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/p2p.cc:646 -> 1
+ubuntu:42505:42589 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/p2p.cc:473 -> 1
+ubuntu:42505:42589 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport.cc:45 -> 1
+ubuntu:42505:42589 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport.cc:147 -> 1
+ubuntu:42505:42589 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/init.cc:1581 -> 1
+ubuntu:42505:42589 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/init.cc:1898 -> 1
+ubuntu:42505:42589 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/group.cc:68 -> 1 [Async thread]
+ubuntu:42505:42505 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/group.cc:437 -> 1
+ubuntu:42505:42505 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/init.cc:2274 -> 1
+ubuntu:42506:42506 [1] NCCL INFO ROCr version 1.14
+ubuntu:42506:42506 [1] NCCL INFO Dmabuf feature disabled without NCCL_DMABUF_ENABLE=1
+ubuntu:42506:42506 [1] NCCL INFO Bootstrap : Using enp13s0:192.168.1.203<0>
+ubuntu:42506:42506 [1] NCCL INFO NET/Plugin : dlerror=librccl-net.so: cannot open shared object file: No such file or directory No plugin found (librccl-net.so), using internal implementation
+ubuntu:42506:42506 [1] NCCL INFO Kernel version: 6.8.0-111-generic
+
+ubuntu:42506:42506 [1] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/init.cc:136 NCCL WARN Missing "iommu=pt" from kernel command line which can lead to system instablity or hang!
+
+ubuntu:42506:42590 [1] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/enqueue.cc:79 NCCL WARN Failed to get kernel attributes
+
+ubuntu:42506:42590 [1] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/enqueue.cc:79 NCCL WARN Failed to get kernel attributes
+ubuntu:42506:42590 [1] NCCL INFO NET/IB : No device found.
+ubuntu:42506:42590 [1] NCCL INFO NET/Socket : Using [0]enp13s0:192.168.1.203<0> [1]br-1452710f0bff:172.18.0.1<0> [2]br-4aef8a8c979c:172.19.0.1<0> [3]vethae2c213:fe80::8c91:baff:fe43:a6d%vethae2c213<0>
+ubuntu:42506:42590 [1] NCCL INFO Using non-device net plugin version 0
+ubuntu:42506:42590 [1] NCCL INFO Using network Socket
+ubuntu:42506:42590 [1] NCCL INFO comm 0x637b18a00e40 rank 1 nranks 2 cudaDev 1 busId 7c000 commId 0xe9d9f8e884733564 - Init START
+ubuntu:42506:42590 [1] NCCL INFO [node_id = 2; gpu_id = 18715; unique_id = 0; location_id = 31744; bdf = 31744; domain = 0; partition = 0],
+ubuntu:42506:42590 [1] NCCL INFO [node_id = 1; gpu_id = 49057; unique_id = 14929398841655351226; location_id = 1024; bdf = 1024; domain = 0; partition = 0],
+ubuntu:42506:42590 [1] NCCL INFO initialized internal alternative rsmi functionality
+ubuntu:42506:42590 [1] NCCL INFO Setting affinity for GPU 1 to ffffffff
+ubuntu:42506:42590 [1] NCCL INFO comm 0x637b18a00e40 rank 1 nRanks 2 nNodes 1 localRanks 2 localRank 1 MNNVL 0
+ubuntu:42506:42590 [1] NCCL INFO Trees [0] -1/-1/-1->1->0 [1] -1/-1/-1->1->0 comm 0x637b18a00e40 nRanks 02 busId 7c000
+ubuntu:42506:42590 [1] NCCL INFO P2P Chunksize set to 131072
+
+ubuntu:42506:42592 [1] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/p2p.cc:235 NCCL WARN hipIpcGetMemHandle failed : invalid argument
+
+ubuntu:42506:42592 [1] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/p2p.cc:237 NCCL WARN Cuda failure 'invalid argument'
+ubuntu:42506:42592 [1] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/p2p.cc:646 -> 1
+ubuntu:42506:42590 [1] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/p2p.cc:473 -> 1
+ubuntu:42506:42590 [1] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport.cc:45 -> 1
+ubuntu:42506:42590 [1] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport.cc:147 -> 1
+ubuntu:42506:42590 [1] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/init.cc:1581 -> 1
+ubuntu:42506:42590 [1] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/init.cc:1898 -> 1
+ubuntu:42506:42590 [1] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/group.cc:68 -> 1 [Async thread]
+ubuntu:42506:42506 [1] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/group.cc:437 -> 1
+ubuntu:42506:42506 [1] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/init.cc:2274 -> 1

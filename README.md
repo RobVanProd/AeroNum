@@ -99,11 +99,14 @@ Blocked or omitted claims:
   current result is an AeroNum core HIP/hipBLAS 4096x4096 SGEMM measurement
   without a same-run baseline comparison.
 - NCCL/MPI multi-GPU scaling is omitted. A real NCCL/DDP single-GPU smoke test
-  passed, but the local two-device attempt using the Radeon RX 7900 XTX plus
-  integrated AMD Radeon Graphics failed with RCCL `hipIpcGetMemHandle failed:
-  invalid argument`; with `NCCL_P2P_DISABLE=1`, initialization progressed
-  further but rank 1 failed with `invalid device function`
-  ([failed attempt](claim-verification/results/aeronum_nccl_ddp_two_device_p2p_disabled_attempt_7900xtx_20260528T225400Z/)).
+  passed, but the local two-device attempts using the Radeon RX 7900 XTX plus
+  integrated AMD Radeon Graphics failed. After reboot, the default
+  heterogeneous run failed with RCCL `hipIpcGetMemHandle failed: invalid argument`.
+  A `NCCL_P2P_DISABLE=1 NCCL_SHM_DISABLE=1` attempt failed with rank 1
+  `invalid device function`. A two-rank single-XTX attempt was rejected by RCCL
+  as duplicate GPU usage. No compatible second discrete ROCm GPU was verified
+  on this machine
+  ([debug result JSON](claim-verification/results/aeronum_nccl_debug_20260528T225759Z/claim_result.json)).
 - GGUF/inference benchmark claims are omitted because no current raw GGUF
   inference benchmark result was found or rerun.
 

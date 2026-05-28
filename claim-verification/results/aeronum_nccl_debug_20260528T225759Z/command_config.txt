@@ -1,0 +1,6 @@
+same_device_command: NCCL_DEBUG=INFO timeout 120s python3 labs/compare/distributed_compare.py --backend nccl --world-size 2 --device-ids 0,0 --master-port 12368 --steps 2 --batch-size 1 --seq-len 16 --vocab-size 1024 --d-model 32 --layers 1 --nhead 4 --output claim-verification/results/aeronum_nccl_debug_20260528T225759Z/same_device_claim_result.json
+heterogeneous_command: NCCL_DEBUG=INFO timeout 120s python3 labs/compare/distributed_compare.py --backend nccl --world-size 2 --device-ids 0,1 --master-port 12369 --steps 1 --batch-size 1 --seq-len 16 --vocab-size 1024 --d-model 32 --layers 1 --nhead 4 --output claim-verification/results/aeronum_nccl_debug_20260528T225759Z/heterogeneous_claim_result.json
+repo: /home/rob/.openclaw.old/workspace/repos/AeroNum
+commit_before_run: 94e28ae3059f8b912da82b8130d635650684e8a3
+timestamp_utc: 2026-05-28T22:58:01Z
+heterogeneous_no_p2p_shm_command: NCCL_DEBUG=INFO NCCL_P2P_DISABLE=1 NCCL_SHM_DISABLE=1 NCCL_NET_GDR_LEVEL=0 timeout 120s python3 labs/compare/distributed_compare.py --backend nccl --world-size 2 --device-ids 0,1 --master-port 12370 --steps 1 --batch-size 1 --seq-len 16 --vocab-size 1024 --d-model 32 --layers 1 --nhead 4 --output claim-verification/results/aeronum_nccl_debug_20260528T225759Z/heterogeneous_no_p2p_shm_claim_result.json

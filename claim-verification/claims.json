@@ -166,7 +166,7 @@
     {
       "id": "aeronum_gpt2_nccl_gguf_claims_20260528",
       "status": "blocked",
-      "claim": "AeroNum-vs-PyTorch GPT-2 training speedup, NCCL/MPI multi-GPU scaling, and GGUF inference claims are not included because no current AeroNum artifact or rerun verified them. A PyTorch/Hugging Face GPT-2 reference passed, NCCL/DDP world size 1 passed, the default local two-device NCCL attempt failed between the 7900 XTX and integrated AMD Radeon Graphics with RCCL hipIpcGetMemHandle invalid argument, and the NCCL_P2P_DISABLE=1 attempt failed on rank 1 with invalid device function.",
+      "claim": "AeroNum-vs-PyTorch GPT-2 training speedup, NCCL/MPI multi-GPU scaling, and GGUF inference claims are not included because no current AeroNum artifact or rerun verified them. A PyTorch/Hugging Face GPT-2 reference passed, NCCL/DDP world size 1 passed, post-reboot NCCL attempts failed on the local Radeon RX 7900 XTX plus integrated AMD Radeon Graphics topology, and a two-rank single-XTX attempt was rejected by RCCL as duplicate GPU usage.",
       "artifacts": [
         "claim-verification/results/aeronum_pytorch_gpt2_reference_7900xtx_20260528T224500Z/claim_result.json",
         "claim-verification/results/aeronum_nccl_ddp_single_gpu_7900xtx_20260528T224500Z/claim_result.json",
@@ -175,7 +175,15 @@
         "claim-verification/results/aeronum_nccl_ddp_two_device_attempt_7900xtx_20260528T224500Z/hardware_software_metadata.txt",
         "claim-verification/results/aeronum_nccl_ddp_two_device_p2p_disabled_attempt_7900xtx_20260528T225400Z/distributed_compare.stdout.log",
         "claim-verification/results/aeronum_nccl_ddp_two_device_p2p_disabled_attempt_7900xtx_20260528T225400Z/distributed_compare.stderr.log",
-        "claim-verification/results/aeronum_nccl_ddp_two_device_p2p_disabled_attempt_7900xtx_20260528T225400Z/hardware_software_metadata.txt"
+        "claim-verification/results/aeronum_nccl_ddp_two_device_p2p_disabled_attempt_7900xtx_20260528T225400Z/hardware_software_metadata.txt",
+        "claim-verification/results/aeronum_nccl_debug_20260528T225759Z/claim_result.json",
+        "claim-verification/results/aeronum_nccl_debug_20260528T225759Z/hardware_software_metadata.txt",
+        "claim-verification/results/aeronum_nccl_debug_20260528T225759Z/same_device.stdout.log",
+        "claim-verification/results/aeronum_nccl_debug_20260528T225759Z/same_device.stderr.log",
+        "claim-verification/results/aeronum_nccl_debug_20260528T225759Z/heterogeneous.stdout.log",
+        "claim-verification/results/aeronum_nccl_debug_20260528T225759Z/heterogeneous.stderr.log",
+        "claim-verification/results/aeronum_nccl_debug_20260528T225759Z/heterogeneous_no_p2p_shm.stdout.log",
+        "claim-verification/results/aeronum_nccl_debug_20260528T225759Z/heterogeneous_no_p2p_shm.stderr.log"
       ]
     }
   ]

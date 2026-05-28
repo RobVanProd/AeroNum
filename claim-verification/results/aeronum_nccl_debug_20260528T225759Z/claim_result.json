@@ -1,0 +1,35 @@
+{
+  "claim_id": "aeronum_nccl_multi_gpu_debug_20260528",
+  "status": "blocked",
+  "benchmark": "PyTorch DDP NCCL multi-rank debug",
+  "repo_commit_before_run": "94e28ae3059f8b912da82b8130d635650684e8a3",
+  "hardware_summary": {
+    "rocm_device_0": "Radeon RX 7900 XTX",
+    "rocm_device_1": "AMD Radeon Graphics",
+    "device_topology": "one discrete Radeon RX 7900 XTX plus one integrated AMD Radeon Graphics device"
+  },
+  "attempts": [
+    {
+      "name": "two ranks on device 0",
+      "command": "NCCL_DEBUG=INFO timeout 120s python3 labs/compare/distributed_compare.py --backend nccl --world-size 2 --device-ids 0,0 --master-port 12368 --steps 2 --batch-size 1 --seq-len 16 --vocab-size 1024 --d-model 32 --layers 1 --nhead 4 --output claim-verification/results/aeronum_nccl_debug_20260528T225759Z/same_device_claim_result.json",
+      "exit_code": 1,
+      "result_json_written": false,
+      "observed_failure": "RCCL rejected duplicate GPU use: rank 0 and rank 1 both on CUDA device 4000"
+    },
+    {
+      "name": "heterogeneous devices 0 and 1",
+      "command": "NCCL_DEBUG=INFO timeout 120s python3 labs/compare/distributed_compare.py --backend nccl --world-size 2 --device-ids 0,1 --master-port 12369 --steps 1 --batch-size 1 --seq-len 16 --vocab-size 1024 --d-model 32 --layers 1 --nhead 4 --output claim-verification/results/aeronum_nccl_debug_20260528T225759Z/heterogeneous_claim_result.json",
+      "exit_code": 1,
+      "result_json_written": false,
+      "observed_failure": "RCCL failed between the Radeon RX 7900 XTX and integrated AMD Radeon Graphics with hipIpcGetMemHandle invalid argument"
+    },
+    {
+      "name": "heterogeneous devices 0 and 1 with P2P and SHM disabled",
+      "command": "NCCL_DEBUG=INFO NCCL_P2P_DISABLE=1 NCCL_SHM_DISABLE=1 NCCL_NET_GDR_LEVEL=0 timeout 120s python3 labs/compare/distributed_compare.py --backend nccl --world-size 2 --device-ids 0,1 --master-port 12370 --steps 1 --batch-size 1 --seq-len 16 --vocab-size 1024 --d-model 32 --layers 1 --nhead 4 --output claim-verification/results/aeronum_nccl_debug_20260528T225759Z/heterogeneous_no_p2p_shm_claim_result.json",
+      "exit_code": 1,
+      "result_json_written": false,
+      "observed_failure": "Rank 1 failed with invalid device function; rank 0 reported the remote process exited"
+    }
+  ],
+  "conclusion": "No NCCL multi-GPU scaling result is verified on this machine. The only second ROCm-visible GPU is integrated AMD Radeon Graphics, and the tested NCCL configurations did not complete with the Radeon RX 7900 XTX plus that device."
+}

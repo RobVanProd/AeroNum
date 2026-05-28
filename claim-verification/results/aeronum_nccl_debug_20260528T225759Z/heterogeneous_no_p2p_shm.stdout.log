@@ -1,0 +1,1422 @@
+============================================================================
+PyTorch Reference: DistributedDataParallel Smoke Benchmark
+============================================================================
+Executing backend=nccl world_size=2 device_ids=[0, 1]
+ubuntu:42732:42732 [0] NCCL INFO Bootstrap : Using enp13s0:192.168.1.203<0>
+ubuntu:42732:42732 [0] NCCL INFO NET/Plugin : dlerror=librccl-net.so: cannot open shared object file: No such file or directory No plugin found (librccl-net.so), using internal implementation
+ubuntu:42732:42732 [0] NCCL INFO Kernel version: 6.8.0-111-generic
+
+ubuntu:42732:42732 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/init.cc:136 NCCL WARN Missing "iommu=pt" from kernel command line which can lead to system instablity or hang!
+ubuntu:42732:42732 [0] NCCL INFO ROCr version 1.14
+ubuntu:42732:42732 [0] NCCL INFO Dmabuf feature disabled without NCCL_DMABUF_ENABLE=1
+RCCL version 2.20.5+hip6.2 HEAD:45b618a+
+ubuntu:42733:42733 [1] NCCL INFO ROCr version 1.14
+ubuntu:42733:42733 [1] NCCL INFO Dmabuf feature disabled without NCCL_DMABUF_ENABLE=1
+ubuntu:42733:42733 [1] NCCL INFO Bootstrap : Using enp13s0:192.168.1.203<0>
+ubuntu:42733:42733 [1] NCCL INFO NET/Plugin : dlerror=librccl-net.so: cannot open shared object file: No such file or directory No plugin found (librccl-net.so), using internal implementation
+ubuntu:42733:42733 [1] NCCL INFO Kernel version: 6.8.0-111-generic
+
+ubuntu:42733:42733 [1] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/init.cc:136 NCCL WARN Missing "iommu=pt" from kernel command line which can lead to system instablity or hang!
+
+ubuntu:42733:42816 [1] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/enqueue.cc:79 NCCL WARN Failed to get kernel attributes
+
+ubuntu:42733:42816 [1] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/enqueue.cc:79 NCCL WARN Failed to get kernel attributes
+ubuntu:42733:42816 [1] NCCL INFO NET/IB : No device found.
+ubuntu:42733:42816 [1] NCCL INFO NET/Socket : Using [0]enp13s0:192.168.1.203<0> [1]br-1452710f0bff:172.18.0.1<0> [2]br-4aef8a8c979c:172.19.0.1<0> [3]vethae2c213:fe80::8c91:baff:fe43:a6d%vethae2c213<0>
+ubuntu:42733:42816 [1] NCCL INFO Using non-device net plugin version 0
+ubuntu:42733:42816 [1] NCCL INFO Using network Socket
+ubuntu:42733:42816 [1] NCCL INFO comm 0x5d715dc616a0 rank 1 nranks 2 cudaDev 1 busId 7c000 commId 0x947fef2e1583e0d1 - Init START
+ubuntu:42733:42816 [1] NCCL INFO [node_id = 2; gpu_id = 18715; unique_id = 0; location_id = 31744; bdf = 31744; domain = 0; partition = 0],
+ubuntu:42733:42816 [1] NCCL INFO [node_id = 1; gpu_id = 49057; unique_id = 14929398841655351226; location_id = 1024; bdf = 1024; domain = 0; partition = 0],
+ubuntu:42733:42816 [1] NCCL INFO initialized internal alternative rsmi functionality
+ubuntu:42733:42816 [1] NCCL INFO NCCL_P2P_LEVEL set by environment to LOC
+ubuntu:42733:42816 [1] NCCL INFO NCCL_SHM_DISABLE set by environment to 1.
+ubuntu:42733:42816 [1] NCCL INFO Setting affinity for GPU 1 to ffffffff
+ubuntu:42733:42816 [1] NCCL INFO comm 0x5d715dc616a0 rank 1 nRanks 2 nNodes 2 localRanks 1 localRank 0 MNNVL 0
+ubuntu:42733:42816 [1] NCCL INFO Trees [0] -1/-1/-1->1->0 [1] -1/-1/-1->1->0 [2] -1/-1/-1->1->0 [3] 0/-1/-1->1->-1 [4] 0/-1/-1->1->-1 [5] 0/-1/-1->1->-1 comm 0x5d715dc616a0 nRanks 02 busId 7c000
+ubuntu:42733:42816 [1] NCCL INFO P2P Chunksize set to 131072
+ubuntu:42733:42816 [1] NCCL INFO Channel 00/0 : 0[4000] -> 1[7c000] [receive] via NET/Socket/1 comm 0x5d715dc616a0 nRanks 02
+ubuntu:42733:42816 [1] NCCL INFO Channel 01/0 : 0[4000] -> 1[7c000] [receive] via NET/Socket/2 comm 0x5d715dc616a0 nRanks 02
+ubuntu:42733:42816 [1] NCCL INFO Channel 02/0 : 0[4000] -> 1[7c000] [receive] via NET/Socket/3 comm 0x5d715dc616a0 nRanks 02
+ubuntu:42733:42816 [1] NCCL INFO Channel 03/0 : 0[4000] -> 1[7c000] [receive] via NET/Socket/1 comm 0x5d715dc616a0 nRanks 02
+ubuntu:42733:42816 [1] NCCL INFO Channel 04/0 : 0[4000] -> 1[7c000] [receive] via NET/Socket/2 comm 0x5d715dc616a0 nRanks 02
+ubuntu:42733:42816 [1] NCCL INFO Channel 05/0 : 0[4000] -> 1[7c000] [receive] via NET/Socket/3 comm 0x5d715dc616a0 nRanks 02
+ubuntu:42733:42816 [1] NCCL INFO Channel 00/0 : 1[7c000] -> 0[4000] [send] via NET/Socket/1 comm 0x5d715dc616a0 nRanks 02
+ubuntu:42733:42816 [1] NCCL INFO Channel 01/0 : 1[7c000] -> 0[4000] [send] via NET/Socket/2 comm 0x5d715dc616a0 nRanks 02
+ubuntu:42733:42816 [1] NCCL INFO Channel 02/0 : 1[7c000] -> 0[4000] [send] via NET/Socket/3 comm 0x5d715dc616a0 nRanks 02
+ubuntu:42733:42816 [1] NCCL INFO Channel 03/0 : 1[7c000] -> 0[4000] [send] via NET/Socket/1 comm 0x5d715dc616a0 nRanks 02
+ubuntu:42733:42816 [1] NCCL INFO Channel 04/0 : 1[7c000] -> 0[4000] [send] via NET/Socket/2 comm 0x5d715dc616a0 nRanks 02
+ubuntu:42733:42816 [1] NCCL INFO Channel 05/0 : 1[7c000] -> 0[4000] [send] via NET/Socket/3 comm 0x5d715dc616a0 nRanks 02
+ubuntu:42733:42816 [1] NCCL INFO Connected all rings comm 0x5d715dc616a0 nRanks 02 busId 7c000
+ubuntu:42733:42816 [1] NCCL INFO Connected all trees
+ubuntu:42733:42816 [1] NCCL INFO threadThresholds 8/8/64 | 16/8/64 | 256 | 256
+ubuntu:42733:42816 [1] NCCL INFO 6 coll channels, 0 collnet channels, 0 nvls channels, 8 p2p channels, 4 p2p channels per peer
+ubuntu:42733:42816 [1] NCCL INFO comm 0x5d715dc616a0 rank 1 nranks 2 cudaDev 1 busId 7c000 commId 0x947fef2e1583e0d1 localSize 0 used 16829856 bytes - Init COMPLETE
+
+ubuntu:42733:42733 [1] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/enqueue.cc:1393 NCCL WARN Cuda failure 'invalid device function'
+ubuntu:42733:42733 [1] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/group.cc:175 -> 1
+ubuntu:42733:42733 [1] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/group.cc:354 -> 1
+ubuntu:42733:42733 [1] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/group.cc:437 -> 1
+ubuntu:42733:42733 [1] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/enqueue.cc:2144 -> 1
+ubuntu:42732:42815 [0] NCCL INFO NET/IB : No device found.
+ubuntu:42732:42815 [0] NCCL INFO NET/Socket : Using [0]enp13s0:192.168.1.203<0> [1]br-1452710f0bff:172.18.0.1<0> [2]br-4aef8a8c979c:172.19.0.1<0> [3]vethae2c213:fe80::8c91:baff:fe43:a6d%vethae2c213<0>
+ubuntu:42732:42815 [0] NCCL INFO Using non-device net plugin version 0
+ubuntu:42732:42815 [0] NCCL INFO Using network Socket
+ubuntu:42732:42815 [0] NCCL INFO comm 0x59086e6d2950 rank 0 nranks 2 cudaDev 0 busId 4000 commId 0x947fef2e1583e0d1 - Init START
+ubuntu:42732:42815 [0] NCCL INFO [node_id = 2; gpu_id = 18715; unique_id = 0; location_id = 31744; bdf = 31744; domain = 0; partition = 0],
+ubuntu:42732:42815 [0] NCCL INFO [node_id = 1; gpu_id = 49057; unique_id = 14929398841655351226; location_id = 1024; bdf = 1024; domain = 0; partition = 0],
+ubuntu:42732:42815 [0] NCCL INFO initialized internal alternative rsmi functionality
+ubuntu:42732:42815 [0] NCCL INFO NCCL_P2P_LEVEL set by environment to LOC
+ubuntu:42732:42815 [0] NCCL INFO NCCL_SHM_DISABLE set by environment to 1.
+ubuntu:42732:42815 [0] NCCL INFO Setting affinity for GPU 0 to ffffffff
+ubuntu:42732:42815 [0] NCCL INFO comm 0x59086e6d2950 rank 0 nRanks 2 nNodes 2 localRanks 1 localRank 0 MNNVL 0
+ubuntu:42732:42815 [0] NCCL INFO Channel 00/06 :    0   1
+ubuntu:42732:42815 [0] NCCL INFO Channel 01/06 :    0   1
+ubuntu:42732:42815 [0] NCCL INFO Channel 02/06 :    0   1
+ubuntu:42732:42815 [0] NCCL INFO Channel 03/06 :    0   1
+ubuntu:42732:42815 [0] NCCL INFO Channel 04/06 :    0   1
+ubuntu:42732:42815 [0] NCCL INFO Channel 05/06 :    0   1
+ubuntu:42732:42815 [0] NCCL INFO Trees [0] 1/-1/-1->0->-1 [1] 1/-1/-1->0->-1 [2] 1/-1/-1->0->-1 [3] -1/-1/-1->0->1 [4] -1/-1/-1->0->1 [5] -1/-1/-1->0->1 comm 0x59086e6d2950 nRanks 02 busId 4000
+ubuntu:42732:42815 [0] NCCL INFO P2P Chunksize set to 131072
+ubuntu:42732:42815 [0] NCCL INFO Channel 00/0 : 1[7c000] -> 0[4000] [receive] via NET/Socket/1 comm 0x59086e6d2950 nRanks 02
+ubuntu:42732:42815 [0] NCCL INFO Channel 01/0 : 1[7c000] -> 0[4000] [receive] via NET/Socket/2 comm 0x59086e6d2950 nRanks 02
+ubuntu:42732:42815 [0] NCCL INFO Channel 02/0 : 1[7c000] -> 0[4000] [receive] via NET/Socket/3 comm 0x59086e6d2950 nRanks 02
+ubuntu:42732:42815 [0] NCCL INFO Channel 03/0 : 1[7c000] -> 0[4000] [receive] via NET/Socket/1 comm 0x59086e6d2950 nRanks 02
+ubuntu:42732:42815 [0] NCCL INFO Channel 04/0 : 1[7c000] -> 0[4000] [receive] via NET/Socket/2 comm 0x59086e6d2950 nRanks 02
+ubuntu:42732:42815 [0] NCCL INFO Channel 05/0 : 1[7c000] -> 0[4000] [receive] via NET/Socket/3 comm 0x59086e6d2950 nRanks 02
+ubuntu:42732:42815 [0] NCCL INFO Channel 00/0 : 0[4000] -> 1[7c000] [send] via NET/Socket/1 comm 0x59086e6d2950 nRanks 02
+ubuntu:42732:42815 [0] NCCL INFO Channel 01/0 : 0[4000] -> 1[7c000] [send] via NET/Socket/2 comm 0x59086e6d2950 nRanks 02
+ubuntu:42732:42815 [0] NCCL INFO Channel 02/0 : 0[4000] -> 1[7c000] [send] via NET/Socket/3 comm 0x59086e6d2950 nRanks 02
+ubuntu:42732:42815 [0] NCCL INFO Channel 03/0 : 0[4000] -> 1[7c000] [send] via NET/Socket/1 comm 0x59086e6d2950 nRanks 02
+ubuntu:42732:42815 [0] NCCL INFO Channel 04/0 : 0[4000] -> 1[7c000] [send] via NET/Socket/2 comm 0x59086e6d2950 nRanks 02
+ubuntu:42732:42815 [0] NCCL INFO Channel 05/0 : 0[4000] -> 1[7c000] [send] via NET/Socket/3 comm 0x59086e6d2950 nRanks 02
+ubuntu:42732:42815 [0] NCCL INFO Connected all rings comm 0x59086e6d2950 nRanks 02 busId 4000
+ubuntu:42732:42815 [0] NCCL INFO Connected all trees
+ubuntu:42732:42815 [0] NCCL INFO threadThresholds 8/8/64 | 16/8/64 | 256 | 256
+ubuntu:42732:42815 [0] NCCL INFO 6 coll channels, 0 collnet channels, 0 nvls channels, 8 p2p channels, 2 p2p channels per peer
+ubuntu:42732:42815 [0] NCCL INFO comm 0x59086e6d2950 rank 0 nranks 2 cudaDev 0 busId 4000 commId 0x947fef2e1583e0d1 localSize 192 used 16829856 bytes - Init COMPLETE
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0ubuntu:42733:42819 [1] NCCL INFO [Service thread] Connection closed by localRank 0
+ubuntu:42733:42823 [1] NCCL INFO comm 0x5d715dc616a0 rank 1 nranks 2 cudaDev 1 busId 7c000 - Abort COMPLETE
+] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]
+
+ubuntu:42732:42821 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:52 NCCL WARN socketProgress: Connection closed by remote peer ubuntu<41696>
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/misc/socket.cc:752 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_socket.cc:474 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/transport/net_tmp.cc:1489 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:699 -> 6
+ubuntu:42732:42821 [0] NCCL INFO /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/proxy.cc:879 -> 6 [Progress Thread]

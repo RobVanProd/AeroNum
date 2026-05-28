@@ -1,0 +1,81 @@
+[rank0]:[E528 18:58:47.989214699 ProcessGroupNCCL.cpp:542] [Rank 0] Collective WorkNCCL(SeqNum=1, OpType=ALLGATHER, NumelIn=1, NumelOut=2, Timeout(ms)=600000) raised the following async exception: NCCL error: remote process exited or there was a network error, NCCL version 2.20.5
+ncclRemoteError: A call failed possibly due to a network error or a remote process exiting prematurely.
+Last error:
+socketProgress: Connection closed by remote peer ubuntu<41696>
+Exception raised from checkForNCCLErrorsInternal at ../torch/csrc/distributed/c10d/ProcessGroupNCCL.cpp:2027 (most recent call first):
+frame #0: c10::Error::Error(c10::SourceLocation, std::string) + 0x96 (0x753e16b6c556 in /home/rob/.local/lib/python3.10/site-packages/torch/lib/libc10.so)
+frame #1: c10d::ProcessGroupNCCL::checkForNCCLErrorsInternal(std::shared_ptr<c10d::NCCLComm>&) + 0x220 (0x753e6fc7efb0 in /home/rob/.local/lib/python3.10/site-packages/torch/lib/libtorch_hip.so)
+frame #2: c10d::ProcessGroupNCCL::WorkNCCL::checkAndSetException() + 0x7c (0x753e6fc7f1fc in /home/rob/.local/lib/python3.10/site-packages/torch/lib/libtorch_hip.so)
+frame #3: c10d::ProcessGroupNCCL::watchdogHandler() + 0x213 (0x753e6fc86b53 in /home/rob/.local/lib/python3.10/site-packages/torch/lib/libtorch_hip.so)
+frame #4: c10d::ProcessGroupNCCL::ncclCommWatchdog() + 0x14d (0x753e6fc885dd in /home/rob/.local/lib/python3.10/site-packages/torch/lib/libtorch_hip.so)
+frame #5: <unknown function> + 0x145c0 (0x753ec42575c0 in /home/rob/.local/lib/python3.10/site-packages/torch/lib/libtorch.so)
+frame #6: <unknown function> + 0x94ac3 (0x753ed2294ac3 in /lib/x86_64-linux-gnu/libc.so.6)
+frame #7: <unknown function> + 0x1268d0 (0x753ed23268d0 in /lib/x86_64-linux-gnu/libc.so.6)
+
+[rank0]:[E528 18:58:47.989868337 ProcessGroupNCCL.cpp:1785] [PG ID 0 PG GUID 0(default_pg) Rank 0] Exception (either an error or timeout) detected by watchdog at work: 1, last enqueued NCCL work: 1, last completed NCCL work: -1.
+[rank0]:[E528 18:58:47.989877875 ProcessGroupNCCL.cpp:630] [Rank 0] Some NCCL operations have failed or timed out. Due to the asynchronous nature of CUDA kernels, subsequent GPU operations might run on corrupted/incomplete data.
+[rank0]:[E528 18:58:47.989880510 ProcessGroupNCCL.cpp:636] [Rank 0] To avoid data inconsistency, we are taking the entire process down.
+[rank0]:[E528 18:58:47.989910336 ProcessGroupNCCL.cpp:1595] [PG ID 0 PG GUID 0(default_pg) Rank 0] Process group watchdog thread terminated with exception: NCCL error: remote process exited or there was a network error, NCCL version 2.20.5
+ncclRemoteError: A call failed possibly due to a network error or a remote process exiting prematurely.
+Last error:
+socketProgress: Connection closed by remote peer ubuntu<41696>
+Exception raised from checkForNCCLErrorsInternal at ../torch/csrc/distributed/c10d/ProcessGroupNCCL.cpp:2027 (most recent call first):
+frame #0: c10::Error::Error(c10::SourceLocation, std::string) + 0x96 (0x753e16b6c556 in /home/rob/.local/lib/python3.10/site-packages/torch/lib/libc10.so)
+frame #1: c10d::ProcessGroupNCCL::checkForNCCLErrorsInternal(std::shared_ptr<c10d::NCCLComm>&) + 0x220 (0x753e6fc7efb0 in /home/rob/.local/lib/python3.10/site-packages/torch/lib/libtorch_hip.so)
+frame #2: c10d::ProcessGroupNCCL::WorkNCCL::checkAndSetException() + 0x7c (0x753e6fc7f1fc in /home/rob/.local/lib/python3.10/site-packages/torch/lib/libtorch_hip.so)
+frame #3: c10d::ProcessGroupNCCL::watchdogHandler() + 0x213 (0x753e6fc86b53 in /home/rob/.local/lib/python3.10/site-packages/torch/lib/libtorch_hip.so)
+frame #4: c10d::ProcessGroupNCCL::ncclCommWatchdog() + 0x14d (0x753e6fc885dd in /home/rob/.local/lib/python3.10/site-packages/torch/lib/libtorch_hip.so)
+frame #5: <unknown function> + 0x145c0 (0x753ec42575c0 in /home/rob/.local/lib/python3.10/site-packages/torch/lib/libtorch.so)
+frame #6: <unknown function> + 0x94ac3 (0x753ed2294ac3 in /lib/x86_64-linux-gnu/libc.so.6)
+frame #7: <unknown function> + 0x1268d0 (0x753ed23268d0 in /lib/x86_64-linux-gnu/libc.so.6)
+
+terminate called after throwing an instance of 'c10::DistBackendError'
+  what():  [PG ID 0 PG GUID 0(default_pg) Rank 0] Process group watchdog thread terminated with exception: NCCL error: remote process exited or there was a network error, NCCL version 2.20.5
+ncclRemoteError: A call failed possibly due to a network error or a remote process exiting prematurely.
+Last error:
+socketProgress: Connection closed by remote peer ubuntu<41696>
+Exception raised from checkForNCCLErrorsInternal at ../torch/csrc/distributed/c10d/ProcessGroupNCCL.cpp:2027 (most recent call first):
+frame #0: c10::Error::Error(c10::SourceLocation, std::string) + 0x96 (0x753e16b6c556 in /home/rob/.local/lib/python3.10/site-packages/torch/lib/libc10.so)
+frame #1: c10d::ProcessGroupNCCL::checkForNCCLErrorsInternal(std::shared_ptr<c10d::NCCLComm>&) + 0x220 (0x753e6fc7efb0 in /home/rob/.local/lib/python3.10/site-packages/torch/lib/libtorch_hip.so)
+frame #2: c10d::ProcessGroupNCCL::WorkNCCL::checkAndSetException() + 0x7c (0x753e6fc7f1fc in /home/rob/.local/lib/python3.10/site-packages/torch/lib/libtorch_hip.so)
+frame #3: c10d::ProcessGroupNCCL::watchdogHandler() + 0x213 (0x753e6fc86b53 in /home/rob/.local/lib/python3.10/site-packages/torch/lib/libtorch_hip.so)
+frame #4: c10d::ProcessGroupNCCL::ncclCommWatchdog() + 0x14d (0x753e6fc885dd in /home/rob/.local/lib/python3.10/site-packages/torch/lib/libtorch_hip.so)
+frame #5: <unknown function> + 0x145c0 (0x753ec42575c0 in /home/rob/.local/lib/python3.10/site-packages/torch/lib/libtorch.so)
+frame #6: <unknown function> + 0x94ac3 (0x753ed2294ac3 in /lib/x86_64-linux-gnu/libc.so.6)
+frame #7: <unknown function> + 0x1268d0 (0x753ed23268d0 in /lib/x86_64-linux-gnu/libc.so.6)
+
+Exception raised from ncclCommWatchdog at ../torch/csrc/distributed/c10d/ProcessGroupNCCL.cpp:1601 (most recent call first):
+frame #0: c10::Error::Error(c10::SourceLocation, std::string) + 0x96 (0x753e16b6c556 in /home/rob/.local/lib/python3.10/site-packages/torch/lib/libc10.so)
+frame #1: <unknown function> + 0x540ccf (0x753e6e140ccf in /home/rob/.local/lib/python3.10/site-packages/torch/lib/libtorch_hip.so)
+frame #2: <unknown function> + 0x145c0 (0x753ec42575c0 in /home/rob/.local/lib/python3.10/site-packages/torch/lib/libtorch.so)
+frame #3: <unknown function> + 0x94ac3 (0x753ed2294ac3 in /lib/x86_64-linux-gnu/libc.so.6)
+frame #4: <unknown function> + 0x1268d0 (0x753ed23268d0 in /lib/x86_64-linux-gnu/libc.so.6)
+
+W0528 18:58:47.558000 42697 torch/multiprocessing/spawn.py:160] Terminating process 42732 via signal SIGTERM
+Traceback (most recent call last):
+  File "/home/rob/.openclaw.old/workspace/repos/AeroNum/labs/compare/distributed_compare.py", line 157, in <module>
+    main()
+  File "/home/rob/.openclaw.old/workspace/repos/AeroNum/labs/compare/distributed_compare.py", line 149, in main
+    mp.spawn(demo_basic, args=(args.world_size, args, result_queue), nprocs=args.world_size, join=True)
+  File "/home/rob/.local/lib/python3.10/site-packages/torch/multiprocessing/spawn.py", line 328, in spawn
+    return start_processes(fn, args, nprocs, join, daemon, start_method="spawn")
+  File "/home/rob/.local/lib/python3.10/site-packages/torch/multiprocessing/spawn.py", line 284, in start_processes
+    while not context.join():
+  File "/home/rob/.local/lib/python3.10/site-packages/torch/multiprocessing/spawn.py", line 203, in join
+    raise ProcessRaisedException(msg, error_index, failed_process.pid)
+torch.multiprocessing.spawn.ProcessRaisedException:
+
+-- Process 1 terminated with the following error:
+Traceback (most recent call last):
+  File "/home/rob/.local/lib/python3.10/site-packages/torch/multiprocessing/spawn.py", line 90, in _wrap
+    fn(i, *args)
+  File "/home/rob/.openclaw.old/workspace/repos/AeroNum/labs/compare/distributed_compare.py", line 57, in demo_basic
+    ddp_model = DDP(model, device_ids=[device_id] if device.type == "cuda" else None)
+  File "/home/rob/.local/lib/python3.10/site-packages/torch/nn/parallel/distributed.py", line 825, in __init__
+    _verify_param_shape_across_processes(self.process_group, parameters)
+  File "/home/rob/.local/lib/python3.10/site-packages/torch/distributed/utils.py", line 288, in _verify_param_shape_across_processes
+    return dist._verify_params_across_processes(process_group, tensors, logger)
+torch.distributed.DistBackendError: NCCL error in: ../torch/csrc/distributed/c10d/ProcessGroupNCCL.cpp:2777, unhandled cuda error (run with NCCL_DEBUG=INFO for details), NCCL version 2.20.5
+ncclUnhandledCudaError: Call to CUDA function failed.
+Last error:
+Cuda failure 'invalid device function'

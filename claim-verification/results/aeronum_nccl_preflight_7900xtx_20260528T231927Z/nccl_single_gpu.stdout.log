@@ -1,0 +1,63 @@
+============================================================================
+PyTorch Reference: DistributedDataParallel Smoke Benchmark
+============================================================================
+Executing backend=nccl world_size=1 device_ids=[0]
+ubuntu:52006:52006 [0] NCCL INFO Bootstrap : Using enp13s0:192.168.1.203<0>
+ubuntu:52006:52006 [0] NCCL INFO NET/Plugin : dlerror=librccl-net.so: cannot open shared object file: No such file or directory No plugin found (librccl-net.so), using internal implementation
+ubuntu:52006:52006 [0] NCCL INFO Kernel version: 6.8.0-111-generic
+
+ubuntu:52006:52006 [0] /long_pathname_so_that_rpms_can_package_the_debug_info/src/extlibs/rccl/build/hipify/src/init.cc:136 NCCL WARN Missing "iommu=pt" from kernel command line which can lead to system instablity or hang!
+ubuntu:52006:52006 [0] NCCL INFO ROCr version 1.14
+ubuntu:52006:52006 [0] NCCL INFO Dmabuf feature disabled without NCCL_DMABUF_ENABLE=1
+RCCL version 2.20.5+hip6.2 HEAD:45b618a+
+ubuntu:52006:52059 [0] NCCL INFO NET/IB : No device found.
+ubuntu:52006:52059 [0] NCCL INFO NET/Socket : Using [0]enp13s0:192.168.1.203<0> [1]br-1452710f0bff:172.18.0.1<0> [2]br-4aef8a8c979c:172.19.0.1<0> [3]vethae2c213:fe80::8c91:baff:fe43:a6d%vethae2c213<0>
+ubuntu:52006:52059 [0] NCCL INFO Using non-device net plugin version 0
+ubuntu:52006:52059 [0] NCCL INFO Using network Socket
+ubuntu:52006:52059 [0] NCCL INFO comm 0x5d1c2112db40 rank 0 nranks 1 cudaDev 0 busId 4000 commId 0x7d5c15238a3161b4 - Init START
+ubuntu:52006:52059 [0] NCCL INFO [node_id = 2; gpu_id = 18715; unique_id = 0; location_id = 31744; bdf = 31744; domain = 0; partition = 0],
+ubuntu:52006:52059 [0] NCCL INFO [node_id = 1; gpu_id = 49057; unique_id = 14929398841655351226; location_id = 1024; bdf = 1024; domain = 0; partition = 0],
+ubuntu:52006:52059 [0] NCCL INFO initialized internal alternative rsmi functionality
+ubuntu:52006:52059 [0] NCCL INFO Setting affinity for GPU 0 to ffffffff
+ubuntu:52006:52059 [0] NCCL INFO comm 0x5d1c2112db40 rank 0 nRanks 1 nNodes 1 localRanks 1 localRank 0 MNNVL 0
+ubuntu:52006:52059 [0] NCCL INFO Channel 00/32 :    0
+ubuntu:52006:52059 [0] NCCL INFO Channel 01/32 :    0
+ubuntu:52006:52059 [0] NCCL INFO Channel 02/32 :    0
+ubuntu:52006:52059 [0] NCCL INFO Channel 03/32 :    0
+ubuntu:52006:52059 [0] NCCL INFO Channel 04/32 :    0
+ubuntu:52006:52059 [0] NCCL INFO Channel 05/32 :    0
+ubuntu:52006:52059 [0] NCCL INFO Channel 06/32 :    0
+ubuntu:52006:52059 [0] NCCL INFO Channel 07/32 :    0
+ubuntu:52006:52059 [0] NCCL INFO Channel 08/32 :    0
+ubuntu:52006:52059 [0] NCCL INFO Channel 09/32 :    0
+ubuntu:52006:52059 [0] NCCL INFO Channel 10/32 :    0
+ubuntu:52006:52059 [0] NCCL INFO Channel 11/32 :    0
+ubuntu:52006:52059 [0] NCCL INFO Channel 12/32 :    0
+ubuntu:52006:52059 [0] NCCL INFO Channel 13/32 :    0
+ubuntu:52006:52059 [0] NCCL INFO Channel 14/32 :    0
+ubuntu:52006:52059 [0] NCCL INFO Channel 15/32 :    0
+ubuntu:52006:52059 [0] NCCL INFO Channel 16/32 :    0
+ubuntu:52006:52059 [0] NCCL INFO Channel 17/32 :    0
+ubuntu:52006:52059 [0] NCCL INFO Channel 18/32 :    0
+ubuntu:52006:52059 [0] NCCL INFO Channel 19/32 :    0
+ubuntu:52006:52059 [0] NCCL INFO Channel 20/32 :    0
+ubuntu:52006:52059 [0] NCCL INFO Channel 21/32 :    0
+ubuntu:52006:52059 [0] NCCL INFO Channel 22/32 :    0
+ubuntu:52006:52059 [0] NCCL INFO Channel 23/32 :    0
+ubuntu:52006:52059 [0] NCCL INFO Channel 24/32 :    0
+ubuntu:52006:52059 [0] NCCL INFO Channel 25/32 :    0
+ubuntu:52006:52059 [0] NCCL INFO Channel 26/32 :    0
+ubuntu:52006:52059 [0] NCCL INFO Channel 27/32 :    0
+ubuntu:52006:52059 [0] NCCL INFO Channel 28/32 :    0
+ubuntu:52006:52059 [0] NCCL INFO Channel 29/32 :    0
+ubuntu:52006:52059 [0] NCCL INFO Channel 30/32 :    0
+ubuntu:52006:52059 [0] NCCL INFO Channel 31/32 :    0
+ubuntu:52006:52059 [0] NCCL INFO Trees [0] -1/-1/-1->0->-1 [1] -1/-1/-1->0->-1 [2] -1/-1/-1->0->-1 [3] -1/-1/-1->0->-1 [4] -1/-1/-1->0->-1 [5] -1/-1/-1->0->-1 [6] -1/-1/-1->0->-1 [7] -1/-1/-1->0->-1 [8] -1/-1/-1->0->-1 [9] -1/-1/-1->0->-1 [10] -1/-1/-1->0->-1 [11] -1/-1/-1->0->-1 [12] -1/-1/-1->0->-1 [13] -1/-1/-1->0->-1 [14] -1/-1/-1->0->-1 [15] -1/-1/-1->0->-1 [16] -1/-1/-1->0->-1 [17] -1/-1/-1->0->-1 [18] -1/-1/-1->0->-1 [19] -1/-1/-1->0->-1 [20] -1/-1/-1->0->-1 [21] -1/-1/-1->0->-1 [22] -1/-1/-1->0->-1 [23] -1/-1/-1->0->-1 [24] -1/-1/-1->0->-1 [25] -1/-1/-1->0->-1 [26] -1/-1/-1->0->-1 [27] -1/-1/-1->0->-1 [28] -1/-1/-1->0->-1 [29] -1/-1/-1->0->-1 [30] -1/-1/-1->0->-1 [31] -1/-1/-1->0->-1 comm 0x5d1c2112db40 nRanks 01 busId 4000
+ubuntu:52006:52059 [0] NCCL INFO P2P Chunksize set to 131072
+ubuntu:52006:52059 [0] NCCL INFO Connected all rings comm 0x5d1c2112db40 nRanks 01 busId 4000
+ubuntu:52006:52059 [0] NCCL INFO Connected all trees
+ubuntu:52006:52059 [0] NCCL INFO 32 coll channels, 0 collnet channels, 0 nvls channels, 32 p2p channels, 32 p2p channels per peer
+ubuntu:52006:52059 [0] NCCL INFO comm 0x5d1c2112db40 rank 0 nranks 1 cudaDev 0 busId 4000 commId 0x7d5c15238a3161b4 localSize 192 used 67177440 bytes - Init COMPLETE
+ubuntu:52006:52072 [0] NCCL INFO [Service thread] Connection closed by localRank 0
+ubuntu:52006:52079 [0] NCCL INFO comm 0x5d1c2112db40 rank 0 nranks 1 cudaDev 0 busId 4000 - Abort COMPLETE
+{"backend": "nccl", "batch_size": 2, "benchmark": "pytorch_ddp_smoke", "d_model": 128, "device_ids": [0], "layers": 1, "mean_last_loss": 8.514657020568848, "mean_rank_seconds": 0.3413834571838379, "nhead": 4, "seq_len": 32, "steps": 3, "tokens_per_second": 562.4174105677487, "torch": "2.5.1+rocm6.2", "torch_hip": "6.2.41133-dd7f95766", "vocab_size": 4096, "world_size": 1}

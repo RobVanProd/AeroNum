@@ -1,0 +1,5 @@
+preflight_command: python3 labs/compare/nccl_topology_preflight.py --world-size 2 --device-ids 0,1 --output claim-verification/results/aeronum_nccl_preflight_7900xtx_20260528T231927Z/nccl_preflight_result.json
+single_gpu_command: NCCL_DEBUG=INFO timeout 120s python3 labs/compare/distributed_compare.py --backend nccl --world-size 1 --device-ids 0 --master-port 12381 --steps 3 --batch-size 2 --seq-len 32 --vocab-size 4096 --d-model 128 --layers 1 --nhead 4 --output claim-verification/results/aeronum_nccl_preflight_7900xtx_20260528T231927Z/nccl_single_gpu_result.json
+repo: /home/rob/.openclaw.old/workspace/repos/AeroNum
+commit_before_run: abcdf9a9c253676a4a2f4a650858f5e08de1abaa
+timestamp_utc: 2026-05-28T23:19:27Z

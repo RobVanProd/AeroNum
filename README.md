@@ -89,6 +89,13 @@ Verified current results:
   benchmark instead of a simulated message. NCCL world size 1 passed on GPU 0
   with 3 steps, mean rank time 0.3393106461 s, and 565.853156 tokens/s
   ([result JSON](claim-verification/results/aeronum_nccl_ddp_single_gpu_7900xtx_20260528T224500Z/claim_result.json)).
+- `labs/compare/nccl_topology_preflight.py` now gates local multi-device NCCL
+  runs before launching DDP. On this machine, the requested two-device topology
+  is blocked because device 1 is integrated AMD Radeon Graphics, selected
+  devices span ROCm architectures 11.0 and 10.3, and the kernel command line
+  does not include `iommu=pt`. A fresh NCCL world-size-1 DDP smoke still passed
+  on device 0 with 562.417411 tokens/s
+  ([result JSON](claim-verification/results/aeronum_nccl_preflight_7900xtx_20260528T231927Z/claim_result.json)).
 - `aeronum-core` now validates GGUF file headers before constructing a
   `LlamaModel`. The repo-owned command
   `cargo run -p aeronum-core --example gguf_header_smoke -- --model /home/rob/models/mistralai_Mistral-Small-3.1-24B-Instruct-2503-Q4_K_M.gguf --device rocm --max-tokens 16 --prompt "AeroNum GGUF smoke prompt"`
@@ -137,8 +144,10 @@ Blocked or omitted claims:
   heterogeneous run failed with RCCL `hipIpcGetMemHandle failed: invalid argument`.
   A `NCCL_P2P_DISABLE=1 NCCL_SHM_DISABLE=1` attempt failed with rank 1
   `invalid device function`. A two-rank single-XTX attempt was rejected by RCCL
-  as duplicate GPU usage. No compatible second discrete ROCm GPU was verified
-  on this machine
+  as duplicate GPU usage. The current preflight also blocks the requested
+  two-device run because device 1 is integrated, the selected devices span ROCm
+  architectures 11.0 and 10.3, and the kernel command line lacks `iommu=pt`.
+  No compatible second discrete ROCm GPU was verified on this machine
   ([debug result JSON](claim-verification/results/aeronum_nccl_debug_20260528T225759Z/claim_result.json)).
 - AeroNum-native GGUF token-inference throughput claims are omitted. The
   verified current AeroNum core result validates a local GGUF header and reaches

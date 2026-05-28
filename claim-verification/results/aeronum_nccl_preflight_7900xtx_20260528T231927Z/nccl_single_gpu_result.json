@@ -1,0 +1,20 @@
+{
+  "benchmark": "pytorch_ddp_smoke",
+  "backend": "nccl",
+  "world_size": 1,
+  "device_ids": [
+    0
+  ],
+  "steps": 3,
+  "batch_size": 2,
+  "seq_len": 32,
+  "vocab_size": 4096,
+  "d_model": 128,
+  "layers": 1,
+  "nhead": 4,
+  "mean_rank_seconds": 0.3413834571838379,
+  "mean_last_loss": 8.514657020568848,
+  "tokens_per_second": 562.4174105677487,
+  "torch": "2.5.1+rocm6.2",
+  "torch_hip": "6.2.41133-dd7f95766"
+}

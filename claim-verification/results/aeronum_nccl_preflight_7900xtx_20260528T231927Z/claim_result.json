@@ -1,0 +1,49 @@
+{
+  "claim_id": "aeronum_nccl_topology_preflight_20260528",
+  "status": "verified_current_blocked_topology",
+  "benchmark": "NCCL topology preflight plus single-GPU DDP smoke",
+  "repo_commit_before_run": "abcdf9a9c253676a4a2f4a650858f5e08de1abaa",
+  "commands": {
+    "preflight": "python3 labs/compare/nccl_topology_preflight.py --world-size 2 --device-ids 0,1 --output claim-verification/results/aeronum_nccl_preflight_7900xtx_20260528T231927Z/nccl_preflight_result.json",
+    "single_gpu": "NCCL_DEBUG=INFO timeout 120s python3 labs/compare/distributed_compare.py --backend nccl --world-size 1 --device-ids 0 --master-port 12381 --steps 3 --batch-size 2 --seq-len 32 --vocab-size 4096 --d-model 128 --layers 1 --nhead 4 --output claim-verification/results/aeronum_nccl_preflight_7900xtx_20260528T231927Z/nccl_single_gpu_result.json"
+  },
+  "exit_codes": {
+    "preflight": 1,
+    "single_gpu": 0
+  },
+  "preflight_result": {
+    "compatible_for_requested_nccl": false,
+    "selected_devices": [
+      {
+        "id": 0,
+        "name": "Radeon RX 7900 XTX",
+        "class": "discrete",
+        "gcn_arch": "11.0"
+      },
+      {
+        "id": 1,
+        "name": "AMD Radeon Graphics",
+        "class": "integrated",
+        "gcn_arch": "10.3"
+      }
+    ],
+    "blocking_reasons": [
+      "requested NCCL ranks include a non-discrete/integrated GPU",
+      "requested NCCL ranks span different ROCm GPU architectures",
+      "kernel command line does not include iommu=pt"
+    ]
+  },
+  "single_gpu_result": {
+    "backend": "nccl",
+    "world_size": 1,
+    "device_ids": [
+      0
+    ],
+    "steps": 3,
+    "mean_rank_seconds": 0.3413834571838379,
+    "tokens_per_second": 562.4174105677487,
+    "torch": "2.5.1+rocm6.2",
+    "torch_hip": "6.2.41133-dd7f95766"
+  },
+  "claim_scope": "Verifies that the repo now has a topology preflight that blocks the requested local two-device NCCL run before DDP launch on this machine, and verifies that NCCL world size 1 still runs on the Radeon RX 7900 XTX. This is not a multi-GPU scaling result."
+}

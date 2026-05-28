@@ -144,6 +144,22 @@
       ]
     },
     {
+      "id": "aeronum_nccl_topology_preflight_20260528",
+      "status": "verified_current_blocked_topology",
+      "claim": "labs/compare/nccl_topology_preflight.py gates local multi-device NCCL runs before launching DDP. On this machine, the requested two-device topology is blocked because device 1 is integrated AMD Radeon Graphics, selected devices span ROCm architectures 11.0 and 10.3, and the kernel command line does not include iommu=pt. A fresh NCCL world-size-1 DDP smoke still passed on device 0 with 562.417411 tokens/s. This is not a multi-GPU scaling result.",
+      "artifacts": [
+        "labs/compare/nccl_topology_preflight.py",
+        "claim-verification/results/aeronum_nccl_preflight_7900xtx_20260528T231927Z/claim_result.json",
+        "claim-verification/results/aeronum_nccl_preflight_7900xtx_20260528T231927Z/nccl_preflight_result.json",
+        "claim-verification/results/aeronum_nccl_preflight_7900xtx_20260528T231927Z/nccl_preflight.stdout.log",
+        "claim-verification/results/aeronum_nccl_preflight_7900xtx_20260528T231927Z/nccl_preflight.stderr.log",
+        "claim-verification/results/aeronum_nccl_preflight_7900xtx_20260528T231927Z/nccl_single_gpu_result.json",
+        "claim-verification/results/aeronum_nccl_preflight_7900xtx_20260528T231927Z/nccl_single_gpu.stdout.log",
+        "claim-verification/results/aeronum_nccl_preflight_7900xtx_20260528T231927Z/nccl_single_gpu.stderr.log",
+        "claim-verification/results/aeronum_nccl_preflight_7900xtx_20260528T231927Z/command_config.txt"
+      ]
+    },
+    {
       "id": "aeronum_core_gguf_header_smoke_20260528",
       "status": "verified_current_smoke",
       "claim": "aeronum-core validates GGUF file headers before constructing a LlamaModel. The repo-owned command `cargo run -p aeronum-core --example gguf_header_smoke -- --model /home/rob/models/mistralai_Mistral-Small-3.1-24B-Instruct-2503-Q4_K_M.gguf --device rocm --max-tokens 16 --prompt AeroNum GGUF smoke prompt` passed against local model SHA-256 c5743c1bf39db0ae8a5ade5df0374b8e9e492754a199cfdad7ef393c1590f7c0 and reported GGUF version 3, 363 tensors, and 45 metadata entries. This is a header/load smoke result with placeholder generation, not real GGUF token inference throughput.",
@@ -229,13 +245,14 @@
     {
       "id": "aeronum_gpt2_nccl_gguf_claims_20260528",
       "status": "blocked",
-      "claim": "AeroNum-vs-PyTorch GPT-2 training speedup, NCCL/MPI multi-GPU scaling, and AeroNum-native GGUF token-inference throughput claims are not included because no current AeroNum artifact or rerun verified them. A PyTorch/Hugging Face GPT-2 reference passed, an AeroNum-owned tiny language-model training analogue passed but is not GPT-2, NCCL/DDP world size 1 passed, post-reboot NCCL attempts failed on the local Radeon RX 7900 XTX plus integrated AMD Radeon Graphics topology, a two-rank single-XTX attempt was rejected by RCCL as duplicate GPU usage, the AeroNum GGUF core result is only a header/load smoke with placeholder generation, and the GGUF token-inference result is a llama.cpp reference through an AeroNum repo wrapper.",
+      "claim": "AeroNum-vs-PyTorch GPT-2 training speedup, NCCL/MPI multi-GPU scaling, and AeroNum-native GGUF token-inference throughput claims are not included because no current AeroNum artifact or rerun verified them. A PyTorch/Hugging Face GPT-2 reference passed, an AeroNum-owned tiny language-model training analogue passed but is not GPT-2, NCCL/DDP world size 1 passed, the current preflight blocks the local two-device NCCL topology before launch, post-reboot NCCL attempts failed on the local Radeon RX 7900 XTX plus integrated AMD Radeon Graphics topology, a two-rank single-XTX attempt was rejected by RCCL as duplicate GPU usage, the AeroNum GGUF core result is only a header/load smoke with placeholder generation, and the GGUF token-inference result is a llama.cpp reference through an AeroNum repo wrapper.",
       "artifacts": [
         "claim-verification/results/aeronum_pytorch_gpt2_reference_7900xtx_20260528T224500Z/claim_result.json",
         "claim-verification/results/aeronum_tiny_lm_train_7900xtx_20260528T231229Z/claim_result.json",
         "claim-verification/results/aeronum_core_gguf_header_smoke_7900xtx_20260528T230321Z/claim_result.json",
         "claim-verification/results/aeronum_llama_cpp_cli_gguf_7900xtx_20260528T230730Z/claim_result.json",
         "claim-verification/results/aeronum_nccl_ddp_single_gpu_7900xtx_20260528T224500Z/claim_result.json",
+        "claim-verification/results/aeronum_nccl_preflight_7900xtx_20260528T231927Z/claim_result.json",
         "claim-verification/results/aeronum_nccl_ddp_two_device_attempt_7900xtx_20260528T224500Z/distributed_compare.stdout.log",
         "claim-verification/results/aeronum_nccl_ddp_two_device_attempt_7900xtx_20260528T224500Z/distributed_compare.stderr.log",
         "claim-verification/results/aeronum_nccl_ddp_two_device_attempt_7900xtx_20260528T224500Z/hardware_software_metadata.txt",

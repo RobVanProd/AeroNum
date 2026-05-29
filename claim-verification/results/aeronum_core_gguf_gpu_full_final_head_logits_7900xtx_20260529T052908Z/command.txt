@@ -1,0 +1,1 @@
+cargo run --release -p aeronum-core --example gguf_gpu_final_head_logits_smoke -- --model /home/rob/models/mistralai_Mistral-Small-3.1-24B-Instruct-2503-Q4_K_M.gguf --add-bos false --parse-special true --layer-start 0 --layers 40 --top-k 5 --max-new-tokens 1 --logit-start 0 --logit-rows 131072 --device 0

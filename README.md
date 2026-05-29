@@ -279,6 +279,15 @@ Verified current results:
   final-token subpath only; it is not external RoPE parity, generated-token
   logits, GPU matmul, or AeroNum-native GGUF token inference throughput
   ([result JSON](claim-verification/results/aeronum_core_gguf_full_40_layer_final_logits_7900xtx_20260529T060000Z/claim_result.json)).
+- `aeronum-core` now computes prompt-level next-token logits for one fixed GGUF
+  prompt. The repo-owned release command tokenized `<s>[INST]Hello[/INST]` to
+  token IDs 1, 3, 22177, and 4 with the repo GGUF tokenizer, ran all 40 CPU
+  layers for those four token states, applied the final norm and output head to
+  the final prompt token, and decoded the top next-token logit IDs back to
+  token pieces: `Hello`, `Hi`, `ĠHello`, `Hey`, and `hello`. This is next-token
+  logits for one fixed prompt only, not sampled or decoded generated text, GPU
+  matmul, or AeroNum-native GGUF token inference throughput
+  ([result JSON](claim-verification/results/aeronum_core_gguf_prompt_next_token_logits_7900xtx_20260529T073000Z/claim_result.json)).
 - `aeronum-core` now verifies a single-token first-layer attention-plus-FFN CPU
   subpath. The repo-owned release command ran the single-token attention-output
   subpath, added the residual, applied `blk.0.ffn_norm.weight`, computed all
@@ -365,15 +374,14 @@ Blocked or omitted claims:
   projection, plus a final-token first-layer FFN and final-head logits CPU
   subpath, a bounded two-layer final-token transformer CPU subpath, a full
   40-layer final-token transformer CPU subpath for the fixed three-token row
-  sequence, and a
+  sequence, prompt-level next-token logits for one fixed prompt, and a
   single-token first-layer attention-plus-FFN CPU subpath through
   `blk.0.ffn_gate.weight`, `blk.0.ffn_up.weight`, and `blk.0.ffn_down.weight`,
   plus full-vocabulary final-head CPU logits from that single-token layer-0
   hidden state are verified, but exhaustive tokenizer parity, external RoPE
-  parity, generated-token logits, and AeroNum-native token inference throughput
-  are not yet verified. The verified
-  token-inference result is a llama.cpp reference through an AeroNum repo
-  wrapper.
+  parity, sampled or decoded generated text, and AeroNum-native token inference
+  throughput are not yet verified. The verified token-inference result is a
+  llama.cpp reference through an AeroNum repo wrapper.
 
 Historical benchmark CSVs remain in the repo, but README claims above only use
 fresh local reruns and captured artifacts.

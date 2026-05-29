@@ -149,6 +149,23 @@ pub struct GgufQuantizedPrefixLogitsSample {
     pub logits_checksum: f64,
 }
 
+#[derive(Clone, Debug, PartialEq)]
+pub struct GgufQuantizedNormalizedLogitsSample {
+    pub input: GgufQuantizedRowSample,
+    pub norm_tensor_name: String,
+    pub output_tensor_name: String,
+    pub output_row_start: u64,
+    pub output_row_count: u64,
+    pub dimension: usize,
+    pub rms_epsilon: f32,
+    pub rms: f64,
+    pub norm_weight_checksum: f64,
+    pub normalized_input_checksum: f64,
+    pub logits: Vec<GgufQuantizedLogitValue>,
+    pub top_logits: Vec<GgufQuantizedLogitValue>,
+    pub logits_checksum: f64,
+}
+
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct GgufTokenizerIndex {
     pub token_count: usize,
@@ -874,6 +891,150 @@ impl GgufHeader {
         })
     }
 
+    pub fn read_quantized_normalized_logits_sample(
+        &self,
+        input_tensor_name: &str,
+        input_row_index: u64,
+        norm_tensor_name: &str,
+        output_tensor_name: &str,
+        output_row_start: u64,
+        output_row_count: u64,
+        top_k: usize,
+    ) -> Result<GgufQuantizedNormalizedLogitsSample, GgufError> {
+        let input = self.read_quantized_row_sample(input_tensor_name, input_row_index)?;
+        let norm_weight = self.load_f32_tensor(norm_tensor_name)?.to_vec();
+        if norm_weight.len() != input.decoded_values.len() {
+            return Err(GgufError::InvalidTensorRange(format!(
+                "{input_tensor_name}:{input_row_index} norm {norm_tensor_name}"
+            )));
+        }
+        let rms_epsilon = self
+            .f32_value("llama.attention.layer_norm_rms_epsilon")
+            .unwrap_or(0.00001);
+        let mean_square = input
+            .decoded_values
+            .iter()
+            .map(|value| (*value as f64) * (*value as f64))
+            .sum::<f64>()
+            / input.decoded_values.len() as f64;
+        let rms = (mean_square + rms_epsilon as f64).sqrt();
+        let normalized_input = input
+            .decoded_values
+            .iter()
+            .zip(norm_weight.iter())
+            .map(|(value, weight)| ((*value as f64) / rms * (*weight as f64)) as f32)
+            .collect::<Vec<_>>();
+        let norm_weight_checksum = checksum_f32_values(&norm_weight);
+        let normalized_input_checksum = checksum_f32_values(&normalized_input);
+        let logits = self.read_quantized_logits_for_values(
+            &normalized_input,
+            output_tensor_name,
+            output_row_start,
+            output_row_count,
+        )?;
+        let top_logits = top_k_logits(&logits, top_k);
+        let logits_checksum = checksum_logits(&logits);
+        Ok(GgufQuantizedNormalizedLogitsSample {
+            dimension: normalized_input.len(),
+            input,
+            norm_tensor_name: norm_tensor_name.to_string(),
+            output_tensor_name: output_tensor_name.to_string(),
+            output_row_start,
+            output_row_count,
+            rms_epsilon,
+            rms,
+            norm_weight_checksum,
+            normalized_input_checksum,
+            logits,
+            top_logits,
+            logits_checksum,
+        })
+    }
+
+    fn read_quantized_logits_for_values(
+        &self,
+        input_values: &[f32],
+        output_tensor_name: &str,
+        output_row_start: u64,
+        output_row_count: u64,
+    ) -> Result<Vec<GgufQuantizedLogitValue>, GgufError> {
+        let output_info = self
+            .tensors
+            .iter()
+            .find(|tensor| tensor.name == output_tensor_name)
+            .ok_or_else(|| GgufError::TensorNotFound(output_tensor_name.to_string()))?;
+        let (output_block_size, output_type_size) = ggml_type_layout(output_info.tensor_type)
+            .ok_or_else(|| GgufError::UnsupportedTensorType {
+                name: output_tensor_name.to_string(),
+                tensor_type: output_info.tensor_type,
+            })?;
+        if !matches!(output_info.tensor_type, 12 | 14) {
+            return Err(GgufError::UnsupportedTensorType {
+                name: output_tensor_name.to_string(),
+                tensor_type: output_info.tensor_type,
+            });
+        }
+        let output_column_count = output_info.dimensions.first().copied().unwrap_or(0);
+        let output_total_rows = output_info.dimensions.get(1).copied().unwrap_or(1);
+        let output_row_end = output_row_start
+            .checked_add(output_row_count)
+            .ok_or_else(|| GgufError::InvalidTensorRange(output_tensor_name.to_string()))?;
+        if output_column_count == 0 || output_row_count == 0 || output_row_end > output_total_rows {
+            return Err(GgufError::InvalidTensorRange(
+                output_tensor_name.to_string(),
+            ));
+        }
+        let output_column_count_usize: usize = output_column_count
+            .try_into()
+            .map_err(|_| GgufError::TensorShapeTooLarge(output_tensor_name.to_string()))?;
+        if input_values.len() != output_column_count_usize {
+            return Err(GgufError::InvalidTensorRange(format!(
+                "input logits {output_tensor_name}"
+            )));
+        }
+        let output_block_count = output_column_count.div_ceil(output_block_size);
+        let output_row_nbytes = output_block_count
+            .checked_mul(output_type_size)
+            .ok_or_else(|| GgufError::InvalidTensorRange(output_tensor_name.to_string()))?;
+        let output_start_offset = output_row_start
+            .checked_mul(output_row_nbytes)
+            .and_then(|offset| output_info.absolute_offset.checked_add(offset))
+            .ok_or_else(|| GgufError::InvalidTensorRange(output_tensor_name.to_string()))?;
+        let output_range_nbytes = output_row_count
+            .checked_mul(output_row_nbytes)
+            .ok_or_else(|| GgufError::InvalidTensorRange(output_tensor_name.to_string()))?;
+        let output_end_offset = output_start_offset
+            .checked_add(output_range_nbytes)
+            .ok_or_else(|| GgufError::InvalidTensorRange(output_tensor_name.to_string()))?;
+        let output_tensor_nbytes = output_info
+            .nbytes
+            .ok_or_else(|| GgufError::UnknownTensorByteSize(output_tensor_name.to_string()))?;
+        let output_tensor_end = output_info
+            .absolute_offset
+            .checked_add(output_tensor_nbytes)
+            .ok_or_else(|| GgufError::InvalidTensorRange(output_tensor_name.to_string()))?;
+        if output_end_offset > output_tensor_end || output_end_offset > self.file_size {
+            return Err(GgufError::InvalidTensorRange(
+                output_tensor_name.to_string(),
+            ));
+        }
+
+        let mut logits = Vec::with_capacity(output_row_count as usize);
+        let mut file = File::open(&self.path)?;
+        file.seek(SeekFrom::Start(output_start_offset))?;
+        let mut row_bytes = vec![0u8; output_row_nbytes as usize];
+        for row_index in output_row_start..output_row_end {
+            file.read_exact(&mut row_bytes)?;
+            let mut output_values = decode_quantized_blocks(output_info.tensor_type, &row_bytes)?;
+            output_values.truncate(output_column_count_usize);
+            logits.push(GgufQuantizedLogitValue {
+                row_index,
+                value: dot_f32_values(input_values, &output_values),
+            });
+        }
+        Ok(logits)
+    }
+
     pub fn load_f32_tensor(&self, tensor_name: &str) -> Result<NdArray, GgufError> {
         let tensor = self
             .tensors
@@ -1513,6 +1674,14 @@ fn top_k_logits(logits: &[GgufQuantizedLogitValue], top_k: usize) -> Vec<GgufQua
     });
     values.truncate(top_k.min(values.len()));
     values
+}
+
+fn checksum_logits(logits: &[GgufQuantizedLogitValue]) -> f64 {
+    logits
+        .iter()
+        .enumerate()
+        .map(|(idx, logit)| (idx as f64 + 1.0) * logit.value)
+        .sum()
 }
 
 fn skip_value(reader: &mut impl Read, value_type: GgufValueType) -> Result<(), GgufError> {

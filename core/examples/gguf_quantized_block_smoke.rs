@@ -1,5 +1,6 @@
 use aeronum_core::{
-    GgufHeader, GgufQuantizedBlockSample, GgufQuantizedLogitValue, GgufQuantizedPrefixLogitsSample,
+    GgufHeader, GgufQuantizedBlockSample, GgufQuantizedLogitValue,
+    GgufQuantizedNormalizedLogitsSample, GgufQuantizedPrefixLogitsSample,
     GgufQuantizedRowDotSample, GgufQuantizedRowSample,
 };
 use std::time::Instant;
@@ -210,6 +211,46 @@ fn prefix_logits_sample_json(sample: &GgufQuantizedPrefixLogitsSample) -> String
     )
 }
 
+fn normalized_logits_sample_json(sample: &GgufQuantizedNormalizedLogitsSample) -> String {
+    let first_logits = sample.logits.iter().take(8).cloned().collect::<Vec<_>>();
+    format!(
+        concat!(
+            "{{",
+            "\"input_tensor\":\"{}\",",
+            "\"input_row\":{},",
+            "\"norm_tensor\":\"{}\",",
+            "\"output_tensor\":\"{}\",",
+            "\"output_row_start\":{},",
+            "\"output_row_count\":{},",
+            "\"dimension\":{},",
+            "\"rms_epsilon\":{:.8},",
+            "\"rms\":{:.12},",
+            "\"norm_weight_checksum\":{:.8},",
+            "\"normalized_input_checksum\":{:.8},",
+            "\"logit_count\":{},",
+            "\"logits_checksum\":{:.12},",
+            "\"first_logits\":{},",
+            "\"top_logits\":{}",
+            "}}"
+        ),
+        json_escape(&sample.input.name),
+        sample.input.row_index,
+        json_escape(&sample.norm_tensor_name),
+        json_escape(&sample.output_tensor_name),
+        sample.output_row_start,
+        sample.output_row_count,
+        sample.dimension,
+        sample.rms_epsilon,
+        sample.rms,
+        sample.norm_weight_checksum,
+        sample.normalized_input_checksum,
+        sample.logits.len(),
+        sample.logits_checksum,
+        json_logit_array(&first_logits),
+        json_logit_array(&sample.top_logits)
+    )
+}
+
 fn main() {
     let model_path = parse_arg("--model", "");
     if model_path.is_empty() {
@@ -251,6 +292,17 @@ fn main() {
             top_k,
         )
         .expect("read quantized prefix logits sample");
+    let normalized_logits_sample = header
+        .read_quantized_normalized_logits_sample(
+            "token_embd.weight",
+            q4_row,
+            "output_norm.weight",
+            "output.weight",
+            logit_start,
+            logit_rows,
+            top_k,
+        )
+        .expect("read quantized normalized logits sample");
     let elapsed_ms = start.elapsed().as_secs_f64() * 1000.0;
 
     println!(
@@ -267,8 +319,9 @@ fn main() {
             "\"row_samples\":[{},{}],",
             "\"row_dot_samples\":[{}],",
             "\"prefix_logits_samples\":[{}],",
+            "\"normalized_logits_samples\":[{}],",
             "\"limitations\":[",
-            "\"selected-block selected-row selected-row-dot and logit-range CPU decode only\",",
+            "\"selected-block selected-row selected-row-dot logit-range and final-norm CPU decode only\",",
             "\"not full transformer inference or generated-token logits\",",
             "\"not GPU matmul\",",
             "\"not AeroNum-native GGUF token inference throughput\"",
@@ -286,6 +339,7 @@ fn main() {
         row_sample_json(&q4_row_sample),
         row_sample_json(&q6_row_sample),
         row_dot_sample_json(&row_dot_sample),
-        prefix_logits_sample_json(&prefix_logits_sample)
+        prefix_logits_sample_json(&prefix_logits_sample),
+        normalized_logits_sample_json(&normalized_logits_sample)
     );
 }

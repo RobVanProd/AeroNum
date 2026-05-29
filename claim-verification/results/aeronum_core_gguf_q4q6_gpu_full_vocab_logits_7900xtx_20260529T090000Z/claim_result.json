@@ -1,0 +1,64 @@
+{
+  "claim_id": "aeronum_core_gguf_q4q6_gpu_full_vocab_logits_20260529",
+  "status": "verified_current_limited",
+  "source_commit": "39ce20257efe5e53fc108a0a7c7c8ca0f1d9a1fe",
+  "model_sha256": "c5743c1bf39db0ae8a5ade5df0374b8e9e492754a199cfdad7ef393c1590f7c0",
+  "hardware": "Radeon RX 7900 XTX",
+  "benchmark": "GPU Q4_K selected input row plus full Q6_K output.weight vocabulary logits",
+  "summary": "benchmarks/gguf/q4q6_decode_dot_hip.cpp computed 131072 logits on ROCm device 0 by GPU-decoding one raw Q4_K row and the Q6_K output.weight byte range from the local GGUF model, reducing each row with a second GPU kernel, and comparing all logits to CPU references from core/examples/gguf_q4q6_gpu_decode_dot_dump.rs.",
+  "inputs": {
+    "model_path": "/home/rob/models/mistralai_Mistral-Small-3.1-24B-Instruct-2503-Q4_K_M.gguf",
+    "q4_tensor": "token_embd.weight",
+    "q4_row": 22177,
+    "q4_row_bytes": 2880,
+    "q6_tensor": "output.weight",
+    "q6_row_start": 0,
+    "q6_row_count": 131072,
+    "q6_range_absolute_offset": 7884256,
+    "q6_range_nbytes": 550502400,
+    "dimension": 5120
+  },
+  "results": {
+    "cpu_first_logit": -9.4391383e-05,
+    "cpu_logits_checksum": -62290.90831267559,
+    "gpu_first_logit": -9.4391347e-05,
+    "gpu_logits_checksum": -62290.90657731086,
+    "expected_logits_count": 131072,
+    "abs_max_diff": 6.15e-10,
+    "gpu_final_reduction": true,
+    "gpu_first_logits": [
+      -9.4391347e-05,
+      -9.6370786e-05,
+      0.0004493944,
+      -9.6530857e-05,
+      -9.5216092e-05,
+      -9.7309967e-05,
+      -9.5216092e-05,
+      -9.5610798e-05
+    ]
+  },
+  "validation": [
+    "cargo fmt -p aeronum-core --check exit 0",
+    "cargo test -p aeronum-core exit 0",
+    "hipcc --offload-arch=gfx1100 compiled q4q6_decode_dot_hip.cpp exit 0",
+    "HIP verifier exit 0 with abs max diff <= 1e-5"
+  ],
+  "limitations": [
+    "full output-vocabulary final-head arithmetic for one selected Q4_K embedding row only",
+    "not generated-token logits from a transformer hidden state",
+    "not transformer layer execution on GPU",
+    "not GPU autoregressive decoding",
+    "not optimized AeroNum-native GGUF token inference throughput"
+  ],
+  "artifacts": [
+    "claim-verification/results/aeronum_core_gguf_q4q6_gpu_full_vocab_logits_7900xtx_20260529T090000Z/claim_result.json",
+    "claim-verification/results/aeronum_core_gguf_q4q6_gpu_full_vocab_logits_7900xtx_20260529T090000Z/gguf_q4q6_gpu_decode_dot_dump_result.json",
+    "claim-verification/results/aeronum_core_gguf_q4q6_gpu_full_vocab_logits_7900xtx_20260529T090000Z/q4q6_decode_dot_hip_result.json",
+    "claim-verification/results/aeronum_core_gguf_q4q6_gpu_full_vocab_logits_7900xtx_20260529T090000Z/command.txt",
+    "claim-verification/results/aeronum_core_gguf_q4q6_gpu_full_vocab_logits_7900xtx_20260529T090000Z/hardware_software_metadata.txt",
+    "claim-verification/results/aeronum_core_gguf_q4q6_gpu_full_vocab_logits_7900xtx_20260529T090000Z/source_metadata.txt",
+    "claim-verification/results/aeronum_core_gguf_q4q6_gpu_full_vocab_logits_7900xtx_20260529T090000Z/model_sha256.txt",
+    "claim-verification/results/aeronum_core_gguf_q4q6_gpu_full_vocab_logits_7900xtx_20260529T090000Z/work/q4.bin",
+    "claim-verification/results/aeronum_core_gguf_q4q6_gpu_full_vocab_logits_7900xtx_20260529T090000Z/work/expected_logits.f64"
+  ]
+}

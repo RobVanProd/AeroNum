@@ -1,0 +1,18 @@
+Fri May 29 06:31:23 UTC 2026
+39ce20257efe5e53fc108a0a7c7c8ca0f1d9a1fe
+?? claim-verification/results/aeronum_core_gguf_cached_autoregressive_decode_7900xtx_20260529T042759Z/
+?? claim-verification/results/aeronum_core_gguf_gpu_final_head_logits_7900xtx_20260529T052528Z/
+?? claim-verification/results/aeronum_core_gguf_multi_token_attention_7900xtx_20260529T033000Z/
+?? claim-verification/results/aeronum_core_gguf_multi_token_attention_7900xtx_20260529T033500Z/
+?? claim-verification/results/aeronum_core_gguf_prompt_greedy_decode_7900xtx_20260529T025033Z/
+?? claim-verification/results/aeronum_core_gguf_q4k_gpu_decode_dot_7900xtx_20260529T065000Z/work/q4k_decode_dot_hip
+?? claim-verification/results/aeronum_core_gguf_q4q6_gpu_decode_dot_7900xtx_20260529T071000Z/work/q4q6_decode_dot_hip
+?? claim-verification/results/aeronum_core_gguf_q4q6_gpu_decode_dot_gpu_reduce_7900xtx_20260529T072500Z/work/q4q6_decode_dot_hip
+?? claim-verification/results/aeronum_core_gguf_q4q6_gpu_full_vocab_logits_7900xtx_20260529T090000Z/
+?? claim-verification/results/aeronum_core_gguf_q4q6_gpu_prefix_logits_7900xtx_20260529T080000Z/work/q4q6_decode_dot_hip
+?? claim-verification/results/aeronum_core_gguf_q6k_gpu_decode_dot_7900xtx_20260529T063500Z/work/q6k_decode_dot_hip
+?? claim-verification/results/aeronum_core_gguf_retained_kv_decode_7900xtx_20260529T050202Z/
+?? claim-verification/results/aeronum_core_gguf_retained_kv_decode_7900xtx_20260529T050220Z/
+?? claim-verification/results/aeronum_local_benchmark_20260528T000000Z/
+?? claim-verification/results/aeronum_matmul_attempt_7900xtx_20260528T190000Z/
+?? claim-verification/results/aeronum_post_reboot_7900xtx_20260528T190000Z/

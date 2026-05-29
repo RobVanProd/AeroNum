@@ -1,0 +1,37 @@
+{
+    "benchmark": "q4q6_decode_dot_hip",
+    "device_id": 0,
+    "device_name": "Radeon RX 7900 XTX",
+    "dimension": 5120,
+    "q4k_block_count": 20,
+    "q4k_row_bytes": 2880,
+    "q6k_block_count": 20,
+    "q6k_row_bytes": 550502400,
+    "q6k_row_count": 131072,
+    "expected_cpu_dot": -9.4391383e-05,
+    "expected_logits_count": 131072,
+    "gpu_q4q6_decode_dot": -9.4391347e-05,
+    "abs_diff": 6.15e-10,
+    "gpu_logits_checksum": -62290.90657731086,
+    "gpu_first_logits": [
+        -9.4391347e-05,
+        -9.6370786e-05,
+        0.0004493944,
+        -9.6530857e-05,
+        -9.5216092e-05,
+        -9.7309967e-05,
+        -9.5216092e-05,
+        -9.5610798e-05
+    ],
+    "gpu_final_reduction": true,
+    "partial_checksum": -1245422.3215402202,
+    "validation": "gpu_q4q6_decode_dot_matches_cpu_reference",
+    "limitations": [
+        "GPU decodes one Q4_K row and one or more Q6_K rows and computes per-block dot partials",
+        "final sum over GPU partials is performed by a second GPU kernel",
+        "not full q4_K/q6_K tensor execution on GPU",
+        "not transformer layer execution on GPU",
+        "not GPU autoregressive decoding",
+        "not optimized AeroNum-native GGUF token inference throughput"
+    ]
+}

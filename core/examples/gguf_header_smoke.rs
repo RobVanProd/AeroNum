@@ -77,6 +77,23 @@ fn json_i32_array(values: &[i32]) -> String {
     format!("[{items}]")
 }
 
+fn json_tokenization_check(label: &str, text: &str, ids: Option<Vec<u32>>) -> String {
+    match ids {
+        Some(ids) => format!(
+            "{{\"label\":\"{}\",\"text\":\"{}\",\"ids\":{},\"token_count\":{}}}",
+            json_escape(label),
+            json_escape(text),
+            json_u32_array(&ids),
+            ids.len()
+        ),
+        None => format!(
+            "{{\"label\":\"{}\",\"text\":\"{}\",\"ids\":null,\"token_count\":0}}",
+            json_escape(label),
+            json_escape(text)
+        ),
+    }
+}
+
 fn checksum_f32(values: &[f32]) -> f64 {
     values
         .iter()
@@ -328,11 +345,28 @@ fn main() {
                 .unwrap_or(i32::MIN)
         })
         .collect::<Vec<_>>();
+    let byte_bpe_checks = [
+        json_tokenization_check(
+            "hello_world_no_bos",
+            "Hello world",
+            tokenizer_index.encode_byte_bpe("Hello world", false),
+        ),
+        json_tokenization_check(
+            "hello_world_with_bos",
+            "Hello world",
+            tokenizer_index.encode_byte_bpe("Hello world", true),
+        ),
+        json_tokenization_check(
+            "artifact_prompt_with_bos",
+            &prompt,
+            tokenizer_index.encode_byte_bpe(&prompt, true),
+        ),
+    ];
     let tokenizer_vocab_json = format!(
-        "{{\"token_count\":{},\"token_index_count\":{},\"merge_count\":{},\"token_type_count\":{},\"bos_token_id\":{},\"eos_token_id\":{},\"unknown_token_id\":{},\"exact_token_id_checks\":{},\"exact_piece_encode_decode\":{{\"pieces\":{},\"ids\":{},\"decoded\":{},\"token_types\":{}}}}}",
+        "{{\"token_count\":{},\"token_index_count\":{},\"merge_count\":{},\"token_type_count\":{},\"bos_token_id\":{},\"eos_token_id\":{},\"unknown_token_id\":{},\"exact_token_id_checks\":{},\"exact_piece_encode_decode\":{{\"pieces\":{},\"ids\":{},\"decoded\":{},\"token_types\":{}}},\"byte_bpe_checks\":[{}]}}",
         tokenizer_token_count,
         tokenizer_index.token_count,
-        tokenizer_merge_count,
+        tokenizer_index.merge_ranks.len().max(tokenizer_merge_count),
         token_type_values.len(),
         header.u32_value("tokenizer.ggml.bos_token_id").unwrap_or(0),
         header.u32_value("tokenizer.ggml.eos_token_id").unwrap_or(0),
@@ -346,7 +380,8 @@ fn main() {
         ),
         json_u32_array(&exact_piece_ids),
         json_string_array(&exact_piece_decoded),
-        json_i32_array(&token_type_checks)
+        json_i32_array(&token_type_checks),
+        byte_bpe_checks.join(",")
     );
     let chat_template = header.string_value("tokenizer.chat_template").unwrap_or("");
     let tokenizer_config_json = format!(

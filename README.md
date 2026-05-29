@@ -146,8 +146,18 @@ Verified current results:
   checksum 156,939,758, context length 131,072, embedding length 5,120, 40
   blocks, 32 attention heads, 8 KV heads, rope frequency base 1,000,000,000,
   and RMS epsilon 0.00001. Generation is still placeholder; this is not full
-  BPE tokenization and not real GGUF token inference throughput
+  GGUF token inference throughput
   ([result JSON](claim-verification/results/aeronum_core_gguf_all_f32_weights_7900xtx_20260529T002801Z/claim_result.json)).
+- `aeronum-core` now includes a byte-level BPE tokenizer path built from GGUF
+  `tokenizer.ggml.tokens` and `tokenizer.ggml.merges`. A fresh comparison
+  against `/home/rob/llama.cpp/build-gpu/bin/llama-tokenize` on the same local
+  Mistral GGUF file matched token IDs for fixed ASCII prompts: `Hello world`
+  with BOS matched `[1,22177,4304]`, `Hello world` without BOS matched
+  `[22177,4304]`, and `AeroNum GGUF tokenizer smoke` with BOS matched
+  `[1,1065,3168,9516,105675,52359,128405,29528]`. This is a fixed-prompt
+  byte-level BPE check, not exhaustive Unicode tokenization and not GGUF token
+  inference throughput
+  ([result JSON](claim-verification/results/aeronum_core_gguf_byte_bpe_tokenizer_7900xtx_20260529T003552Z/claim_result.json)).
 - `benchmarks/gguf/run_llama_cpp_cli.py` ran a real local llama.cpp CLI ROCm
   GGUF inference reference on the same Mistral GGUF file. The llama.cpp build
   reported version 7074 (`22e1ce2f8`) with HIP 6.2.41133-dd7f95766, offloaded
@@ -199,12 +209,14 @@ Blocked or omitted claims:
   verified current AeroNum core result parses local GGUF metadata, tokenizer
   string-array samples, the full tokenizer token array, tokenizer merges,
   tokenizer token-type array, exact-token-piece encode/decode for known
-  special tokens, tokenizer config, selected Llama hyperparameters, tensor
-  directory records, tensor byte ranges, loads a complete small F32 tensor into
-  `LlamaModel`, offloads that model weight through ROCm device 0, then reaches
-  placeholder generation. Full BPE tokenization is not yet verified. The
-  verified token-inference result is a llama.cpp reference through an AeroNum
-  repo wrapper.
+  special tokens, a byte-level BPE path matching llama.cpp on fixed ASCII
+  prompts, tokenizer config, selected Llama hyperparameters, tensor directory
+  records, tensor byte ranges, loads all 81 F32 tensors into `LlamaModel`,
+  offloads those model weights through ROCm device 0, then reaches placeholder
+  generation. Exhaustive Unicode tokenization, q4_K/q6_K tensor execution, and
+  AeroNum-native token inference throughput are not yet verified. The verified
+  token-inference result is a llama.cpp reference through an AeroNum repo
+  wrapper.
 
 Historical benchmark CSVs remain in the repo, but README claims above only use
 fresh local reruns and captured artifacts.

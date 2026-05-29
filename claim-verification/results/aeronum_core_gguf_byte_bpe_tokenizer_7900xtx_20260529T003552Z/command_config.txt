@@ -1,0 +1,14 @@
+AeroNum command:
+cargo run -p aeronum-core --example gguf_header_smoke -- --model /home/rob/models/mistralai_Mistral-Small-3.1-24B-Instruct-2503-Q4_K_M.gguf --device rocm --max-tokens 16 --prompt "AeroNum GGUF tokenizer smoke"
+
+llama.cpp reference commands:
+/home/rob/llama.cpp/build-gpu/bin/llama-tokenize -m /home/rob/models/mistralai_Mistral-Small-3.1-24B-Instruct-2503-Q4_K_M.gguf --ids --log-disable -p "Hello world"
+/home/rob/llama.cpp/build-gpu/bin/llama-tokenize -m /home/rob/models/mistralai_Mistral-Small-3.1-24B-Instruct-2503-Q4_K_M.gguf --ids --log-disable --no-bos -p "Hello world"
+/home/rob/llama.cpp/build-gpu/bin/llama-tokenize -m /home/rob/models/mistralai_Mistral-Small-3.1-24B-Instruct-2503-Q4_K_M.gguf --ids --log-disable -p "AeroNum GGUF tokenizer smoke"
+
+Purpose:
+Verify repo-owned byte-level BPE tokenization from GGUF tokens/merges against llama.cpp token IDs for fixed ASCII prompts. This does not verify exhaustive Unicode tokenization, special-token parsing, q4_K/q6_K tensor execution, or token inference throughput.
+
+Model file:
+/home/rob/models/mistralai_Mistral-Small-3.1-24B-Instruct-2503-Q4_K_M.gguf
+c5743c1bf39db0ae8a5ade5df0374b8e9e492754a199cfdad7ef393c1590f7c0  /home/rob/models/mistralai_Mistral-Small-3.1-24B-Instruct-2503-Q4_K_M.gguf

@@ -1,0 +1,72 @@
+{
+  "claim_id": "aeronum_core_gguf_byte_bpe_tokenizer_20260529",
+  "status": "verified_current_limited",
+  "timestamp_utc": "2026-05-29T00:35:52Z",
+  "repo_commit_before_changes": "c1bf787c8332fc5d1646056a3a5fa7cbeaee28c4",
+  "hardware": {
+    "primary_gpu": "Radeon RX 7900 XTX",
+    "rocm_agent": "gfx1100",
+    "secondary_gpu": "AMD Radeon Graphics",
+    "secondary_rocm_agent": "gfx1036",
+    "cpu": "AMD Ryzen 9 9950X 16-Core Processor"
+  },
+  "software": {
+    "pytorch": "2.5.1+rocm6.2",
+    "torch_hip": "6.2.41133-dd7f95766",
+    "llama_cpp_binary": "/home/rob/llama.cpp/build-gpu/bin/llama-tokenize"
+  },
+  "model": {
+    "path": "/home/rob/models/mistralai_Mistral-Small-3.1-24B-Instruct-2503-Q4_K_M.gguf",
+    "sha256": "c5743c1bf39db0ae8a5ade5df0374b8e9e492754a199cfdad7ef393c1590f7c0",
+    "tokenizer_model": "gpt2",
+    "tokenizer_pre": "tekken",
+    "token_count": 131072,
+    "merge_count": 269443
+  },
+  "result_summary": {
+    "exit_code": 0,
+    "comparison_all_match": true,
+    "checks": [
+      {
+        "label": "hello_world_with_bos",
+        "text": "Hello world",
+        "aeronum_ids": [1, 22177, 4304],
+        "llama_cpp_ids": [1, 22177, 4304],
+        "match": true
+      },
+      {
+        "label": "hello_world_no_bos",
+        "text": "Hello world",
+        "aeronum_ids": [22177, 4304],
+        "llama_cpp_ids": [22177, 4304],
+        "match": true
+      },
+      {
+        "label": "artifact_prompt_with_bos",
+        "text": "AeroNum GGUF tokenizer smoke",
+        "aeronum_ids": [1, 1065, 3168, 9516, 105675, 52359, 128405, 29528],
+        "llama_cpp_ids": [1, 1065, 3168, 9516, 105675, 52359, 128405, 29528],
+        "match": true
+      }
+    ]
+  },
+  "scope_limitations": [
+    "This verifies repo-owned byte-level BPE tokenization from GGUF tokens and merges against llama.cpp for fixed ASCII prompts.",
+    "This does not verify exhaustive Unicode tokenization.",
+    "This does not verify general special-token parsing beyond exact-piece checks in the smoke output.",
+    "This does not verify q4_K/q6_K tensor execution.",
+    "This does not verify AeroNum-native GGUF token inference throughput."
+  ],
+  "artifacts": [
+    "claim-verification/results/aeronum_core_gguf_byte_bpe_tokenizer_7900xtx_20260529T003552Z/command_config.txt",
+    "claim-verification/results/aeronum_core_gguf_byte_bpe_tokenizer_7900xtx_20260529T003552Z/hardware_software_metadata.txt",
+    "claim-verification/results/aeronum_core_gguf_byte_bpe_tokenizer_7900xtx_20260529T003552Z/gguf_byte_bpe_tokenizer.stdout.log",
+    "claim-verification/results/aeronum_core_gguf_byte_bpe_tokenizer_7900xtx_20260529T003552Z/gguf_byte_bpe_tokenizer.stderr.log",
+    "claim-verification/results/aeronum_core_gguf_byte_bpe_tokenizer_7900xtx_20260529T003552Z/gguf_byte_bpe_tokenizer.exit_code.txt",
+    "claim-verification/results/aeronum_core_gguf_byte_bpe_tokenizer_7900xtx_20260529T003552Z/gguf_byte_bpe_tokenizer_result.json",
+    "claim-verification/results/aeronum_core_gguf_byte_bpe_tokenizer_7900xtx_20260529T003552Z/byte_bpe_tokenizer_comparison.json",
+    "claim-verification/results/aeronum_core_gguf_byte_bpe_tokenizer_7900xtx_20260529T003552Z/llama_tokenize_hello_world_with_bos.stdout.log",
+    "claim-verification/results/aeronum_core_gguf_byte_bpe_tokenizer_7900xtx_20260529T003552Z/llama_tokenize_hello_world_no_bos.stdout.log",
+    "claim-verification/results/aeronum_core_gguf_byte_bpe_tokenizer_7900xtx_20260529T003552Z/llama_tokenize_artifact_prompt_with_bos.stdout.log"
+  ]
+}

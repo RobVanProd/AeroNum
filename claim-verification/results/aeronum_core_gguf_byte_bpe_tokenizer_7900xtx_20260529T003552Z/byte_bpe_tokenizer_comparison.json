@@ -1,0 +1,69 @@
+{
+  "all_match": true,
+  "comparisons": [
+    {
+      "label": "hello_world_with_bos",
+      "aeronum_ids": [
+        1,
+        22177,
+        4304
+      ],
+      "llama_cpp_ids": [
+        1,
+        22177,
+        4304
+      ],
+      "match": true,
+      "token_count": 3
+    },
+    {
+      "label": "hello_world_no_bos",
+      "aeronum_ids": [
+        22177,
+        4304
+      ],
+      "llama_cpp_ids": [
+        22177,
+        4304
+      ],
+      "match": true,
+      "token_count": 2
+    },
+    {
+      "label": "artifact_prompt_with_bos",
+      "aeronum_ids": [
+        1,
+        1065,
+        3168,
+        9516,
+        105675,
+        52359,
+        128405,
+        29528
+      ],
+      "llama_cpp_ids": [
+        1,
+        1065,
+        3168,
+        9516,
+        105675,
+        52359,
+        128405,
+        29528
+      ],
+      "match": true,
+      "token_count": 8
+    }
+  ],
+  "tokenizer_model": "gpt2",
+  "tokenizer_pre": "tekken",
+  "token_count": 131072,
+  "merge_count": 269443,
+  "model_sha256": "c5743c1bf39db0ae8a5ade5df0374b8e9e492754a199cfdad7ef393c1590f7c0",
+  "limitations": [
+    "fixed ASCII prompt tokenization check only",
+    "not exhaustive Unicode tokenization",
+    "not special-token parsing beyond exact-piece checks already reported",
+    "not GGUF token inference throughput"
+  ]
+}

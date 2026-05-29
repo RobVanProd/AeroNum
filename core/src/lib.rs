@@ -11,7 +11,8 @@ pub use aeronn::{
     GgufMultiLayerFinalLogitsSample, GgufMultiTokenAttentionSample,
     GgufMultiTokenLayerLogitsSample, GgufProjectionValueSample, GgufQuantizedBlockSample,
     GgufQuantizedLogitValue, GgufQuantizedNormalizedLogitsSample, GgufQuantizedPrefixLogitsSample,
-    GgufQuantizedRowDotSample, GgufQuantizedRowSample, GgufSingleTokenAttentionOutputSample,
+    GgufQuantizedRowDotSample, GgufQuantizedRowSample, GgufRetainedKvAutoregressiveDecodeSample,
+    GgufRetainedKvDecodeStepSample, GgufSingleTokenAttentionOutputSample,
     GgufSingleTokenFfnOutputSample, GgufSingleTokenLayerLogitsSample, GgufTensorByteSample,
     GgufValueType, LlamaModel,
 };

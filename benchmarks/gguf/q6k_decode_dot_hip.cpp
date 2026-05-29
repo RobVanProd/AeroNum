@@ -1,6 +1,7 @@
 #include <hip/hip_runtime.h>
 
 #include <algorithm>
+#include <climits>
 #include <cmath>
 #include <cstdint>
 #include <cstring>
@@ -239,6 +240,72 @@ __global__ void reduce_partials_kernel(const float *partials, float *output, int
     }
 }
 
+__global__ void top1_block_kernel(const float *values, float *top_values, int *top_indices, int row_count, int row_start) {
+    __shared__ float scratch_values[256];
+    __shared__ int scratch_indices[256];
+    int global = blockIdx.x * blockDim.x + threadIdx.x;
+    float value = -INFINITY;
+    int index = row_start + global;
+    if (global < row_count) {
+        value = values[global];
+    }
+    scratch_values[threadIdx.x] = value;
+    scratch_indices[threadIdx.x] = index;
+    __syncthreads();
+    for (int stride = 128; stride > 0; stride >>= 1) {
+        if (threadIdx.x < stride) {
+            float right_value = scratch_values[threadIdx.x + stride];
+            int right_index = scratch_indices[threadIdx.x + stride];
+            float left_value = scratch_values[threadIdx.x];
+            int left_index = scratch_indices[threadIdx.x];
+            if (right_value > left_value || (right_value == left_value && right_index < left_index)) {
+                scratch_values[threadIdx.x] = right_value;
+                scratch_indices[threadIdx.x] = right_index;
+            }
+        }
+        __syncthreads();
+    }
+    if (threadIdx.x == 0) {
+        top_values[blockIdx.x] = scratch_values[0];
+        top_indices[blockIdx.x] = scratch_indices[0];
+    }
+}
+
+__global__ void top1_final_kernel(const float *block_values, const int *block_indices, float *top_value, int *top_index, int block_count) {
+    __shared__ float scratch_values[256];
+    __shared__ int scratch_indices[256];
+    float value = -INFINITY;
+    int index = INT_MAX;
+    for (int i = threadIdx.x; i < block_count; i += blockDim.x) {
+        float candidate_value = block_values[i];
+        int candidate_index = block_indices[i];
+        if (candidate_value > value || (candidate_value == value && candidate_index < index)) {
+            value = candidate_value;
+            index = candidate_index;
+        }
+    }
+    scratch_values[threadIdx.x] = value;
+    scratch_indices[threadIdx.x] = index;
+    __syncthreads();
+    for (int stride = 128; stride > 0; stride >>= 1) {
+        if (threadIdx.x < stride) {
+            float right_value = scratch_values[threadIdx.x + stride];
+            int right_index = scratch_indices[threadIdx.x + stride];
+            float left_value = scratch_values[threadIdx.x];
+            int left_index = scratch_indices[threadIdx.x];
+            if (right_value > left_value || (right_value == left_value && right_index < left_index)) {
+                scratch_values[threadIdx.x] = right_value;
+                scratch_indices[threadIdx.x] = right_index;
+            }
+        }
+        __syncthreads();
+    }
+    if (threadIdx.x == 0) {
+        *top_value = scratch_values[0];
+        *top_index = scratch_indices[0];
+    }
+}
+
 int main(int argc, char **argv) {
     std::string lhs_path = arg_value(argc, argv, "--lhs-bin");
     std::string rhs_path = arg_value(argc, argv, "--rhs-q6k-bin");
@@ -251,8 +318,13 @@ int main(int argc, char **argv) {
     int device = std::stoi(arg_value(argc, argv, "--device", "0"));
     double expected = std::stod(arg_value(argc, argv, "--expected-dot", "0"));
     bool gpu_final_reduction = bool_arg(argc, argv, "--gpu-final-reduction", false);
+    bool gpu_top1 = bool_arg(argc, argv, "--gpu-top1", false);
     if (lhs_path.empty() || (rhs_path.empty() && (rhs_model_path.empty() || rhs_bytes == 0))) {
         std::cerr << "usage: q6k_decode_dot_hip --lhs-bin <path> (--rhs-q6k-bin <path> | --rhs-q6k-model <path> --rhs-q6k-offset <bytes> --rhs-q6k-bytes <bytes>) --expected-dot <value> [--device <id>]\n";
+        return 2;
+    }
+    if (gpu_top1 && !gpu_final_reduction) {
+        std::cerr << "--gpu-top1 requires --gpu-final-reduction true\n";
         return 2;
     }
 
@@ -295,12 +367,40 @@ int main(int argc, char **argv) {
 
     std::vector<double> gpu_logits(row_count, 0.0);
     std::vector<float> partials(row_count * block_count);
+    int gpu_top1_index = -1;
+    double gpu_top1_value = 0.0;
     check_hip(hipMemcpy(partials.data(), d_partials, partials.size() * sizeof(float), hipMemcpyDeviceToHost), "hipMemcpy partials");
     check_hip(hipDeviceSynchronize(), "hipDeviceSynchronize copy");
     if (gpu_final_reduction) {
         reduce_partials_kernel<<<row_count, 256>>>(d_partials, d_output, block_count, row_count);
         check_hip(hipGetLastError(), "reduce_partials_kernel");
         check_hip(hipDeviceSynchronize(), "hipDeviceSynchronize reduce");
+        if (gpu_top1) {
+            int top_block_count = (row_count + 255) / 256;
+            float *d_top_values = nullptr;
+            int *d_top_indices = nullptr;
+            float *d_final_top_value = nullptr;
+            int *d_final_top_index = nullptr;
+            check_hip(hipMalloc(&d_top_values, top_block_count * sizeof(float)), "hipMalloc top values");
+            check_hip(hipMalloc(&d_top_indices, top_block_count * sizeof(int)), "hipMalloc top indices");
+            check_hip(hipMalloc(&d_final_top_value, sizeof(float)), "hipMalloc final top value");
+            check_hip(hipMalloc(&d_final_top_index, sizeof(int)), "hipMalloc final top index");
+            top1_block_kernel<<<top_block_count, 256>>>(d_output, d_top_values, d_top_indices, row_count, row_start);
+            check_hip(hipGetLastError(), "top1_block_kernel");
+            top1_final_kernel<<<1, 256>>>(d_top_values, d_top_indices, d_final_top_value, d_final_top_index, top_block_count);
+            check_hip(hipGetLastError(), "top1_final_kernel");
+            check_hip(hipDeviceSynchronize(), "hipDeviceSynchronize top1");
+            float top_value = 0.0f;
+            int top_index = -1;
+            check_hip(hipMemcpy(&top_value, d_final_top_value, sizeof(float), hipMemcpyDeviceToHost), "hipMemcpy top value");
+            check_hip(hipMemcpy(&top_index, d_final_top_index, sizeof(int), hipMemcpyDeviceToHost), "hipMemcpy top index");
+            check_hip(hipFree(d_top_values), "hipFree top values");
+            check_hip(hipFree(d_top_indices), "hipFree top indices");
+            check_hip(hipFree(d_final_top_value), "hipFree final top value");
+            check_hip(hipFree(d_final_top_index), "hipFree final top index");
+            gpu_top1_value = static_cast<double>(top_value);
+            gpu_top1_index = top_index;
+        }
         std::vector<float> output(row_count);
         check_hip(hipMemcpy(output.data(), d_output, output.size() * sizeof(float), hipMemcpyDeviceToHost), "hipMemcpy output");
         check_hip(hipDeviceSynchronize(), "hipDeviceSynchronize output");
@@ -349,6 +449,8 @@ int main(int argc, char **argv) {
         : top_k_logits(expected_logits, top_k, row_start);
     bool top_token_matches = !expected_top_logits.empty() && !gpu_top_logits.empty()
         && expected_top_logits.front().row_index == gpu_top_logits.front().row_index;
+    bool gpu_top1_token_matches = !expected_top_logits.empty() && gpu_top1
+        && expected_top_logits.front().row_index == gpu_top1_index;
 
     std::cout << std::fixed << std::setprecision(12)
               << "{"
@@ -368,6 +470,10 @@ int main(int argc, char **argv) {
               << "\"expected_top_logits\":" << top_logits_json(expected_top_logits) << ","
               << "\"gpu_top_logits\":" << top_logits_json(gpu_top_logits) << ","
               << "\"top_token_matches\":" << (top_token_matches ? "true" : "false") << ","
+              << "\"gpu_top1_enabled\":" << (gpu_top1 ? "true" : "false") << ","
+              << "\"gpu_top1_index\":" << gpu_top1_index << ","
+              << "\"gpu_top1_value\":" << gpu_top1_value << ","
+              << "\"gpu_top1_token_matches\":" << (gpu_top1_token_matches ? "true" : "false") << ","
               << "\"gpu_final_reduction\":" << (gpu_final_reduction ? "true" : "false") << ","
               << "\"partial_checksum\":" << partial_checksum << ","
               << "\"validation\":\"gpu_q6k_decode_dot_matches_cpu_reference\","
@@ -375,6 +481,7 @@ int main(int argc, char **argv) {
               << "\"GPU decodes one or more Q6_K rows and computes per-block dot partials\","
               << "\"input vector is decoded on CPU before GPU execution\","
               << (gpu_final_reduction ? "\"final sum over GPU partials is performed by a second GPU kernel\"" : "\"final sum over GPU partials is performed on host\"") << ","
+              << (gpu_top1 ? "\"top-1 token selection is performed by GPU reduction over the computed logits\"" : "\"top-1 token selection is not performed on GPU\"") << ","
               << "\"not full q4_K/q6_K tensor execution on GPU\","
               << "\"not transformer layer execution on GPU\","
               << "\"not GPU autoregressive decoding\","

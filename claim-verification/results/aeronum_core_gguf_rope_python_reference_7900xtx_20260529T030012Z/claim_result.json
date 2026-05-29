@@ -1,0 +1,62 @@
+{
+  "claim_id": "aeronum_core_gguf_rope_python_reference_20260529",
+  "status": "verified_current_limited",
+  "source_commit": "45e64c453c87f9d914fd1326339b85b6f3d9edd8",
+  "model_path": "/home/rob/models/mistralai_Mistral-Small-3.1-24B-Instruct-2503-Q4_K_M.gguf",
+  "model_sha256": "c5743c1bf39db0ae8a5ade5df0374b8e9e492754a199cfdad7ef393c1590f7c0",
+  "commands": [
+    "cargo run --release -p aeronum-core --example gguf_multi_token_attention_smoke -- --model /home/rob/models/mistralai_Mistral-Small-3.1-24B-Instruct-2503-Q4_K_M.gguf --input-rows 1,22177,1044 --layer 0 --top-k 5",
+    "python3 benchmarks/gguf/compare_rope_reference.py --input claim-verification/results/aeronum_core_gguf_rope_python_reference_7900xtx_20260529T030012Z/gguf_multi_token_attention_result.json --output claim-verification/results/aeronum_core_gguf_rope_python_reference_7900xtx_20260529T030012Z/rope_reference_result.json --tolerance 0.00001"
+  ],
+  "attention_exit_code": 0,
+  "rope_reference_exit_code": 0,
+  "cargo_test_core_exit_code": 0,
+  "token_count": 3,
+  "input_rows": [
+    1,
+    22177,
+    1044
+  ],
+  "head_count": 32,
+  "kv_head_count": 8,
+  "head_dimension": 128,
+  "rope_freq_base": 1000000000.0,
+  "query_projection_sample_count": 48,
+  "key_projection_sample_count": 48,
+  "rope_query_sample_count": 48,
+  "rope_key_sample_count": 48,
+  "python_reference_query_compared_values": 96,
+  "python_reference_query_max_abs_diff": 9.086514296541282e-08,
+  "python_reference_query_mismatch_count": 0,
+  "python_reference_key_compared_values": 96,
+  "python_reference_key_max_abs_diff": 1.0474124079173919e-07,
+  "python_reference_key_mismatch_count": 0,
+  "python_reference_passed": true,
+  "attention_score_count": 192,
+  "attention_score_checksum": 41957.44051399119,
+  "limitations": [
+    "sampled Q/K RoPE values only",
+    "independent Python mathematical reference, not llama.cpp internal trace",
+    "not full attention parity",
+    "not generated-token logits",
+    "not AeroNum-native GGUF token inference throughput"
+  ],
+  "artifact_files": [
+    "claim-verification/results/aeronum_core_gguf_rope_python_reference_7900xtx_20260529T030012Z/claim_result.json",
+    "claim-verification/results/aeronum_core_gguf_rope_python_reference_7900xtx_20260529T030012Z/gguf_multi_token_attention_result.json",
+    "claim-verification/results/aeronum_core_gguf_rope_python_reference_7900xtx_20260529T030012Z/gguf_multi_token_attention.stdout.log",
+    "claim-verification/results/aeronum_core_gguf_rope_python_reference_7900xtx_20260529T030012Z/gguf_multi_token_attention.stderr.log",
+    "claim-verification/results/aeronum_core_gguf_rope_python_reference_7900xtx_20260529T030012Z/gguf_multi_token_attention.exit_code.txt",
+    "claim-verification/results/aeronum_core_gguf_rope_python_reference_7900xtx_20260529T030012Z/gguf_multi_token_attention.time.txt",
+    "claim-verification/results/aeronum_core_gguf_rope_python_reference_7900xtx_20260529T030012Z/rope_reference_result.json",
+    "claim-verification/results/aeronum_core_gguf_rope_python_reference_7900xtx_20260529T030012Z/rope_reference.stdout.log",
+    "claim-verification/results/aeronum_core_gguf_rope_python_reference_7900xtx_20260529T030012Z/rope_reference.stderr.log",
+    "claim-verification/results/aeronum_core_gguf_rope_python_reference_7900xtx_20260529T030012Z/rope_reference.exit_code.txt",
+    "claim-verification/results/aeronum_core_gguf_rope_python_reference_7900xtx_20260529T030012Z/cargo_test_core.stdout.log",
+    "claim-verification/results/aeronum_core_gguf_rope_python_reference_7900xtx_20260529T030012Z/cargo_test_core.stderr.log",
+    "claim-verification/results/aeronum_core_gguf_rope_python_reference_7900xtx_20260529T030012Z/cargo_test_core.exit_code.txt",
+    "claim-verification/results/aeronum_core_gguf_rope_python_reference_7900xtx_20260529T030012Z/command_config.txt",
+    "claim-verification/results/aeronum_core_gguf_rope_python_reference_7900xtx_20260529T030012Z/source_metadata.txt",
+    "claim-verification/results/aeronum_core_gguf_rope_python_reference_7900xtx_20260529T030012Z/hardware_software_metadata.txt"
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "comparison": "gguf_rope_python_reference",
+  "input": "claim-verification/results/aeronum_core_gguf_rope_python_reference_7900xtx_20260529T030012Z/gguf_multi_token_attention_result.json",
+  "tolerance": 1e-05,
+  "head_dimension": 128,
+  "rope_freq_base": 1000000000.0,
+  "query": {
+    "compared_values": 96,
+    "max_abs_diff": 9.086514296541282e-08,
+    "mismatch_count": 0,
+    "mismatches": []
+  },
+  "key": {
+    "compared_values": 96,
+    "max_abs_diff": 1.0474124079173919e-07,
+    "mismatch_count": 0,
+    "mismatches": []
+  },
+  "passed": true,
+  "limitations": [
+    "sampled Q/K RoPE values only",
+    "independent Python mathematical reference, not llama.cpp internal trace",
+    "not full attention parity",
+    "not generated-token logits",
+    "not AeroNum-native GGUF token inference throughput"
+  ]
+}

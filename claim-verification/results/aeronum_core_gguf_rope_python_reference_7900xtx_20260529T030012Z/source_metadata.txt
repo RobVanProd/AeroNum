@@ -1,0 +1,11 @@
+source_commit=45e64c453c87f9d914fd1326339b85b6f3d9edd8
+source_branch=main
+source_status_short=?? claim-verification/results/aeronum_core_gguf_multi_token_attention_7900xtx_20260529T033000Z/
+?? claim-verification/results/aeronum_core_gguf_multi_token_attention_7900xtx_20260529T033500Z/
+?? claim-verification/results/aeronum_core_gguf_prompt_greedy_decode_7900xtx_20260529T025033Z/
+?? claim-verification/results/aeronum_core_gguf_rope_python_reference_7900xtx_20260529T030012Z/
+?? claim-verification/results/aeronum_local_benchmark_20260528T000000Z/
+?? claim-verification/results/aeronum_matmul_attempt_7900xtx_20260528T190000Z/
+?? claim-verification/results/aeronum_post_reboot_7900xtx_20260528T190000Z/
+model_path=/home/rob/models/mistralai_Mistral-Small-3.1-24B-Instruct-2503-Q4_K_M.gguf
+model_sha256=c5743c1bf39db0ae8a5ade5df0374b8e9e492754a199cfdad7ef393c1590f7c0

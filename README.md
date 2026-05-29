@@ -242,11 +242,19 @@ Verified current results:
   and `blk.0.attn_v.weight`, applied internal RoPE arithmetic with
   `llama.rope.freq_base` 1,000,000,000, formed 192 causal attention scores, and
   computed the final-token `blk.0.attn_output.weight` projection. This is a
-  first-layer CPU attention subpath only; the RoPE arithmetic is not external
-  parity, and this is not FFN execution, full transformer execution,
-  generated-token logits, GPU matmul, or AeroNum-native GGUF token inference
-  throughput
+  first-layer CPU attention subpath only, not FFN execution, full transformer
+  execution, generated-token logits, GPU matmul, or AeroNum-native GGUF token
+  inference throughput
   ([result JSON](claim-verification/results/aeronum_core_gguf_multi_token_attention_7900xtx_20260529T034500Z/claim_result.json)).
+- `benchmarks/gguf/compare_rope_reference.py` now compares sampled pre-RoPE and
+  post-RoPE Q/K projection values from that attention smoke against an
+  independent Python mathematical RoPE reference. It compared 96 sampled query
+  values and 96 sampled key values for the same three input rows, head dimension
+  128, and RoPE base 1,000,000,000 with zero mismatches at tolerance `0.00001`.
+  This is sampled Q/K RoPE parity only, not a llama.cpp internal trace, full
+  attention parity, generated-token logits, or AeroNum-native GGUF token
+  inference throughput
+  ([result JSON](claim-verification/results/aeronum_core_gguf_rope_python_reference_7900xtx_20260529T030012Z/claim_result.json)).
 - `aeronum-core` now extends that multi-token first-layer CPU subpath through
   the final token's FFN and final-head logits. The repo-owned release command
   used the same three token rows, added the final-token attention residual,
@@ -378,8 +386,9 @@ Blocked or omitted claims:
   embedding row against Q6_K `output.weight`, first-layer V-projection CPU
   arithmetic against Q6_K `blk.0.attn_v.weight`, a single-token first-layer
   attention-output CPU subpath against Q4_K `blk.0.attn_output.weight`, and a
-  first-layer multi-token attention CPU subpath with Q/K/V projections, internal
-  RoPE arithmetic, 192 causal attention scores, and final-token attention-output
+  first-layer multi-token attention CPU subpath with Q/K/V projections, sampled
+  Q/K RoPE parity against an independent Python mathematical reference, 192
+  causal attention scores, and final-token attention-output
   projection, plus a final-token first-layer FFN and final-head logits CPU
   subpath, a bounded two-layer final-token transformer CPU subpath, a full
   40-layer final-token transformer CPU subpath for the fixed three-token row
@@ -388,10 +397,11 @@ Blocked or omitted claims:
   single-token first-layer attention-plus-FFN CPU subpath through
   `blk.0.ffn_gate.weight`, `blk.0.ffn_up.weight`, and `blk.0.ffn_down.weight`,
   plus full-vocabulary final-head CPU logits from that single-token layer-0
-  hidden state are verified, but exhaustive tokenizer parity, external RoPE
-  parity, multi-token autoregressive generated text, and AeroNum-native token
-  inference throughput are not yet verified. The verified token-inference
-  result is a llama.cpp reference through an AeroNum repo wrapper.
+  hidden state are verified, but exhaustive tokenizer parity, llama.cpp
+  internal-trace RoPE parity, multi-token autoregressive generated text, and
+  AeroNum-native token inference throughput are not yet verified. The verified
+  token-inference result is a llama.cpp reference through an AeroNum repo
+  wrapper.
 
 Historical benchmark CSVs remain in the repo, but README claims above only use
 fresh local reruns and captured artifacts.

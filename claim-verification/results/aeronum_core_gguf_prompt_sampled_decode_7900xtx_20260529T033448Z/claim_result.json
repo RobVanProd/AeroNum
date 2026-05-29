@@ -1,0 +1,99 @@
+{
+  "schema_version": 1,
+  "claim_id": "aeronum_core_gguf_prompt_sampled_decode_20260529",
+  "status": "verified_current_limited",
+  "verified_on": "2026-05-29",
+  "source_commit": "bea4fe36db75546501ae58983a44c318df163ffb",
+  "benchmark": "gguf_prompt_autoregressive_decode_smoke",
+  "command": "cargo run --release -p aeronum-core --example gguf_prompt_autoregressive_decode_smoke -- --model /home/rob/models/mistralai_Mistral-Small-3.1-24B-Instruct-2503-Q4_K_M.gguf --prompt '<s>[INST]Hello[/INST]' --add-bos false --parse-special true --layer-start 0 --layers 40 --top-k 5 --max-new-tokens 2 --decode-mode sample --temperature 1.0 --seed 12345",
+  "exit_code": 0,
+  "cargo_test_core_exit_code": 0,
+  "model_path": "/home/rob/models/mistralai_Mistral-Small-3.1-24B-Instruct-2503-Q4_K_M.gguf",
+  "model_sha256": "c5743c1bf39db0ae8a5ade5df0374b8e9e492754a199cfdad7ef393c1590f7c0",
+  "hardware": {
+    "gpu_0": "Radeon RX 7900 XTX / gfx1100 / PCI device 1002:744c",
+    "gpu_1": "AMD Radeon Graphics / gfx1036 / PCI device 1002:13c0"
+  },
+  "prompt": "<s>[INST]Hello[/INST]",
+  "prompt_token_ids": [
+    1,
+    3,
+    22177,
+    4
+  ],
+  "prompt_token_pieces": [
+    "<s>",
+    "[INST]",
+    "Hello",
+    "[/INST]"
+  ],
+  "decode_mode": "sample",
+  "top_k": 5,
+  "temperature": 1.0,
+  "initial_seed": 12345,
+  "final_seed": 4354685564936857699,
+  "max_new_tokens": 2,
+  "generated_token_ids": [
+    22177,
+    1033
+  ],
+  "generated_token_pieces": [
+    "Hello",
+    "!"
+  ],
+  "generated_text": "Hello!",
+  "elapsed_ms": 223203.837453,
+  "wall_time_seconds": 223.49454123,
+  "generated_tokens_per_second": 0.008960419421,
+  "step_summaries": [
+    {
+      "step_index": 0,
+      "seed_before": 12345,
+      "seed_after": 11400714819323210830,
+      "sample_draw": 0.133079668661,
+      "greedy_token_id": 22177,
+      "greedy_token_piece": "Hello",
+      "selected_token_id": 22177,
+      "selected_token_piece": "Hello",
+      "selected_probability": 0.995944206615,
+      "elapsed_ms": 99065.034918
+    },
+    {
+      "step_index": 1,
+      "seed_before": 11400714819323210830,
+      "seed_after": 4354685564936857699,
+      "sample_draw": 0.204816633362,
+      "greedy_token_id": 1033,
+      "greedy_token_piece": "!",
+      "selected_token_id": 1033,
+      "selected_token_piece": "!",
+      "selected_probability": 0.999997993185,
+      "elapsed_ms": 123946.276853
+    }
+  ],
+  "limitations": [
+    "CPU autoregressive token-piece selection for one fixed prompt only",
+    "sample mode samples only from the reported top-k logits, not the full vocabulary",
+    "recomputes the full context for each generated token without KV cache",
+    "generated_piece_sequence is tokenizer piece concatenation, not full detokenization parity",
+    "not GPU matmul",
+    "not AeroNum-native GGUF token inference throughput",
+    "not full-vocabulary sampling",
+    "not llama.cpp sampled-output parity",
+    "not KV-cache decoding",
+    "not optimized token inference throughput"
+  ],
+  "raw_artifacts": [
+    "claim-verification/results/aeronum_core_gguf_prompt_sampled_decode_7900xtx_20260529T033448Z/gguf_prompt_sampled_decode.stdout.log",
+    "claim-verification/results/aeronum_core_gguf_prompt_sampled_decode_7900xtx_20260529T033448Z/gguf_prompt_sampled_decode.stderr.log",
+    "claim-verification/results/aeronum_core_gguf_prompt_sampled_decode_7900xtx_20260529T033448Z/gguf_prompt_sampled_decode.exit_code.txt",
+    "claim-verification/results/aeronum_core_gguf_prompt_sampled_decode_7900xtx_20260529T033448Z/gguf_prompt_sampled_decode_result.json",
+    "claim-verification/results/aeronum_core_gguf_prompt_sampled_decode_7900xtx_20260529T033448Z/cargo_test_core.stdout.log",
+    "claim-verification/results/aeronum_core_gguf_prompt_sampled_decode_7900xtx_20260529T033448Z/cargo_test_core.stderr.log",
+    "claim-verification/results/aeronum_core_gguf_prompt_sampled_decode_7900xtx_20260529T033448Z/cargo_test_core.exit_code.txt",
+    "claim-verification/results/aeronum_core_gguf_prompt_sampled_decode_7900xtx_20260529T033448Z/command.txt",
+    "claim-verification/results/aeronum_core_gguf_prompt_sampled_decode_7900xtx_20260529T033448Z/source_metadata.txt",
+    "claim-verification/results/aeronum_core_gguf_prompt_sampled_decode_7900xtx_20260529T033448Z/hardware_software_metadata.txt",
+    "claim-verification/results/aeronum_core_gguf_prompt_sampled_decode_7900xtx_20260529T033448Z/wall_time.json"
+  ]
+}

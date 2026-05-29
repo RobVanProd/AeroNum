@@ -330,6 +330,20 @@ Verified current results:
   two-token greedy decode only; it is not sampled decoding, KV-cache decoding,
   GPU matmul, or optimized AeroNum-native GGUF token inference throughput
   ([result JSON](claim-verification/results/aeronum_core_gguf_autoregressive_cpu_throughput_7900xtx_20260529T032124Z/claim_result.json)).
+- The same CPU full-context autoregressive path now also supports deterministic
+  top-k sampled token selection. The repo-owned release command used
+  `--decode-mode sample --temperature 1.0 --seed 12345 --top-k 5` for the same
+  fixed prompt, sampled from the reported top-5 logits at each step, selected
+  token IDs 22177 and 1033 with pieces `Hello` and `!`, and reported generated
+  text `Hello!`. The two sampled draws were `0.133079668661` and
+  `0.204816633362`, with selected-token probabilities `0.995944206615` and
+  `0.999997993185`; the run reported `generated_tokens_per_second` of
+  `0.008960419421` and wall time 223.495 seconds. This is deterministic CPU
+  top-k sampled token-piece selection for one fixed prompt only; it samples
+  from the reported top-k logits rather than the full vocabulary, has no KV
+  cache, is not llama.cpp sampled-output parity, and is not GPU GGUF execution
+  or optimized AeroNum-native GGUF token inference throughput
+  ([result JSON](claim-verification/results/aeronum_core_gguf_prompt_sampled_decode_7900xtx_20260529T033448Z/claim_result.json)).
 - `aeronum-core` now verifies a single-token first-layer attention-plus-FFN CPU
   subpath. The repo-owned release command ran the single-token attention-output
   subpath, added the residual, applied `blk.0.ffn_norm.weight`, computed all
@@ -427,9 +441,10 @@ Blocked or omitted claims:
   `blk.0.ffn_gate.weight`, `blk.0.ffn_up.weight`, and `blk.0.ffn_down.weight`,
   plus full-vocabulary final-head CPU logits from that single-token layer-0
   hidden state are verified, but exhaustive tokenizer parity, llama.cpp
-  internal-trace RoPE parity, sampled decoding, llama.cpp detokenization-trace
-  parity, KV-cache decoding, GPU GGUF execution, and optimized AeroNum-native
-  token inference throughput are not yet verified. The verified
+  internal-trace RoPE parity, full-vocabulary sampled decoding, llama.cpp
+  sampled-output parity, llama.cpp detokenization-trace parity, KV-cache
+  decoding, GPU GGUF execution, and optimized AeroNum-native token inference
+  throughput are not yet verified. The verified
   token-inference result is a llama.cpp reference through an AeroNum repo
   wrapper.
 

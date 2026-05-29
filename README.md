@@ -391,6 +391,21 @@ Verified current results:
   KV-cache parity, not GPU GGUF execution, and not optimized AeroNum-native
   GGUF token inference throughput
   ([result JSON](claim-verification/results/aeronum_core_gguf_retained_kv_decode_7900xtx_20260529T050904Z/claim_result.json)).
+- `aeronum-core` also has a retained CPU KV-cache runtime timing smoke for the
+  same fixed prompt that disables full-context verification inside the timed
+  decode loop. The repo-owned release command ran from source commit
+  `e10e2abc70bc9c6461d5b4cb8e09728475e65ade`, used
+  `full_context_verification: false`, generated token IDs 22177 and 1033 with
+  pieces `Hello` and `!`, decoded generated text `Hello!`, and matched the
+  generated IDs and text from the separately verified retained-KV artifact. The
+  run reported elapsed `116453.772702` ms, wall time
+  `118.41068768501282` seconds, and `0.017174196710` generated tokens/s. This
+  is CPU retained-KV greedy autoregressive decode timing for one fixed prompt
+  only; correctness is tied to the separate full-context verified retained-KV
+  artifact, and it is not sampled decoding, not llama.cpp internal KV-cache
+  parity, not GPU GGUF execution, and not optimized AeroNum-native GGUF token
+  inference throughput
+  ([result JSON](claim-verification/results/aeronum_core_gguf_retained_kv_runtime_decode_7900xtx_20260529T054500Z/claim_result.json)).
 - `benchmarks/gguf/compare_llama_cpp_greedy_output.py` now compares that
   retained-KV AeroNum greedy decode output against llama.cpp CLI greedy output
   for the same prompt and model. The retained-KV AeroNum artifact generated

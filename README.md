@@ -362,6 +362,19 @@ Verified current results:
   KV-cache parity, not GPU matmul, and not AeroNum-native GGUF token inference
   throughput
   ([result JSON](claim-verification/results/aeronum_core_gguf_cached_autoregressive_decode_7900xtx_20260529T043942Z/claim_result.json)).
+- `aeronum-core` now verifies a retained CPU KV-cache greedy decode path for
+  the same fixed GGUF prompt. The repo-owned release command prefills per-layer
+  K/V for the three prior prompt tokens once, then appends per-layer K/V for
+  each decoded query token. It generated token IDs 22177 and 1033 with pieces
+  `Hello` and `!`, decoded generated text `Hello!`, and matched the
+  full-context CPU logits path at both generated steps with max logit diff
+  `0.000000000000`, checksum diff `0.000000000000`, and matching top tokens.
+  The first-layer cache token count advanced from 3 to 4 at step 0 and from 4
+  to 5 at step 1. This is CPU retained-KV greedy autoregressive decoding for
+  one fixed prompt only; it is not sampled decoding, not llama.cpp internal
+  KV-cache parity, not GPU GGUF execution, and not optimized AeroNum-native
+  GGUF token inference throughput
+  ([result JSON](claim-verification/results/aeronum_core_gguf_retained_kv_decode_7900xtx_20260529T050904Z/claim_result.json)).
 - `benchmarks/gguf/compare_llama_cpp_greedy_output.py` now compares that
   cached AeroNum greedy decode output against llama.cpp CLI greedy output for
   the same prompt and model. The cached AeroNum artifact generated text
@@ -540,8 +553,9 @@ Blocked or omitted claims:
   one-layer final-token CPU KV-cache attention parity for rows 1, 3, 22177,
   and 4, plus full 40-layer cached final-token CPU logits parity for the same
   fixed row sequence, plus two-token cached-final-logits greedy autoregressive
-  CPU decode for the fixed prompt, plus cached-decode deterministic greedy
-  generated-output parity against llama.cpp CLI, plus
+  CPU decode for the fixed prompt, plus retained CPU KV-cache greedy
+  autoregressive decode for the fixed prompt, plus cached-decode deterministic
+  greedy generated-output parity against llama.cpp CLI, plus
   generated-text decoding for that output with llama.cpp re-tokenization
   parity, plus deterministic greedy generated-output parity against llama.cpp
   CLI for that output, plus one-token sampled generated-output parity against
@@ -552,10 +566,10 @@ Blocked or omitted claims:
   plus full-vocabulary final-head CPU logits from that single-token layer-0
   hidden state are verified, but exhaustive tokenizer parity, llama.cpp
   internal-trace RoPE parity, llama.cpp sampler-internals parity, llama.cpp
-  detokenization-trace parity, optimized retained-state KV-cache decoding,
-  llama.cpp KV-cache parity, full GPU GGUF tensor/layer execution, GPU
-  autoregressive decoding, and optimized AeroNum-native token inference
-  throughput are not yet verified. The
+  detokenization-trace parity, llama.cpp KV-cache parity, full GPU GGUF
+  tensor/layer execution, GPU autoregressive decoding, optimized retained-state
+  KV-cache throughput, and optimized AeroNum-native token inference throughput
+  are not yet verified. The
   verified
   token-inference result is a llama.cpp reference through an AeroNum repo
   wrapper.

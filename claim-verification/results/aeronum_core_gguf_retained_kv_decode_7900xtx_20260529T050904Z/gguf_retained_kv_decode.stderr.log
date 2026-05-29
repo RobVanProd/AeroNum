@@ -1,0 +1,2 @@
+    Finished `release` profile [optimized] target(s) in 0.00s
+     Running `target/release/examples/gguf_retained_kv_autoregressive_decode_smoke --model /home/rob/models/mistralai_Mistral-Small-3.1-24B-Instruct-2503-Q4_K_M.gguf --add-bos false --parse-special true --layer-start 0 --layers 40 --top-k 5 --max-new-tokens 2`

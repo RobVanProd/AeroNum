@@ -1,0 +1,2 @@
+0cb734a8a5dd6c362a74e18e19b266e15b7d5819
+c5743c1bf39db0ae8a5ade5df0374b8e9e492754a199cfdad7ef393c1590f7c0  /home/rob/models/mistralai_Mistral-Small-3.1-24B-Instruct-2503-Q4_K_M.gguf

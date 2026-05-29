@@ -1,0 +1,1 @@
+cargo run --release -p aeronum-core --example gguf_multi_token_layer_logits_smoke -- --model /home/rob/models/mistralai_Mistral-Small-3.1-24B-Instruct-2503-Q4_K_M.gguf --input-rows 1,22177,1044 --layer 0 --top-k 5

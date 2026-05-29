@@ -247,6 +247,18 @@ Verified current results:
   generated-token logits, GPU matmul, or AeroNum-native GGUF token inference
   throughput
   ([result JSON](claim-verification/results/aeronum_core_gguf_multi_token_attention_7900xtx_20260529T034500Z/claim_result.json)).
+- `aeronum-core` now extends that multi-token first-layer CPU subpath through
+  the final token's FFN and final-head logits. The repo-owned release command
+  used the same three token rows, added the final-token attention residual,
+  applied `blk.0.ffn_norm.weight`, computed all 32,768 rows of
+  `blk.0.ffn_gate.weight` and `blk.0.ffn_up.weight`, applied `SiLU(gate) * up`,
+  computed all 5,120 rows of `blk.0.ffn_down.weight`, applied
+  `output_norm.weight`, stream-decoded all 131,072 rows of `output.weight`, and
+  reported top logit rows 64,162, 68,637, 117,577, 64,303, and 128,129. This is
+  first-layer final-token CPU arithmetic only, not full transformer execution,
+  generated-token logits, GPU matmul, or AeroNum-native GGUF token inference
+  throughput
+  ([result JSON](claim-verification/results/aeronum_core_gguf_multi_token_layer_logits_7900xtx_20260529T041500Z/claim_result.json)).
 - `aeronum-core` now verifies a single-token first-layer attention-plus-FFN CPU
   subpath. The repo-owned release command ran the single-token attention-output
   subpath, added the residual, applied `blk.0.ffn_norm.weight`, computed all
@@ -330,8 +342,8 @@ Blocked or omitted claims:
   attention-output CPU subpath against Q4_K `blk.0.attn_output.weight`, and a
   first-layer multi-token attention CPU subpath with Q/K/V projections, internal
   RoPE arithmetic, 192 causal attention scores, and final-token attention-output
-  projection, plus a
-  single-token first-layer attention-plus-FFN CPU subpath through
+  projection, plus a final-token first-layer FFN and final-head logits CPU
+  subpath, and a single-token first-layer attention-plus-FFN CPU subpath through
   `blk.0.ffn_gate.weight`, `blk.0.ffn_up.weight`, and `blk.0.ffn_down.weight`,
   plus full-vocabulary final-head CPU logits from that single-token layer-0
   hidden state are verified, but exhaustive tokenizer parity, full q4_K/q6_K

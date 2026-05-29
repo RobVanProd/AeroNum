@@ -349,6 +349,19 @@ Verified current results:
   are copied back, and this is not GPU autoregressive decoding or optimized
   AeroNum-native GGUF token inference throughput
   ([result JSON](claim-verification/results/aeronum_core_gguf_retained_final_head_q6k_gpu_top_token_7900xtx_20260529T110000Z/claim_result.json)).
+- The Q6_K HIP verifier also has a GPU top-1 path for the same retained-step
+  final-head subpath. Reusing the retained input vector and CPU expected logits
+  above, the repo-owned command ran from source commit
+  `7d338af372ab51da05fe4a2be9028a143014e031`, reduced each row's dot
+  partials on GPU, then selected top-1 on GPU from 131,072 computed logits.
+  The CPU expected top token was ID 1033; the GPU top-1 index was 1033 with
+  `gpu_top1_token_matches: true`, and the maximum absolute logit difference was
+  `0.000001617267`. This verifies GPU-side top-1 selection over GPU-decoded
+  final-head logits for one retained generated step only; the final-head input
+  is retained CPU transformer state, transformer layers still run on CPU, and
+  this is not GPU autoregressive decoding or optimized AeroNum-native GGUF token
+  inference throughput
+  ([result JSON](claim-verification/results/aeronum_core_gguf_retained_final_head_q6k_gpu_top1_7900xtx_20260529T065439Z/claim_result.json)).
 - `aeronum-core` now computes CPU prefix logits over decoded quantized rows.
   The repo-owned command
   `cargo run -p aeronum-core --example gguf_quantized_block_smoke -- --model /home/rob/models/mistralai_Mistral-Small-3.1-24B-Instruct-2503-Q4_K_M.gguf --q4-row 22177 --q6-row 100 --logit-start 0 --logit-rows 256 --top-k 5`

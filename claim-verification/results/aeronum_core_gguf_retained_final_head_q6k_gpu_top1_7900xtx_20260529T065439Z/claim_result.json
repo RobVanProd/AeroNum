@@ -1,0 +1,53 @@
+{
+  "claim_id": "aeronum_core_gguf_retained_final_head_q6k_gpu_top1_20260529",
+  "status": "verified_current_limited",
+  "source_commit": "7d338af372ab51da05fe4a2be9028a143014e031",
+  "hardware": "Radeon RX 7900 XTX",
+  "model_sha256": "c5743c1bf39db0ae8a5ade5df0374b8e9e492754a199cfdad7ef393c1590f7c0",
+  "claim": "benchmarks/gguf/q6k_decode_dot_hip.cpp can compute retained-step full-output-vocabulary final-head logits by GPU-decoding Q6_K output.weight rows, reduce per-row dot partials on GPU, and select the top-1 token with a GPU reduction over the computed logits for one retained generated step.",
+  "result": {
+    "prompt": "<s>[INST]Hello[/INST]",
+    "generated_token_ids": [
+      22177,
+      1033
+    ],
+    "generated_text": "Hello!",
+    "retained_step_index": 1,
+    "q6k_row_count": 131072,
+    "q6k_block_count": 20,
+    "expected_cpu_top_token_id": 1033,
+    "gpu_top1_index": 1033,
+    "gpu_top1_value": 30.194519042969,
+    "gpu_top1_token_matches": true,
+    "top_token_matches_after_host_copy": true,
+    "abs_max_logit_diff": 0.000001617267,
+    "gpu_logits_checksum": -12572921667.470350265503
+  },
+  "artifacts": [
+    "claim-verification/results/aeronum_core_gguf_retained_final_head_q6k_gpu_top1_7900xtx_20260529T065439Z/q6k_decode_dot_hip_result.json",
+    "claim-verification/results/aeronum_core_gguf_retained_final_head_q6k_gpu_top1_7900xtx_20260529T065439Z/q6k_decode_dot_hip.stdout.log",
+    "claim-verification/results/aeronum_core_gguf_retained_final_head_q6k_gpu_top1_7900xtx_20260529T065439Z/q6k_decode_dot_hip.stderr.log",
+    "claim-verification/results/aeronum_core_gguf_retained_final_head_q6k_gpu_top1_7900xtx_20260529T065439Z/q6k_decode_dot_hip.exit_code.txt",
+    "claim-verification/results/aeronum_core_gguf_retained_final_head_q6k_gpu_top1_7900xtx_20260529T065439Z/hipcc_q6k_decode_dot.stdout.log",
+    "claim-verification/results/aeronum_core_gguf_retained_final_head_q6k_gpu_top1_7900xtx_20260529T065439Z/hipcc_q6k_decode_dot.stderr.log",
+    "claim-verification/results/aeronum_core_gguf_retained_final_head_q6k_gpu_top1_7900xtx_20260529T065439Z/hipcc_q6k_decode_dot.exit_code.txt",
+    "claim-verification/results/aeronum_core_gguf_retained_final_head_q6k_gpu_top1_7900xtx_20260529T065439Z/command.txt",
+    "claim-verification/results/aeronum_core_gguf_retained_final_head_q6k_gpu_top1_7900xtx_20260529T065439Z/source_metadata.txt",
+    "claim-verification/results/aeronum_core_gguf_retained_final_head_q6k_gpu_top1_7900xtx_20260529T065439Z/hardware_software_metadata.txt",
+    "claim-verification/results/aeronum_core_gguf_retained_final_head_q6k_gpu_top1_7900xtx_20260529T065439Z/model_sha256.txt",
+    "claim-verification/results/aeronum_core_gguf_retained_final_head_q6k_gpu_top1_7900xtx_20260529T065439Z/cargo_fmt_check.stdout.log",
+    "claim-verification/results/aeronum_core_gguf_retained_final_head_q6k_gpu_top1_7900xtx_20260529T065439Z/cargo_fmt_check.stderr.log",
+    "claim-verification/results/aeronum_core_gguf_retained_final_head_q6k_gpu_top1_7900xtx_20260529T065439Z/cargo_fmt_check.exit_code.txt",
+    "claim-verification/results/aeronum_core_gguf_retained_final_head_q6k_gpu_top1_7900xtx_20260529T065439Z/cargo_test_core.stdout.log",
+    "claim-verification/results/aeronum_core_gguf_retained_final_head_q6k_gpu_top1_7900xtx_20260529T065439Z/cargo_test_core.stderr.log",
+    "claim-verification/results/aeronum_core_gguf_retained_final_head_q6k_gpu_top1_7900xtx_20260529T065439Z/cargo_test_core.exit_code.txt"
+  ],
+  "limitations": [
+    "uses retained CPU transformer state as the final-head input",
+    "Q6_K output.weight rows are GPU-decoded for this final-head subpath only",
+    "top-1 selection is a GPU reduction over already computed final-head logits",
+    "transformer layers still run on CPU",
+    "not GPU autoregressive decoding",
+    "not optimized AeroNum-native GGUF token inference throughput"
+  ]
+}

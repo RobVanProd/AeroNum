@@ -672,6 +672,32 @@
       ]
     },
     {
+      "id": "aeronum_core_gguf_retained_final_head_q6k_gpu_top1_20260529",
+      "status": "verified_current_limited",
+      "claim": "benchmarks/gguf/q6k_decode_dot_hip.cpp now supports GPU top-1 selection after computing retained-step full-output-vocabulary final-head logits by GPU-decoding Q6_K output.weight rows. The repo-owned command ran from source commit 7d338af372ab51da05fe4a2be9028a143014e031 on the local Radeon RX 7900 XTX system against local model SHA-256 c5743c1bf39db0ae8a5ade5df0374b8e9e492754a199cfdad7ef393c1590f7c0, reusing the retained final input vector and CPU expected logits from claim-verification/results/aeronum_core_gguf_retained_final_head_q6k_gpu_decode_full_vocab_7900xtx_20260529T100000Z/. The HIP verifier compiled with hipcc for gfx1100, read the Q6_K output.weight model byte range, computed 131072 GPU-decoded final-head logits, reduced each row's dot partials on GPU, and selected top-1 on GPU from the computed logits. The CPU expected top token was ID 1033, the GPU top-1 index was 1033, gpu_top1_token_matches was true, and the maximum absolute logit difference remained 1.617267e-06. This verifies GPU-side top-1 selection over GPU-decoded final-head logits for one retained generated step only; the final-head input is retained CPU transformer state, transformer layers still run on CPU, and this does not verify GPU autoregressive decoding or optimized AeroNum-native GGUF token inference throughput.",
+      "artifacts": [
+        "benchmarks/gguf/q6k_decode_dot_hip.cpp",
+        "claim-verification/results/aeronum_core_gguf_retained_final_head_q6k_gpu_top1_7900xtx_20260529T065439Z/claim_result.json",
+        "claim-verification/results/aeronum_core_gguf_retained_final_head_q6k_gpu_top1_7900xtx_20260529T065439Z/q6k_decode_dot_hip_result.json",
+        "claim-verification/results/aeronum_core_gguf_retained_final_head_q6k_gpu_top1_7900xtx_20260529T065439Z/q6k_decode_dot_hip.stdout.log",
+        "claim-verification/results/aeronum_core_gguf_retained_final_head_q6k_gpu_top1_7900xtx_20260529T065439Z/q6k_decode_dot_hip.stderr.log",
+        "claim-verification/results/aeronum_core_gguf_retained_final_head_q6k_gpu_top1_7900xtx_20260529T065439Z/q6k_decode_dot_hip.exit_code.txt",
+        "claim-verification/results/aeronum_core_gguf_retained_final_head_q6k_gpu_top1_7900xtx_20260529T065439Z/hipcc_q6k_decode_dot.stdout.log",
+        "claim-verification/results/aeronum_core_gguf_retained_final_head_q6k_gpu_top1_7900xtx_20260529T065439Z/hipcc_q6k_decode_dot.stderr.log",
+        "claim-verification/results/aeronum_core_gguf_retained_final_head_q6k_gpu_top1_7900xtx_20260529T065439Z/hipcc_q6k_decode_dot.exit_code.txt",
+        "claim-verification/results/aeronum_core_gguf_retained_final_head_q6k_gpu_top1_7900xtx_20260529T065439Z/command.txt",
+        "claim-verification/results/aeronum_core_gguf_retained_final_head_q6k_gpu_top1_7900xtx_20260529T065439Z/source_metadata.txt",
+        "claim-verification/results/aeronum_core_gguf_retained_final_head_q6k_gpu_top1_7900xtx_20260529T065439Z/hardware_software_metadata.txt",
+        "claim-verification/results/aeronum_core_gguf_retained_final_head_q6k_gpu_top1_7900xtx_20260529T065439Z/model_sha256.txt",
+        "claim-verification/results/aeronum_core_gguf_retained_final_head_q6k_gpu_top1_7900xtx_20260529T065439Z/cargo_fmt_check.stdout.log",
+        "claim-verification/results/aeronum_core_gguf_retained_final_head_q6k_gpu_top1_7900xtx_20260529T065439Z/cargo_fmt_check.stderr.log",
+        "claim-verification/results/aeronum_core_gguf_retained_final_head_q6k_gpu_top1_7900xtx_20260529T065439Z/cargo_fmt_check.exit_code.txt",
+        "claim-verification/results/aeronum_core_gguf_retained_final_head_q6k_gpu_top1_7900xtx_20260529T065439Z/cargo_test_core.stdout.log",
+        "claim-verification/results/aeronum_core_gguf_retained_final_head_q6k_gpu_top1_7900xtx_20260529T065439Z/cargo_test_core.stderr.log",
+        "claim-verification/results/aeronum_core_gguf_retained_final_head_q6k_gpu_top1_7900xtx_20260529T065439Z/cargo_test_core.exit_code.txt"
+      ]
+    },
+    {
       "id": "aeronum_core_gguf_quantized_prefix_logits_20260529",
       "status": "verified_current_limited",
       "claim": "aeronum-core can decode one selected GGUF Q4_K row from token_embd.weight, decode a 256-row prefix from Q6_K output.weight, compute 256 CPU prefix logits, and report top-k values over that prefix. The repo-owned command `cargo run -p aeronum-core --example gguf_quantized_block_smoke -- --model /home/rob/models/mistralai_Mistral-Small-3.1-24B-Instruct-2503-Q4_K_M.gguf --q4-row 22177 --q6-row 100 --logit-start 0 --logit-rows 256 --top-k 5` passed against source commit 4a0e2f7cb2ed5acdf57cdf00fc4912762b65deed and local model SHA-256 c5743c1bf39db0ae8a5ade5df0374b8e9e492754a199cfdad7ef393c1590f7c0. It reported 256 prefix logits over 5120-dimensional decoded rows, logits checksum -3.134514216634, first logits row 0 -0.000094391383, row 1 -0.000096370772, row 2 0.000449394164, row 3 -0.000096530855, row 4 -0.000095216124, row 5 -0.000097309993, row 6 -0.000095216124, and row 7 -0.000095610814. The reported top logits in the prefix were row 2 value 0.000449394164, row 9 value -0.000025294732, row 107 value -0.000093217555, row 112 value -0.000093217555, and row 185 value -0.000093217555. This is prefix-logits CPU arithmetic only, not full-vocabulary logits, not full q4_K/q6_K tensor execution, not GPU matmul, and not AeroNum-native GGUF token inference throughput.",

@@ -1,0 +1,1 @@
+python3 labs/compare/distributed_compare.py --backend nccl --world-size 2 --device-ids 0,1 --steps 1 --batch-size 1 --seq-len 16 --output claim-verification/results/aeronum_nccl_current_topology_7900xtx_20260529T053659Z/ddp_two_device_guard_result.json

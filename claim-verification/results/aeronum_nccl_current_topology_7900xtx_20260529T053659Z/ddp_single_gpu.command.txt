@@ -1,0 +1,1 @@
+python3 labs/compare/distributed_compare.py --backend nccl --world-size 1 --device-ids 0 --steps 2 --batch-size 2 --seq-len 32 --output claim-verification/results/aeronum_nccl_current_topology_7900xtx_20260529T053659Z/ddp_single_gpu_result.json

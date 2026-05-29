@@ -1,0 +1,75 @@
+{
+  "artifacts": [
+    "claim-verification/results/aeronum_nccl_current_topology_7900xtx_20260529T053659Z/claim_result.json",
+    "claim-verification/results/aeronum_nccl_current_topology_7900xtx_20260529T053659Z/nccl_preflight_result.json",
+    "claim-verification/results/aeronum_nccl_current_topology_7900xtx_20260529T053659Z/nccl_preflight.stdout.log",
+    "claim-verification/results/aeronum_nccl_current_topology_7900xtx_20260529T053659Z/nccl_preflight.stderr.log",
+    "claim-verification/results/aeronum_nccl_current_topology_7900xtx_20260529T053659Z/nccl_preflight.exit_code.txt",
+    "claim-verification/results/aeronum_nccl_current_topology_7900xtx_20260529T053659Z/nccl_preflight.command.txt",
+    "claim-verification/results/aeronum_nccl_current_topology_7900xtx_20260529T053659Z/ddp_single_gpu_result.json",
+    "claim-verification/results/aeronum_nccl_current_topology_7900xtx_20260529T053659Z/ddp_single_gpu.stdout.log",
+    "claim-verification/results/aeronum_nccl_current_topology_7900xtx_20260529T053659Z/ddp_single_gpu.stderr.log",
+    "claim-verification/results/aeronum_nccl_current_topology_7900xtx_20260529T053659Z/ddp_single_gpu.exit_code.txt",
+    "claim-verification/results/aeronum_nccl_current_topology_7900xtx_20260529T053659Z/ddp_single_gpu.command.txt",
+    "claim-verification/results/aeronum_nccl_current_topology_7900xtx_20260529T053659Z/ddp_two_device_guard_result.json",
+    "claim-verification/results/aeronum_nccl_current_topology_7900xtx_20260529T053659Z/ddp_two_device_guard.stdout.log",
+    "claim-verification/results/aeronum_nccl_current_topology_7900xtx_20260529T053659Z/ddp_two_device_guard.stderr.log",
+    "claim-verification/results/aeronum_nccl_current_topology_7900xtx_20260529T053659Z/ddp_two_device_guard.exit_code.txt",
+    "claim-verification/results/aeronum_nccl_current_topology_7900xtx_20260529T053659Z/ddp_two_device_guard.command.txt",
+    "claim-verification/results/aeronum_nccl_current_topology_7900xtx_20260529T053659Z/source_metadata.txt",
+    "claim-verification/results/aeronum_nccl_current_topology_7900xtx_20260529T053659Z/hardware_software_metadata.txt",
+    "claim-verification/results/aeronum_nccl_current_topology_7900xtx_20260529T053659Z/py_compile.stdout.log",
+    "claim-verification/results/aeronum_nccl_current_topology_7900xtx_20260529T053659Z/py_compile.stderr.log",
+    "claim-verification/results/aeronum_nccl_current_topology_7900xtx_20260529T053659Z/py_compile.exit_code.txt",
+    "claim-verification/results/aeronum_nccl_current_topology_7900xtx_20260529T053659Z/cargo_test_core.stdout.log",
+    "claim-verification/results/aeronum_nccl_current_topology_7900xtx_20260529T053659Z/cargo_test_core.stderr.log",
+    "claim-verification/results/aeronum_nccl_current_topology_7900xtx_20260529T053659Z/cargo_test_core.exit_code.txt"
+  ],
+  "claim_id": "aeronum_nccl_current_topology_20260529",
+  "hardware": "Radeon RX 7900 XTX / gfx1100 / PCI device 1002:744c plus integrated AMD Radeon Graphics / gfx1036",
+  "limitations": [
+    "single-GPU NCCL/DDP smoke passed only for world size 1",
+    "two-device NCCL/DDP was not launched because topology preflight blocked it",
+    "does not verify NCCL/MPI multi-GPU scaling",
+    "does not verify a compatible second discrete ROCm GPU on this machine"
+  ],
+  "passed": true,
+  "repo": "AeroNum",
+  "result_summary": {
+    "blocking_reasons": [
+      "requested NCCL ranks include a non-discrete/integrated GPU",
+      "requested NCCL ranks span different ROCm GPU architectures",
+      "kernel command line does not include iommu=pt"
+    ],
+    "compatible_for_requested_nccl": false,
+    "kernel_cmdline": "BOOT_IMAGE=/boot/vmlinuz-6.8.0-111-generic root=UUID=be58515d-3329-49db-b130-a9a9ab83c43c ro quiet splash vt.handoff=7",
+    "nccl_preflight_exit_code": 1,
+    "single_gpu_ddp_exit_code": 0,
+    "single_gpu_mean_last_loss": 8.569013595581055,
+    "single_gpu_mean_rank_seconds": 0.34177613258361816,
+    "single_gpu_tokens_per_second": 374.51415648131547,
+    "single_gpu_world_size": 1,
+    "torch": "2.5.1+rocm6.2",
+    "torch_hip": "6.2.41133-dd7f95766",
+    "two_device_guard_exit_code": 1,
+    "two_device_launched_ddp": false,
+    "two_device_status": "blocked_by_topology_preflight",
+    "visible_devices": [
+      [
+        0,
+        "Radeon RX 7900 XTX",
+        "discrete",
+        "11.0"
+      ],
+      [
+        1,
+        "AMD Radeon Graphics",
+        "integrated",
+        "10.3"
+      ]
+    ]
+  },
+  "source_commit": "e4ddbdedc84308c7ddf8ccacefacfd121fe04723",
+  "status": "verified_current_blocked_topology",
+  "verified_on": "2026-05-29"
+}

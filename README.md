@@ -112,9 +112,10 @@ Verified current results:
   two-device topology is blocked before launch because device 1 is integrated
   AMD Radeon Graphics, selected devices span ROCm architectures 11.0 and 10.3,
   and the kernel command line does not include `iommu=pt`. The same script
-  still passed an NCCL world-size-1 DDP smoke on device 0 with 191.244289
-  tokens/s for the one-step smoke
-  ([result JSON](claim-verification/results/aeronum_distributed_compare_guard_7900xtx_20260528T233403Z/claim_result.json)).
+  passed a fresh NCCL world-size-1 DDP smoke on device 0 at current commit
+  `e4ddbdedc84308c7ddf8ccacefacfd121fe04723`, with 2 steps, mean rank time
+  `0.341776132584` s, and `374.514156481315` tokens/s
+  ([result JSON](claim-verification/results/aeronum_nccl_current_topology_7900xtx_20260529T053659Z/claim_result.json)).
 - `aeronum-core` now parses GGUF metadata, sampled tokenizer string-array
   metadata, tensor directory records, tensor data byte ranges, loads all 81
   F32 tensors into `LlamaModel`, and offloads those model weights through the
@@ -555,7 +556,7 @@ Blocked or omitted claims:
   integrated, the selected devices span ROCm architectures 11.0 and 10.3, and
   the kernel command line lacks `iommu=pt`. No compatible second discrete ROCm
   GPU was verified on this machine
-  ([guard result JSON](claim-verification/results/aeronum_distributed_compare_guard_7900xtx_20260528T233403Z/claim_result.json)).
+  ([current guard result JSON](claim-verification/results/aeronum_nccl_current_topology_7900xtx_20260529T053659Z/claim_result.json)).
 - AeroNum-native GGUF token-inference throughput claims are omitted. The
   verified current AeroNum core result parses local GGUF metadata, tokenizer
   string-array samples, the full tokenizer token array, tokenizer merges,

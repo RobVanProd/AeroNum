@@ -1,0 +1,1 @@
+python3 labs/compare/nccl_topology_preflight.py --world-size 2 --device-ids 0,1 --output claim-verification/results/aeronum_nccl_current_topology_7900xtx_20260529T053659Z/nccl_preflight_result.json

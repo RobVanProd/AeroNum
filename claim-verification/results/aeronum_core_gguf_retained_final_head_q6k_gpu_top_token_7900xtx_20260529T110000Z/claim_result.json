@@ -1,0 +1,95 @@
+{
+  "claim_id": "aeronum_core_gguf_retained_final_head_q6k_gpu_top_token_20260529",
+  "status": "verified_current_limited",
+  "source_commit": "c45a2c5b760f53fb847558409d1530d1c5e99747",
+  "model_sha256": "c5743c1bf39db0ae8a5ade5df0374b8e9e492754a199cfdad7ef393c1590f7c0",
+  "hardware": "Radeon RX 7900 XTX",
+  "benchmark": "Host top-k selection over retained-step GPU-decoded Q6_K full-vocabulary final-head logits",
+  "summary": "benchmarks/gguf/q6k_decode_dot_hip.cpp computed full-vocabulary final-head logits by GPU-decoding Q6_K output.weight rows for a retained CPU final hidden vector, copied logits back to host, and selected the top 5 logits. The selected GPU top token matched the CPU expected top token for the retained generated step.",
+  "inputs": {
+    "input_artifact": "claim-verification/results/aeronum_core_gguf_retained_final_head_q6k_gpu_decode_full_vocab_7900xtx_20260529T100000Z/",
+    "prompt": "<s>[INST]Hello[/INST]",
+    "generated_token_ids": [
+      22177,
+      1033
+    ],
+    "generated_text": "Hello!",
+    "retained_step_index": 1,
+    "output_row_count": 131072,
+    "q6k_row_bytes": 550502400
+  },
+  "results": {
+    "abs_max_diff": 1.617267e-06,
+    "expected_top_logits": [
+      {
+        "row_index": 1033,
+        "value": 30.194520660236
+      },
+      {
+        "row_index": 5338,
+        "value": 16.133496891497
+      },
+      {
+        "row_index": 1044,
+        "value": 15.718870704124
+      },
+      {
+        "row_index": 2156,
+        "value": 15.36322797206
+      },
+      {
+        "row_index": 45949,
+        "value": 15.316588928011
+      }
+    ],
+    "gpu_top_logits": [
+      {
+        "row_index": 1033,
+        "value": 30.194519042969
+      },
+      {
+        "row_index": 5338,
+        "value": 16.133497238159
+      },
+      {
+        "row_index": 1044,
+        "value": 15.718870162964
+      },
+      {
+        "row_index": 2156,
+        "value": 15.363227844238
+      },
+      {
+        "row_index": 45949,
+        "value": 15.316589355469
+      }
+    ],
+    "top_token_matches": true,
+    "gpu_logits_checksum": -12572921667.47035
+  },
+  "validation": [
+    "cargo fmt -p aeronum-core --check exit 0",
+    "cargo test -p aeronum-core exit 0",
+    "hipcc --offload-arch=gfx1100 compiled q6k_decode_dot_hip.cpp exit 0",
+    "HIP verifier exit 0 and top_token_matches true"
+  ],
+  "limitations": [
+    "top-k selection is performed on host after GPU logits are copied back",
+    "uses retained CPU transformer state as the final-head input",
+    "Q6_K output.weight decode and dot products run on GPU for final-head logits",
+    "transformer layers do not run on GPU",
+    "not GPU autoregressive decoding",
+    "not optimized AeroNum-native GGUF token inference throughput"
+  ],
+  "artifacts": [
+    "claim-verification/results/aeronum_core_gguf_retained_final_head_q6k_gpu_top_token_7900xtx_20260529T110000Z/claim_result.json",
+    "claim-verification/results/aeronum_core_gguf_retained_final_head_q6k_gpu_top_token_7900xtx_20260529T110000Z/q6k_decode_dot_hip_result.json",
+    "claim-verification/results/aeronum_core_gguf_retained_final_head_q6k_gpu_top_token_7900xtx_20260529T110000Z/q6k_decode_dot_hip.stdout.log",
+    "claim-verification/results/aeronum_core_gguf_retained_final_head_q6k_gpu_top_token_7900xtx_20260529T110000Z/q6k_decode_dot_hip.stderr.log",
+    "claim-verification/results/aeronum_core_gguf_retained_final_head_q6k_gpu_top_token_7900xtx_20260529T110000Z/q6k_decode_dot_hip.exit_code.txt",
+    "claim-verification/results/aeronum_core_gguf_retained_final_head_q6k_gpu_top_token_7900xtx_20260529T110000Z/command.txt",
+    "claim-verification/results/aeronum_core_gguf_retained_final_head_q6k_gpu_top_token_7900xtx_20260529T110000Z/hardware_software_metadata.txt",
+    "claim-verification/results/aeronum_core_gguf_retained_final_head_q6k_gpu_top_token_7900xtx_20260529T110000Z/source_metadata.txt",
+    "claim-verification/results/aeronum_core_gguf_retained_final_head_q6k_gpu_top_token_7900xtx_20260529T110000Z/model_sha256.txt"
+  ]
+}

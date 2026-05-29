@@ -337,6 +337,18 @@ Verified current results:
   transformer layers still run on CPU, and this is not GPU autoregressive
   decoding or optimized AeroNum-native GGUF token inference throughput
   ([result JSON](claim-verification/results/aeronum_core_gguf_retained_final_head_q6k_gpu_decode_full_vocab_7900xtx_20260529T100000Z/claim_result.json)).
+- The same Q6_K HIP verifier now reports top logits from the GPU-decoded
+  retained-step final-head result. Reusing the retained input vector and CPU
+  expected logits above, it selected the same top token as the CPU reference:
+  token ID 1033 (`!`). The CPU top-5 IDs were 1033, 5338, 1044, 2156, and
+  45949; the GPU top-5 IDs were the same. The top logit values were
+  `30.194520660236` on CPU and `30.194519042969` from the GPU-decoded logits,
+  with `top_token_matches: true`. This verifies host-side top-k selection over
+  GPU-decoded final-head logits for one retained generated step only; the
+  transformer layers still run on CPU, top-k selection runs on host after logits
+  are copied back, and this is not GPU autoregressive decoding or optimized
+  AeroNum-native GGUF token inference throughput
+  ([result JSON](claim-verification/results/aeronum_core_gguf_retained_final_head_q6k_gpu_top_token_7900xtx_20260529T110000Z/claim_result.json)).
 - `aeronum-core` now computes CPU prefix logits over decoded quantized rows.
   The repo-owned command
   `cargo run -p aeronum-core --example gguf_quantized_block_smoke -- --model /home/rob/models/mistralai_Mistral-Small-3.1-24B-Instruct-2503-Q4_K_M.gguf --q4-row 22177 --q6-row 100 --logit-start 0 --logit-rows 256 --top-k 5`
@@ -714,7 +726,8 @@ Blocked or omitted claims:
   logits, full-output-vocabulary GPU final-head logits for the first and
   second retained-KV decode steps with CPU-side quantized weight decode, a
   retained-step full-output-vocabulary GPU Q6_K final-head decode-and-dot
-  subpath, full output-vocabulary CPU arithmetic, final
+  subpath, host-side top-token selection over that GPU-decoded final-head
+  result, full output-vocabulary CPU arithmetic, final
   RMS/output-norm full output-vocabulary CPU arithmetic for one selected Q4_K
   embedding row against Q6_K `output.weight`, first-layer V-projection CPU
   arithmetic against Q6_K `blk.0.attn_v.weight`, a single-token first-layer

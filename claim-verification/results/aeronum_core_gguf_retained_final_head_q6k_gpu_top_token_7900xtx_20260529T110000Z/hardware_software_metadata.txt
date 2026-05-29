@@ -1,0 +1,79 @@
+lspci:
+04:00.0 VGA compatible controller: Advanced Micro Devices, Inc. [AMD/ATI] Navi 31 [Radeon RX 7900 XT/7900 XTX/7900 GRE/7900M] (rev c8)
+7c:00.0 VGA compatible controller: Advanced Micro Devices, Inc. [AMD/ATI] Granite Ridge [Radeon Graphics] (rev c1)
+
+rocminfo excerpt:
+  Name:                    AMD Ryzen 9 9950X 16-Core Processor
+  Uuid:                    CPU-XX                             
+  Marketing Name:          AMD Ryzen 9 9950X 16-Core Processor
+  Vendor Name:             CPU                                
+  Name:                    gfx1100                            
+  Uuid:                    GPU-cf2fe125aafed7ba               
+  Marketing Name:          Radeon RX 7900 XTX                 
+  Vendor Name:             AMD                                
+      Name:                    amdgcn-amd-amdhsa--gfx1100         
+  Name:                    gfx1036                            
+  Uuid:                    GPU-XX                             
+  Marketing Name:          AMD Radeon Graphics                
+  Vendor Name:             AMD                                
+      Name:                    amdgcn-amd-amdhsa--gfx1036         
+
+rocm-smi:
+
+
+============================ ROCm System Management Interface ============================
+============================== Version of System Component ===============================
+Driver version: 6.8.0-111-generic
+==========================================================================================
+======================================= Unique ID ========================================
+GPU[0]		: Unique ID: 0xcf2fe125aafed7ba
+GPU[1]		: Unique ID: N/A
+==========================================================================================
+========================================= VBIOS ==========================================
+GPU[0]		: VBIOS version: 113-31XFSHBS1-L03
+GPU[1]		: VBIOS version: 102-RAPHAEL-008
+==========================================================================================
+======================================= PCI Bus ID =======================================
+GPU[0]		: PCI Bus: 0000:04:00.0
+GPU[1]		: PCI Bus: 0000:7C:00.0
+==========================================================================================
+====================================== Product Info ======================================
+GPU[0]		: Card Series: 		Navi 31 [Radeon RX 7900 XT/7900 XTX/7900 GRE/7900M]
+GPU[0]		: Card Model: 		0x744c
+GPU[0]		: Card Vendor: 		Advanced Micro Devices, Inc. [AMD/ATI]
+GPU[0]		: Card SKU: 		31XFSHBS1
+GPU[0]		: Subsystem ID: 	RX-79XMERCB9 [SPEEDSTER MERC 310 RX 7900 XTX]
+GPU[0]		: Device Rev: 		0xc8
+GPU[0]		: Node ID: 		1
+GPU[0]		: GUID: 		49057
+GPU[0]		: GFX Version: 		gfx11000
+GPU[1]		: Card Series: 		Granite Ridge [Radeon Graphics]
+GPU[1]		: Card Model: 		0x13c0
+GPU[1]		: Card Vendor: 		Advanced Micro Devices, Inc. [AMD/ATI]
+GPU[1]		: Card SKU: 		RAPHAEL
+GPU[1]		: Subsystem ID: 	0x8877
+GPU[1]		: Device Rev: 		0xc1
+GPU[1]		: Node ID: 		2
+GPU[1]		: GUID: 		18715
+GPU[1]		: GFX Version: 		gfx1036
+==========================================================================================
+================================== End of ROCm SMI Log ===================================
+
+python:
+Python 3.10.12
+
+rust:
+rustc 1.93.0 (254b59607 2026-01-19)
+cargo 1.93.0 (083ac5135 2025-12-15)
+
+hipcc:
+HIP version: 6.2.41133-dd7f95766
+AMD clang version 18.0.0git (https://github.com/RadeonOpenCompute/llvm-project roc-6.2.0 24292 26466ce804ac523b398608f17388eb6d605a3f09)
+Target: x86_64-unknown-linux-gnu
+Thread model: posix
+InstalledDir: /opt/rocm-6.2.0/lib/llvm/bin
+Configuration file: /opt/rocm-6.2.0/lib/llvm/bin/clang++.cfg
+
+git:
+c45a2c5b760f53fb847558409d1530d1c5e99747
+main

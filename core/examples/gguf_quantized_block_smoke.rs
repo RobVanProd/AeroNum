@@ -1,5 +1,6 @@
 use aeronum_core::{
-    GgufHeader, GgufQuantizedBlockSample, GgufQuantizedRowDotSample, GgufQuantizedRowSample,
+    GgufHeader, GgufQuantizedBlockSample, GgufQuantizedLogitValue, GgufQuantizedPrefixLogitsSample,
+    GgufQuantizedRowDotSample, GgufQuantizedRowSample,
 };
 use std::time::Instant;
 
@@ -21,6 +22,12 @@ fn parse_u64_arg(name: &str, default: u64) -> u64 {
         .unwrap_or(default)
 }
 
+fn parse_usize_arg(name: &str, default: usize) -> usize {
+    parse_arg(name, &default.to_string())
+        .parse()
+        .unwrap_or(default)
+}
+
 fn json_escape(value: &str) -> String {
     value.replace('\\', "\\\\").replace('"', "\\\"")
 }
@@ -29,6 +36,20 @@ fn json_f32_array(values: &[f32]) -> String {
     let items = values
         .iter()
         .map(|value| format!("{value:.8}"))
+        .collect::<Vec<_>>()
+        .join(",");
+    format!("[{items}]")
+}
+
+fn json_logit_array(values: &[GgufQuantizedLogitValue]) -> String {
+    let items = values
+        .iter()
+        .map(|value| {
+            format!(
+                "{{\"row_index\":{},\"value\":{:.12}}}",
+                value.row_index, value.value
+            )
+        })
         .collect::<Vec<_>>()
         .join(",");
     format!("[{items}]")
@@ -159,6 +180,36 @@ fn row_dot_sample_json(sample: &GgufQuantizedRowDotSample) -> String {
     )
 }
 
+fn prefix_logits_sample_json(sample: &GgufQuantizedPrefixLogitsSample) -> String {
+    let first_logits = sample.logits.iter().take(8).cloned().collect::<Vec<_>>();
+    format!(
+        concat!(
+            "{{",
+            "\"input_tensor\":\"{}\",",
+            "\"input_row\":{},",
+            "\"output_tensor\":\"{}\",",
+            "\"output_row_start\":{},",
+            "\"output_row_count\":{},",
+            "\"dimension\":{},",
+            "\"logit_count\":{},",
+            "\"logits_checksum\":{:.12},",
+            "\"first_logits\":{},",
+            "\"top_logits\":{}",
+            "}}"
+        ),
+        json_escape(&sample.input.name),
+        sample.input.row_index,
+        json_escape(&sample.output_tensor_name),
+        sample.output_row_start,
+        sample.output_row_count,
+        sample.dimension,
+        sample.logits.len(),
+        sample.logits_checksum,
+        json_logit_array(&first_logits),
+        json_logit_array(&sample.top_logits)
+    )
+}
+
 fn main() {
     let model_path = parse_arg("--model", "");
     if model_path.is_empty() {
@@ -169,6 +220,9 @@ fn main() {
     }
     let q4_row = parse_u64_arg("--q4-row", 22177);
     let q6_row = parse_u64_arg("--q6-row", 100);
+    let logit_start = parse_u64_arg("--logit-start", 0);
+    let logit_rows = parse_u64_arg("--logit-rows", 256);
+    let top_k = parse_usize_arg("--top-k", 5);
 
     let start = Instant::now();
     let header = GgufHeader::read(&model_path).expect("read GGUF header");
@@ -187,6 +241,16 @@ fn main() {
     let row_dot_sample = header
         .read_quantized_row_dot_sample("token_embd.weight", q4_row, "output.weight", q6_row)
         .expect("read quantized row dot sample");
+    let prefix_logits_sample = header
+        .read_quantized_prefix_logits_sample(
+            "token_embd.weight",
+            q4_row,
+            "output.weight",
+            logit_start,
+            logit_rows,
+            top_k,
+        )
+        .expect("read quantized prefix logits sample");
     let elapsed_ms = start.elapsed().as_secs_f64() * 1000.0;
 
     println!(
@@ -202,9 +266,10 @@ fn main() {
             "\"samples\":[{},{}],",
             "\"row_samples\":[{},{}],",
             "\"row_dot_samples\":[{}],",
+            "\"prefix_logits_samples\":[{}],",
             "\"limitations\":[",
-            "\"selected-block selected-row and selected-row-dot CPU decode only\",",
-            "\"not full tensor execution or full logits\",",
+            "\"selected-block selected-row selected-row-dot and prefix-logits CPU decode only\",",
+            "\"not full tensor execution or full-vocabulary logits\",",
             "\"not GPU matmul\",",
             "\"not AeroNum-native GGUF token inference throughput\"",
             "]",
@@ -220,6 +285,7 @@ fn main() {
         sample_json(&q6_sample),
         row_sample_json(&q4_row_sample),
         row_sample_json(&q6_row_sample),
-        row_dot_sample_json(&row_dot_sample)
+        row_dot_sample_json(&row_dot_sample),
+        prefix_logits_sample_json(&prefix_logits_sample)
     );
 }

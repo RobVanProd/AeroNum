@@ -131,6 +131,24 @@ pub struct GgufQuantizedRowDotSample {
     pub abs_sum: f64,
 }
 
+#[derive(Clone, Debug, PartialEq)]
+pub struct GgufQuantizedLogitValue {
+    pub row_index: u64,
+    pub value: f64,
+}
+
+#[derive(Clone, Debug, PartialEq)]
+pub struct GgufQuantizedPrefixLogitsSample {
+    pub input: GgufQuantizedRowSample,
+    pub output_tensor_name: String,
+    pub output_row_start: u64,
+    pub output_row_count: u64,
+    pub dimension: usize,
+    pub logits: Vec<GgufQuantizedLogitValue>,
+    pub top_logits: Vec<GgufQuantizedLogitValue>,
+    pub logits_checksum: f64,
+}
+
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct GgufTokenizerIndex {
     pub token_count: usize,
@@ -751,6 +769,62 @@ impl GgufHeader {
             rhs,
             dot_product,
             abs_sum,
+        })
+    }
+
+    pub fn read_quantized_prefix_logits_sample(
+        &self,
+        input_tensor_name: &str,
+        input_row_index: u64,
+        output_tensor_name: &str,
+        output_row_start: u64,
+        output_row_count: u64,
+        top_k: usize,
+    ) -> Result<GgufQuantizedPrefixLogitsSample, GgufError> {
+        let input = self.read_quantized_row_sample(input_tensor_name, input_row_index)?;
+        let output_info = self
+            .tensors
+            .iter()
+            .find(|tensor| tensor.name == output_tensor_name)
+            .ok_or_else(|| GgufError::TensorNotFound(output_tensor_name.to_string()))?;
+        let output_total_rows = output_info.dimensions.get(1).copied().unwrap_or(1);
+        let output_row_end = output_row_start
+            .checked_add(output_row_count)
+            .ok_or_else(|| GgufError::InvalidTensorRange(output_tensor_name.to_string()))?;
+        if output_row_count == 0 || output_row_end > output_total_rows {
+            return Err(GgufError::InvalidTensorRange(
+                output_tensor_name.to_string(),
+            ));
+        }
+
+        let mut logits = Vec::with_capacity(output_row_count as usize);
+        for row_index in output_row_start..output_row_end {
+            let output = self.read_quantized_row_sample(output_tensor_name, row_index)?;
+            if input.decoded_values.len() != output.decoded_values.len() {
+                return Err(GgufError::InvalidTensorRange(format!(
+                    "{input_tensor_name}:{input_row_index} logits {output_tensor_name}:{row_index}"
+                )));
+            }
+            logits.push(GgufQuantizedLogitValue {
+                row_index,
+                value: dot_f32_values(&input.decoded_values, &output.decoded_values),
+            });
+        }
+        let top_logits = top_k_logits(&logits, top_k);
+        let logits_checksum = logits
+            .iter()
+            .enumerate()
+            .map(|(idx, logit)| (idx as f64 + 1.0) * logit.value)
+            .sum();
+        Ok(GgufQuantizedPrefixLogitsSample {
+            dimension: input.decoded_values.len(),
+            input,
+            output_tensor_name: output_tensor_name.to_string(),
+            output_row_start,
+            output_row_count,
+            logits,
+            top_logits,
+            logits_checksum,
         })
     }
 
@@ -1383,6 +1457,18 @@ fn dot_f32_values(left: &[f32], right: &[f32]) -> f64 {
         .sum()
 }
 
+fn top_k_logits(logits: &[GgufQuantizedLogitValue], top_k: usize) -> Vec<GgufQuantizedLogitValue> {
+    let mut values = logits.to_vec();
+    values.sort_by(|left, right| {
+        right
+            .value
+            .total_cmp(&left.value)
+            .then_with(|| left.row_index.cmp(&right.row_index))
+    });
+    values.truncate(top_k.min(values.len()));
+    values
+}
+
 fn skip_value(reader: &mut impl Read, value_type: GgufValueType) -> Result<(), GgufError> {
     match value_type {
         GgufValueType::U8 | GgufValueType::I8 | GgufValueType::Bool => {
@@ -1810,6 +1896,48 @@ mod tests {
         let right = [4.0f32, 5.0, -6.0];
 
         assert_eq!(dot_f32_values(&left, &right), -24.0);
+    }
+
+    #[test]
+    fn selects_top_k_logits_by_value_then_row_index() {
+        let logits = vec![
+            GgufQuantizedLogitValue {
+                row_index: 3,
+                value: 0.25,
+            },
+            GgufQuantizedLogitValue {
+                row_index: 1,
+                value: 0.5,
+            },
+            GgufQuantizedLogitValue {
+                row_index: 2,
+                value: 0.5,
+            },
+            GgufQuantizedLogitValue {
+                row_index: 4,
+                value: -1.0,
+            },
+        ];
+
+        let top = top_k_logits(&logits, 3);
+
+        assert_eq!(
+            top,
+            vec![
+                GgufQuantizedLogitValue {
+                    row_index: 1,
+                    value: 0.5
+                },
+                GgufQuantizedLogitValue {
+                    row_index: 2,
+                    value: 0.5
+                },
+                GgufQuantizedLogitValue {
+                    row_index: 3,
+                    value: 0.25
+                }
+            ]
+        );
     }
 
     #[test]

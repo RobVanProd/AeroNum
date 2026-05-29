@@ -157,7 +157,7 @@ fn splitmix64_unit(seed: &mut u64) -> f64 {
     (value as f64) * (1.0 / ((1u64 << 53) as f64))
 }
 
-fn top_k_probabilities(values: &[GgufQuantizedLogitValue], temperature: f64) -> Vec<f64> {
+fn sampling_probabilities(values: &[GgufQuantizedLogitValue], temperature: f64) -> Vec<f64> {
     if values.is_empty() {
         return Vec::new();
     }
@@ -193,13 +193,34 @@ fn choose_sampled_index(probabilities: &[f64], draw: f64) -> usize {
     probabilities.len().saturating_sub(1)
 }
 
+fn probability_for_token(
+    values: &[GgufQuantizedLogitValue],
+    probabilities: &[f64],
+    token_id: u64,
+) -> f64 {
+    values
+        .iter()
+        .zip(probabilities.iter())
+        .find(|(value, _)| value.row_index == token_id)
+        .map(|(_, probability)| *probability)
+        .unwrap_or(0.0)
+}
+
+fn cumulative_probability_for_index(probabilities: &[f64], selected_index: usize) -> f64 {
+    probabilities.iter().take(selected_index + 1).sum::<f64>()
+}
+
 fn decode_step_json(
     step_index: usize,
     decode_mode: &str,
+    sampling_scope: &str,
     temperature: f64,
     seed_before: u64,
     seed_after: u64,
     sample_draw: f64,
+    sampling_candidate_count: usize,
+    selected_probability: f64,
+    selected_cumulative_probability: f64,
     context_ids: &[u32],
     context_pieces: &[String],
     generated_token_id: u32,
@@ -216,10 +237,14 @@ fn decode_step_json(
             "{{",
             "\"step_index\":{},",
             "\"decode_mode\":\"{}\",",
+            "\"sampling_scope\":\"{}\",",
             "\"temperature\":{:.6},",
             "\"seed_before\":{},",
             "\"seed_after\":{},",
             "\"sample_draw\":{:.12},",
+            "\"sampling_candidate_count\":{},",
+            "\"selected_probability\":{:.12},",
+            "\"selected_cumulative_probability\":{:.12},",
             "\"context_token_ids\":{},",
             "\"context_token_pieces\":{},",
             "\"context_token_count\":{},",
@@ -241,10 +266,14 @@ fn decode_step_json(
         ),
         step_index,
         json_escape(decode_mode),
+        json_escape(sampling_scope),
         temperature,
         seed_before,
         seed_after,
         sample_draw,
+        sampling_candidate_count,
+        selected_probability,
+        selected_cumulative_probability,
         json_u32_array(context_ids),
         json_string_array(context_pieces),
         sample.token_count,
@@ -283,6 +312,11 @@ fn main() {
     let decode_mode = parse_arg("--decode-mode", "greedy");
     if decode_mode != "greedy" && decode_mode != "sample" {
         eprintln!("--decode-mode must be greedy or sample");
+        std::process::exit(2);
+    }
+    let sampling_scope = parse_arg("--sampling-scope", "top-k");
+    if sampling_scope != "top-k" && sampling_scope != "full-vocab" {
+        eprintln!("--sampling-scope must be top-k or full-vocab");
         std::process::exit(2);
     }
     let temperature = parse_f64_arg("--temperature", 1.0);
@@ -338,7 +372,12 @@ fn main() {
         let top_token_pieces = tokenizer
             .decode_ids(&top_token_ids)
             .expect("decode top token ids");
-        let sampling_probabilities = top_k_probabilities(&sample.top_logits, temperature);
+        let sampling_source = if decode_mode == "sample" && sampling_scope == "full-vocab" {
+            &sample.logits
+        } else {
+            &sample.top_logits
+        };
+        let sampling_probabilities = sampling_probabilities(sampling_source, temperature);
         let seed_before = sampling_seed;
         let sample_draw = if decode_mode == "sample" {
             splitmix64_unit(&mut sampling_seed)
@@ -346,23 +385,41 @@ fn main() {
             0.0
         };
         let seed_after = sampling_seed;
-        let selected_index = if decode_mode == "sample" {
+        let selected_source_index = if decode_mode == "sample" {
             choose_sampled_index(&sampling_probabilities, sample_draw)
         } else {
             0
         };
-        let generated_token_id = top_token_ids[selected_index];
-        let generated_piece = top_token_pieces[selected_index].clone();
+        let selected_value = &sampling_source[selected_source_index];
+        let generated_token_id = selected_value.row_index as u32;
+        let generated_piece = tokenizer
+            .decode_ids(&[generated_token_id])
+            .expect("decode selected token id")[0]
+            .clone();
         let greedy_token_id = top_token_ids[0];
         let greedy_piece = top_token_pieces[0].clone();
+        let top_token_probabilities = sample
+            .top_logits
+            .iter()
+            .map(|value| {
+                probability_for_token(sampling_source, &sampling_probabilities, value.row_index)
+            })
+            .collect::<Vec<_>>();
+        let selected_probability = sampling_probabilities[selected_source_index];
+        let selected_cumulative_probability =
+            cumulative_probability_for_index(&sampling_probabilities, selected_source_index);
         let elapsed_ms = step_start.elapsed().as_secs_f64() * 1000.0;
         step_json_values.push(decode_step_json(
             step_index,
             &decode_mode,
+            &sampling_scope,
             temperature,
             seed_before,
             seed_after,
             sample_draw,
+            sampling_source.len(),
+            selected_probability,
+            selected_cumulative_probability,
             &context_token_ids,
             &context_pieces,
             generated_token_id,
@@ -371,7 +428,7 @@ fn main() {
             &greedy_piece,
             &sample,
             &top_token_pieces,
-            &sampling_probabilities,
+            &top_token_probabilities,
             elapsed_ms,
         ));
         context_token_ids.push(generated_token_id);
@@ -409,6 +466,7 @@ fn main() {
             "\"parse_special\":{},",
             "\"max_new_tokens\":{},",
             "\"decode_mode\":\"{}\",",
+            "\"sampling_scope\":\"{}\",",
             "\"top_k\":{},",
             "\"temperature\":{:.6},",
             "\"initial_seed\":{},",
@@ -424,7 +482,7 @@ fn main() {
             "\"steps\":[{}],",
             "\"limitations\":[",
             "\"CPU autoregressive token-piece selection for one fixed prompt only\",",
-            "\"sample mode samples only from the reported top-k logits, not the full vocabulary\",",
+            "\"sample mode supports top-k or full-vocabulary sampling according to sampling_scope\",",
             "\"recomputes the full context for each generated token without KV cache\",",
             "\"generated_piece_sequence is tokenizer piece concatenation, not full detokenization parity\",",
             "\"not GPU matmul\",",
@@ -445,6 +503,7 @@ fn main() {
         parse_special,
         max_new_tokens,
         json_escape(&decode_mode),
+        json_escape(&sampling_scope),
         top_k,
         temperature,
         initial_seed,

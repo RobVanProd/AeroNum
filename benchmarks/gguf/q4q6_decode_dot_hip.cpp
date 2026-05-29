@@ -176,8 +176,8 @@ __device__ float decode_q6k_value(const uint8_t *block, int t) {
 
 __global__ void q4q6_decode_dot_kernel(const uint8_t *q4, const uint8_t *q6, float *partials, int block_count) {
     __shared__ float scratch[256];
-    int row_index = blockIdx.y;
-    int block_index = blockIdx.x;
+    int row_index = blockIdx.x / block_count;
+    int block_index = blockIdx.x - row_index * block_count;
     int t = threadIdx.x;
     float value = 0.0f;
     if (block_index < block_count && t < 256) {
@@ -266,8 +266,8 @@ int main(int argc, char **argv) {
     check_hip(hipMemcpy(d_q4, q4.data(), q4.size(), hipMemcpyHostToDevice), "hipMemcpy q4");
     check_hip(hipMemcpy(d_q6, q6.data(), q6.size(), hipMemcpyHostToDevice), "hipMemcpy q6");
 
-    dim3 grid(block_count, row_count);
-    q4q6_decode_dot_kernel<<<grid, 256>>>(d_q4, d_q6, d_partials, block_count);
+    int grid_blocks = row_count * block_count;
+    q4q6_decode_dot_kernel<<<grid_blocks, 256>>>(d_q4, d_q6, d_partials, block_count);
     check_hip(hipGetLastError(), "q4q6_decode_dot_kernel");
     check_hip(hipDeviceSynchronize(), "hipDeviceSynchronize");
 

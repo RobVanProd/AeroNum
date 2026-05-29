@@ -1,0 +1,90 @@
+{
+  "artifacts": [
+    "claim-verification/results/aeronum_core_gguf_retained_kv_decode_llama_cpp_greedy_output_parity_7900xtx_20260529T051856Z/claim_result.json",
+    "claim-verification/results/aeronum_core_gguf_retained_kv_decode_llama_cpp_greedy_output_parity_7900xtx_20260529T051856Z/llama_cpp_retained_kv_greedy_output_comparison.json",
+    "claim-verification/results/aeronum_core_gguf_retained_kv_decode_llama_cpp_greedy_output_parity_7900xtx_20260529T051856Z/llama_cpp_retained_kv_greedy_output_comparison.stdout.log",
+    "claim-verification/results/aeronum_core_gguf_retained_kv_decode_llama_cpp_greedy_output_parity_7900xtx_20260529T051856Z/llama_cpp_retained_kv_greedy_output_comparison.stderr.log",
+    "claim-verification/results/aeronum_core_gguf_retained_kv_decode_llama_cpp_greedy_output_parity_7900xtx_20260529T051856Z/llama_cpp_retained_kv_greedy_output_comparison.exit_code.txt",
+    "claim-verification/results/aeronum_core_gguf_retained_kv_decode_llama_cpp_greedy_output_parity_7900xtx_20260529T051856Z/command.txt",
+    "claim-verification/results/aeronum_core_gguf_retained_kv_decode_llama_cpp_greedy_output_parity_7900xtx_20260529T051856Z/source_metadata.txt",
+    "claim-verification/results/aeronum_core_gguf_retained_kv_decode_llama_cpp_greedy_output_parity_7900xtx_20260529T051856Z/hardware_software_metadata.txt",
+    "claim-verification/results/aeronum_core_gguf_retained_kv_decode_llama_cpp_greedy_output_parity_7900xtx_20260529T051856Z/model_sha256.txt",
+    "claim-verification/results/aeronum_core_gguf_retained_kv_decode_llama_cpp_greedy_output_parity_7900xtx_20260529T051856Z/wall_time.json",
+    "claim-verification/results/aeronum_core_gguf_retained_kv_decode_llama_cpp_greedy_output_parity_7900xtx_20260529T051856Z/py_compile_compare.stdout.log",
+    "claim-verification/results/aeronum_core_gguf_retained_kv_decode_llama_cpp_greedy_output_parity_7900xtx_20260529T051856Z/py_compile_compare.stderr.log",
+    "claim-verification/results/aeronum_core_gguf_retained_kv_decode_llama_cpp_greedy_output_parity_7900xtx_20260529T051856Z/py_compile_compare.exit_code.txt",
+    "claim-verification/results/aeronum_core_gguf_retained_kv_decode_llama_cpp_greedy_output_parity_7900xtx_20260529T051856Z/cargo_test_core.stdout.log",
+    "claim-verification/results/aeronum_core_gguf_retained_kv_decode_llama_cpp_greedy_output_parity_7900xtx_20260529T051856Z/cargo_test_core.stderr.log",
+    "claim-verification/results/aeronum_core_gguf_retained_kv_decode_llama_cpp_greedy_output_parity_7900xtx_20260529T051856Z/cargo_test_core.exit_code.txt",
+    "claim-verification/results/aeronum_core_gguf_retained_kv_decode_7900xtx_20260529T050904Z/gguf_retained_kv_decode_result.json",
+    "claim-verification/results/aeronum_core_gguf_retained_kv_decode_7900xtx_20260529T050904Z/claim_result.json"
+  ],
+  "claim_id": "aeronum_core_gguf_retained_kv_decode_llama_cpp_greedy_output_parity_20260529",
+  "command": "python3 benchmarks/gguf/compare_llama_cpp_greedy_output.py --input claim-verification/results/aeronum_core_gguf_retained_kv_decode_7900xtx_20260529T050904Z/gguf_retained_kv_decode_result.json --model /home/rob/models/mistralai_Mistral-Small-3.1-24B-Instruct-2503-Q4_K_M.gguf --output claim-verification/results/aeronum_core_gguf_retained_kv_decode_llama_cpp_greedy_output_parity_7900xtx_20260529T051856Z/llama_cpp_retained_kv_greedy_output_comparison.json --timeout 240",
+  "hardware": "Radeon RX 7900 XTX / gfx1100 / PCI device 1002:744c",
+  "limitations": [
+    "compares retained AeroNum greedy generated text and re-tokenized IDs against llama.cpp CLI output only",
+    "uses llama.cpp CLI stdout rather than an internal detokenization trace",
+    "not sampled-output parity",
+    "not llama.cpp internal KV-cache parity",
+    "not GPU GGUF execution by AeroNum",
+    "not optimized AeroNum-native GGUF token inference throughput"
+  ],
+  "model_path": "/home/rob/models/mistralai_Mistral-Small-3.1-24B-Instruct-2503-Q4_K_M.gguf",
+  "model_sha256": "c5743c1bf39db0ae8a5ade5df0374b8e9e492754a199cfdad7ef393c1590f7c0",
+  "passed": true,
+  "repo": "AeroNum",
+  "result_summary": {
+    "artifact_wall_time_seconds": 3.231990337371826,
+    "expected_text": "Hello!",
+    "expected_token_ids": [
+      22177,
+      1033
+    ],
+    "llama_cli_returncode": 0,
+    "llama_cli_wall_seconds": 2.9151053310015413,
+    "llama_text": "Hello!",
+    "llama_token_ids": [
+      22177,
+      1033
+    ],
+    "llama_tokenize_returncode": 0,
+    "offloaded_layers": 41,
+    "predict": 2,
+    "prompt": "<s>[INST]Hello[/INST]",
+    "retained_kv_all_step_top_tokens_match": true,
+    "retained_kv_generated_text": "Hello!",
+    "retained_kv_generated_token_ids": [
+      22177,
+      1033
+    ],
+    "retained_kv_max_logits_abs_diff": 0.0,
+    "retained_kv_max_logits_checksum_diff": 0.0,
+    "retained_kv_step_cache_token_counts": [
+      {
+        "cache_token_counts_after_first_layer": 4,
+        "cache_token_counts_before_first_layer": 3,
+        "logits_abs_max_diff": 0.0,
+        "logits_checksum_diff": 0.0,
+        "selected_token_id": 22177,
+        "step_index": 0,
+        "top_token_matches": true
+      },
+      {
+        "cache_token_counts_after_first_layer": 5,
+        "cache_token_counts_before_first_layer": 4,
+        "logits_abs_max_diff": 0.0,
+        "logits_checksum_diff": 0.0,
+        "selected_token_id": 1033,
+        "step_index": 1,
+        "top_token_matches": true
+      }
+    ],
+    "total_layers": 41
+  },
+  "retained_kv_source_artifact": "claim-verification/results/aeronum_core_gguf_retained_kv_decode_7900xtx_20260529T050904Z/gguf_retained_kv_decode_result.json",
+  "retained_kv_source_commit": "ebbf70469021e3c527506f312852306414345094",
+  "source_commit": "a1c10b6f721dd0361f98a809a0fca99b02a313ff",
+  "status": "verified_current_limited",
+  "verified_on": "2026-05-29"
+}

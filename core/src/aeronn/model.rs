@@ -260,6 +260,42 @@ pub struct GgufMultiTokenAttentionSample {
     pub attention_output_checksum: f64,
 }
 
+#[derive(Clone, Debug, PartialEq)]
+pub struct GgufMultiTokenLayerLogitsSample {
+    pub attention: GgufMultiTokenAttentionSample,
+    pub last_input_row: u64,
+    pub ffn_norm_tensor_name: String,
+    pub gate_tensor_name: String,
+    pub up_tensor_name: String,
+    pub down_tensor_name: String,
+    pub residual_checksum: f64,
+    pub ffn_rms_epsilon: f32,
+    pub ffn_rms: f64,
+    pub ffn_norm_weight_checksum: f64,
+    pub ffn_normalized_input_checksum: f64,
+    pub gate_projection_count: usize,
+    pub gate_projection_checksum: f64,
+    pub up_projection_count: usize,
+    pub up_projection_checksum: f64,
+    pub activated_count: usize,
+    pub activated_checksum: f64,
+    pub ffn_output: Vec<GgufQuantizedLogitValue>,
+    pub top_ffn_output: Vec<GgufQuantizedLogitValue>,
+    pub ffn_output_checksum: f64,
+    pub layer_output_count: usize,
+    pub layer_output_checksum: f64,
+    pub final_norm_tensor_name: String,
+    pub final_rms_epsilon: f32,
+    pub final_rms: f64,
+    pub final_norm_weight_checksum: f64,
+    pub final_normalized_input_checksum: f64,
+    pub output_tensor_name: String,
+    pub output_row_count: u64,
+    pub logits: Vec<GgufQuantizedLogitValue>,
+    pub top_logits: Vec<GgufQuantizedLogitValue>,
+    pub logits_checksum: f64,
+}
+
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct GgufTokenizerIndex {
     pub token_count: usize,
@@ -1446,6 +1482,146 @@ impl GgufHeader {
             attention_output_checksum: checksum_logits(&attention_output),
             attention_output,
             top_attention_output,
+        })
+    }
+
+    pub fn read_multi_token_layer_logits_sample(
+        &self,
+        input_tensor_name: &str,
+        input_row_indices: &[u64],
+        attn_norm_tensor_name: &str,
+        query_tensor_name: &str,
+        key_tensor_name: &str,
+        value_tensor_name: &str,
+        attn_output_tensor_name: &str,
+        ffn_norm_tensor_name: &str,
+        gate_tensor_name: &str,
+        up_tensor_name: &str,
+        down_tensor_name: &str,
+        final_norm_tensor_name: &str,
+        output_tensor_name: &str,
+        top_k: usize,
+    ) -> Result<GgufMultiTokenLayerLogitsSample, GgufError> {
+        let attention = self.read_multi_token_attention_sample(
+            input_tensor_name,
+            input_row_indices,
+            attn_norm_tensor_name,
+            query_tensor_name,
+            key_tensor_name,
+            value_tensor_name,
+            attn_output_tensor_name,
+            top_k,
+        )?;
+        let last_input_row = *input_row_indices.last().ok_or_else(|| {
+            GgufError::InvalidTensorRange("multi-token layer input rows".to_string())
+        })?;
+        let last_input = self.read_quantized_row_sample(input_tensor_name, last_input_row)?;
+        if last_input.decoded_values.len() != attention.attention_output.len() {
+            return Err(GgufError::InvalidTensorRange(
+                "multi-token attention residual".to_string(),
+            ));
+        }
+        let residual = last_input
+            .decoded_values
+            .iter()
+            .zip(attention.attention_output.iter())
+            .map(|(input, output)| *input + output.value as f32)
+            .collect::<Vec<_>>();
+        let residual_checksum = checksum_f32_values(&residual);
+        let ffn_norm_weight = self.load_f32_tensor(ffn_norm_tensor_name)?.to_vec();
+        let (ffn_normalized_input, ffn_rms, ffn_rms_epsilon) =
+            rms_normalize_values(&residual, &ffn_norm_weight, self)?;
+
+        let gate_row_count = self.tensor_row_count(gate_tensor_name)?;
+        let up_row_count = self.tensor_row_count(up_tensor_name)?;
+        if gate_row_count != up_row_count {
+            return Err(GgufError::InvalidTensorRange(
+                "multi-token FFN gate/up row count".to_string(),
+            ));
+        }
+        let gate_projection = self.read_quantized_logits_for_values(
+            &ffn_normalized_input,
+            gate_tensor_name,
+            0,
+            gate_row_count,
+        )?;
+        let up_projection = self.read_quantized_logits_for_values(
+            &ffn_normalized_input,
+            up_tensor_name,
+            0,
+            up_row_count,
+        )?;
+        let gate_projection_values = gate_projection
+            .iter()
+            .map(|logit| logit.value as f32)
+            .collect::<Vec<_>>();
+        let up_projection_values = up_projection
+            .iter()
+            .map(|logit| logit.value as f32)
+            .collect::<Vec<_>>();
+        let activated = gate_projection_values
+            .iter()
+            .zip(up_projection_values.iter())
+            .map(|(gate, up)| silu(*gate) * *up)
+            .collect::<Vec<_>>();
+        let down_row_count = self.tensor_row_count(down_tensor_name)?;
+        let ffn_output =
+            self.read_quantized_logits_for_values(&activated, down_tensor_name, 0, down_row_count)?;
+        if residual.len() != ffn_output.len() {
+            return Err(GgufError::InvalidTensorRange(
+                "multi-token layer output".to_string(),
+            ));
+        }
+        let layer_output = residual
+            .iter()
+            .zip(ffn_output.iter())
+            .map(|(residual_value, ffn_value)| *residual_value + ffn_value.value as f32)
+            .collect::<Vec<_>>();
+        let final_norm_weight = self.load_f32_tensor(final_norm_tensor_name)?.to_vec();
+        let (final_normalized_input, final_rms, final_rms_epsilon) =
+            rms_normalize_values(&layer_output, &final_norm_weight, self)?;
+        let output_row_count = self.tensor_row_count(output_tensor_name)?;
+        let logits = self.read_quantized_logits_for_values(
+            &final_normalized_input,
+            output_tensor_name,
+            0,
+            output_row_count,
+        )?;
+        let top_logits = top_k_logits(&logits, top_k);
+        let top_ffn_output = top_k_logits(&ffn_output, top_k);
+        Ok(GgufMultiTokenLayerLogitsSample {
+            attention,
+            last_input_row,
+            ffn_norm_tensor_name: ffn_norm_tensor_name.to_string(),
+            gate_tensor_name: gate_tensor_name.to_string(),
+            up_tensor_name: up_tensor_name.to_string(),
+            down_tensor_name: down_tensor_name.to_string(),
+            residual_checksum,
+            ffn_rms_epsilon,
+            ffn_rms,
+            ffn_norm_weight_checksum: checksum_f32_values(&ffn_norm_weight),
+            ffn_normalized_input_checksum: checksum_f32_values(&ffn_normalized_input),
+            gate_projection_count: gate_projection.len(),
+            gate_projection_checksum: checksum_logits(&gate_projection),
+            up_projection_count: up_projection.len(),
+            up_projection_checksum: checksum_logits(&up_projection),
+            activated_count: activated.len(),
+            activated_checksum: checksum_f32_values(&activated),
+            ffn_output_checksum: checksum_logits(&ffn_output),
+            ffn_output,
+            top_ffn_output,
+            layer_output_count: layer_output.len(),
+            layer_output_checksum: checksum_f32_values(&layer_output),
+            final_norm_tensor_name: final_norm_tensor_name.to_string(),
+            final_rms_epsilon,
+            final_rms,
+            final_norm_weight_checksum: checksum_f32_values(&final_norm_weight),
+            final_normalized_input_checksum: checksum_f32_values(&final_normalized_input),
+            output_tensor_name: output_tensor_name.to_string(),
+            output_row_count,
+            logits_checksum: checksum_logits(&logits),
+            logits,
+            top_logits,
         })
     }
 

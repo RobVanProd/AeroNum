@@ -1,0 +1,7 @@
+claim_id=aeronum_core_gguf_normalized_full_vocab_logits_20260529
+timestamp_utc=20260529T013621Z
+command=cargo run --release -p aeronum-core --example gguf_quantized_block_smoke -- --model /home/rob/models/mistralai_Mistral-Small-3.1-24B-Instruct-2503-Q4_K_M.gguf --q4-row 22177 --q6-row 100 --logit-start 0 --logit-rows 131072 --top-k 5
+test_command=cargo test -p aeronum-core
+model_path=/home/rob/models/mistralai_Mistral-Small-3.1-24B-Instruct-2503-Q4_K_M.gguf
+model_sha256=c5743c1bf39db0ae8a5ade5df0374b8e9e492754a199cfdad7ef393c1590f7c0
+limitations=selected embedding-row with final RMS/output_norm versus full output.weight vocabulary CPU logits only; not transformer hidden-state logits; not generated-token logits; not GPU matmul; not AeroNum-native GGUF token inference throughput

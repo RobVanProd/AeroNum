@@ -207,6 +207,15 @@ Verified current results:
   transformer hidden-state logits, generated-token logits, GPU matmul, or
   AeroNum-native GGUF token inference throughput
   ([result JSON](claim-verification/results/aeronum_core_gguf_quantized_full_vocab_logits_7900xtx_20260529T012919Z/claim_result.json)).
+- `aeronum-core` now applies the final RMS/output norm before full
+  output-vocabulary CPU logits for one selected Q4_K embedding row. The same
+  release command decoded `token_embd.weight` row 22177, applied
+  `output_norm.weight` with RMS epsilon `0.00001`, stream-decoded all 131,072
+  Q6_K `output.weight` rows, and reported top rows 109,526, 123,618, 57,996,
+  113,893, and 31,494. This is final-LM-head-style arithmetic for one selected
+  embedding row, not transformer hidden-state logits, generated-token logits,
+  GPU matmul, or AeroNum-native GGUF token inference throughput
+  ([result JSON](claim-verification/results/aeronum_core_gguf_normalized_full_vocab_logits_7900xtx_20260529T013621Z/claim_result.json)).
 - `benchmarks/gguf/run_llama_cpp_cli.py` ran a real local llama.cpp CLI ROCm
   GGUF inference reference on the same Mistral GGUF file. The llama.cpp build
   reported version 7074 (`22e1ce2f8`) with HIP 6.2.41133-dd7f95766, offloaded
@@ -264,13 +273,13 @@ Blocked or omitted claims:
   records, tensor byte ranges, loads all 81 F32 tensors into `LlamaModel`,
   offloads those model weights through ROCm device 0, then reaches placeholder
   generation. First-block decode, selected-row decode, a selected-row CPU dot
-  product, 256-row prefix logits, and full output-vocabulary CPU arithmetic for
-  one selected Q4_K embedding row against Q6_K `output.weight` are verified,
-  but exhaustive tokenizer parity, full q4_K/q6_K tensor execution,
-  transformer hidden-state logits, generated-token logits, and AeroNum-native
-  token inference throughput are not yet verified. The verified
-  token-inference result is a llama.cpp reference through an AeroNum repo
-  wrapper.
+  product, 256-row prefix logits, full output-vocabulary CPU arithmetic, and
+  final RMS/output-norm full output-vocabulary CPU arithmetic for one selected
+  Q4_K embedding row against Q6_K `output.weight` are verified, but exhaustive
+  tokenizer parity, full q4_K/q6_K tensor execution, transformer hidden-state
+  logits, generated-token logits, and AeroNum-native token inference throughput
+  are not yet verified. The verified token-inference result is a llama.cpp
+  reference through an AeroNum repo wrapper.
 
 Historical benchmark CSVs remain in the repo, but README claims above only use
 fresh local reruns and captured artifacts.

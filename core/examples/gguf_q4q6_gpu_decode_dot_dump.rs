@@ -21,6 +21,14 @@ fn parse_u64_arg(name: &str, default: u64) -> u64 {
         .unwrap_or(default)
 }
 
+fn bool_arg(name: &str, default: bool) -> bool {
+    match parse_arg(name, if default { "true" } else { "false" }).as_str() {
+        "1" | "true" | "yes" => true,
+        "0" | "false" | "no" => false,
+        _ => default,
+    }
+}
+
 fn json_escape(value: &str) -> String {
     value.replace('\\', "\\\\").replace('"', "\\\"")
 }
@@ -101,8 +109,9 @@ fn main() {
     }
     let q4_bin = parse_arg("--q4-bin", "");
     let q6_bin = parse_arg("--q6-bin", "");
-    if q4_bin.is_empty() || q6_bin.is_empty() {
-        eprintln!("--q4-bin and --q6-bin are required");
+    let skip_q6_bin = bool_arg("--skip-q6-bin", false);
+    if q4_bin.is_empty() || (!skip_q6_bin && q6_bin.is_empty()) {
+        eprintln!("--q4-bin and --q6-bin are required unless --skip-q6-bin true is set");
         std::process::exit(2);
     }
     let q4_tensor = parse_arg("--q4-tensor", "token_embd.weight");
@@ -111,25 +120,16 @@ fn main() {
     let q6_row = parse_u64_arg("--q6-row", 100);
     let q6_row_count = parse_u64_arg("--q6-row-count", 1);
     let expected_logits_bin = parse_arg("--expected-logits-bin", "");
+    let top_k = parse_u64_arg("--top-k", 5) as usize;
 
     let start = Instant::now();
     let header = GgufHeader::read(&model_path).expect("read GGUF header");
     let q4 = header
         .read_quantized_row_sample(&q4_tensor, q4_row)
         .expect("read q4 GGUF row");
-    let mut q6_rows = Vec::new();
-    let mut q6_bytes = Vec::new();
-    let mut logits = Vec::new();
-    for row in q6_row..q6_row + q6_row_count {
-        let q6_sample = header
-            .read_quantized_row_sample(&q6_tensor, row)
-            .expect("read q6 GGUF row");
-        let cpu_dot = dot_f32(&q4.decoded_values, &q6_sample.decoded_values);
-        q6_bytes.extend_from_slice(&q6_sample.row_bytes);
-        logits.push((row, cpu_dot));
-        q6_rows.push(q6_sample);
-    }
-    let q6 = q6_rows.first().expect("q6 row count must be nonzero");
+    let q6 = header
+        .read_quantized_row_sample(&q6_tensor, q6_row)
+        .expect("read first q6 GGUF row");
     if q4.tensor_type != 12 || q6.tensor_type != 14 {
         eprintln!("q4 tensor must be Q4_K and q6 tensor must be Q6_K");
         std::process::exit(3);
@@ -139,7 +139,35 @@ fn main() {
         std::process::exit(3);
     }
     write_u8_file(&q4_bin, &q4.row_bytes);
-    write_u8_file(&q6_bin, &q6_bytes);
+    let logits = if skip_q6_bin {
+        header
+            .read_quantized_prefix_logits_sample(
+                &q4_tensor,
+                q4_row,
+                &q6_tensor,
+                q6_row,
+                q6_row_count,
+                top_k,
+            )
+            .expect("read CPU prefix logits")
+            .logits
+            .into_iter()
+            .map(|logit| (logit.row_index, logit.value))
+            .collect::<Vec<_>>()
+    } else {
+        let mut q6_bytes = Vec::new();
+        let mut logits = Vec::new();
+        for row in q6_row..q6_row + q6_row_count {
+            let q6_sample = header
+                .read_quantized_row_sample(&q6_tensor, row)
+                .expect("read q6 GGUF row");
+            let cpu_dot = dot_f32(&q4.decoded_values, &q6_sample.decoded_values);
+            q6_bytes.extend_from_slice(&q6_sample.row_bytes);
+            logits.push((row, cpu_dot));
+        }
+        write_u8_file(&q6_bin, &q6_bytes);
+        logits
+    };
     if !expected_logits_bin.is_empty() {
         let values = logits.iter().map(|(_, value)| *value).collect::<Vec<_>>();
         write_f64_file(&expected_logits_bin, &values);
@@ -166,8 +194,11 @@ fn main() {
             "\"q4_bin\":\"{}\",",
             "\"q6_bin\":\"{}\",",
             "\"expected_logits_bin\":\"{}\",",
+            "\"skip_q6_bin\":{},",
             "\"q4\":{},",
             "\"q6\":{},",
+            "\"q6_range_absolute_offset\":{},",
+            "\"q6_range_nbytes\":{},",
             "\"q6_row_count\":{},",
             "\"dimension\":{},",
             "\"cpu_dot\":{:.12},",
@@ -186,8 +217,11 @@ fn main() {
         json_escape(&q4_bin),
         json_escape(&q6_bin),
         json_escape(&expected_logits_bin),
+        skip_q6_bin,
         row_json(&q4),
         row_json(&q6),
+        q6.absolute_offset,
+        q6.row_nbytes * q6_row_count,
         q6_row_count,
         q4.decoded_values.len(),
         cpu_dot,

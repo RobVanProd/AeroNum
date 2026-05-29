@@ -40,6 +40,26 @@ static std::vector<uint8_t> read_u8_file(const std::string &path) {
     return std::vector<uint8_t>((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
 }
 
+static std::vector<uint8_t> read_u8_range(const std::string &path, std::uint64_t offset, std::uint64_t byte_count) {
+    std::ifstream file(path, std::ios::binary);
+    if (!file) {
+        std::cerr << "could not open " << path << "\n";
+        std::exit(2);
+    }
+    file.seekg(static_cast<std::streamoff>(offset));
+    if (!file) {
+        std::cerr << "could not seek " << path << "\n";
+        std::exit(2);
+    }
+    std::vector<uint8_t> bytes(static_cast<size_t>(byte_count));
+    file.read(reinterpret_cast<char *>(bytes.data()), static_cast<std::streamsize>(bytes.size()));
+    if (file.gcount() != static_cast<std::streamsize>(bytes.size())) {
+        std::cerr << "could not read requested byte range from " << path << "\n";
+        std::exit(2);
+    }
+    return bytes;
+}
+
 static std::vector<double> read_f64_file(const std::string &path) {
     std::ifstream file(path, std::ios::binary);
     if (!file) {
@@ -202,17 +222,20 @@ __global__ void reduce_partials_kernel(const float *partials, float *output, int
 int main(int argc, char **argv) {
     std::string q4_path = arg_value(argc, argv, "--q4-bin");
     std::string q6_path = arg_value(argc, argv, "--q6-bin");
+    std::string q6_model_path = arg_value(argc, argv, "--q6-model");
+    std::uint64_t q6_offset = std::stoull(arg_value(argc, argv, "--q6-offset", "0"));
+    std::uint64_t q6_bytes = std::stoull(arg_value(argc, argv, "--q6-bytes", "0"));
     std::string expected_logits_path = arg_value(argc, argv, "--expected-logits-bin");
     int device = std::stoi(arg_value(argc, argv, "--device", "0"));
     double expected = std::stod(arg_value(argc, argv, "--expected-dot", "0"));
     bool gpu_final_reduction = bool_arg(argc, argv, "--gpu-final-reduction", false);
-    if (q4_path.empty() || q6_path.empty()) {
-        std::cerr << "usage: q4q6_decode_dot_hip --q4-bin <path> --q6-bin <path> --expected-dot <value> [--device <id>]\n";
+    if (q4_path.empty() || (q6_path.empty() && (q6_model_path.empty() || q6_bytes == 0))) {
+        std::cerr << "usage: q4q6_decode_dot_hip --q4-bin <path> (--q6-bin <path> | --q6-model <path> --q6-offset <bytes> --q6-bytes <bytes>) --expected-dot <value> [--device <id>]\n";
         return 2;
     }
 
     auto q4 = read_u8_file(q4_path);
-    auto q6 = read_u8_file(q6_path);
+    auto q6 = q6_path.empty() ? read_u8_range(q6_model_path, q6_offset, q6_bytes) : read_u8_file(q6_path);
     if (q4.size() % 144 != 0 || q6.size() % 210 != 0) {
         std::cerr << "input dimensions do not match Q4_K/Q6_K row layout\n";
         return 2;

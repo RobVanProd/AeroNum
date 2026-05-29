@@ -1,0 +1,1078 @@
+{
+  "benchmark": "aeronum_core_gguf_tokenizer_llama_cpp_compare",
+  "model_path": "/home/rob/models/mistralai_Mistral-Small-3.1-24B-Instruct-2503-Q4_K_M.gguf",
+  "llama_tokenize": "/home/rob/llama.cpp/build-gpu/bin/llama-tokenize",
+  "aeronum_command": [
+    "cargo",
+    "run",
+    "-q",
+    "-p",
+    "aeronum-core",
+    "--example",
+    "gguf_tokenizer_compare",
+    "--",
+    "--model",
+    "/home/rob/models/mistralai_Mistral-Small-3.1-24B-Instruct-2503-Q4_K_M.gguf"
+  ],
+  "llama_command_count": 48,
+  "tokenizer_model": "gpt2",
+  "tokenizer_pre": "tekken",
+  "token_count": 131072,
+  "merge_count": 269443,
+  "prompt_count": 14,
+  "comparison_count": 48,
+  "special_prompt_count": 4,
+  "all_match": true,
+  "comparisons": [
+    {
+      "label": "hello_world",
+      "text": "Hello world",
+      "has_special": false,
+      "with_bos": {
+        "aeronum_ids": [
+          1,
+          22177,
+          4304
+        ],
+        "llama_cpp_ids": [
+          1,
+          22177,
+          4304
+        ],
+        "match": true,
+        "token_count": 3
+      },
+      "without_bos": {
+        "aeronum_ids": [
+          22177,
+          4304
+        ],
+        "llama_cpp_ids": [
+          22177,
+          4304
+        ],
+        "match": true,
+        "token_count": 2
+      },
+      "no_parse_with_bos": {
+        "aeronum_ids": [
+          1,
+          22177,
+          4304
+        ],
+        "llama_cpp_ids": [
+          1,
+          22177,
+          4304
+        ],
+        "match": true,
+        "token_count": 3,
+        "skipped": false
+      },
+      "no_parse_without_bos": {
+        "aeronum_ids": [
+          22177,
+          4304
+        ],
+        "llama_cpp_ids": [
+          22177,
+          4304
+        ],
+        "match": true,
+        "token_count": 2,
+        "skipped": false
+      }
+    },
+    {
+      "label": "hello_world_punctuation",
+      "text": "Hello, world!",
+      "has_special": false,
+      "with_bos": {
+        "aeronum_ids": [
+          1,
+          22177,
+          1044,
+          4304,
+          1033
+        ],
+        "llama_cpp_ids": [
+          1,
+          22177,
+          1044,
+          4304,
+          1033
+        ],
+        "match": true,
+        "token_count": 5
+      },
+      "without_bos": {
+        "aeronum_ids": [
+          22177,
+          1044,
+          4304,
+          1033
+        ],
+        "llama_cpp_ids": [
+          22177,
+          1044,
+          4304,
+          1033
+        ],
+        "match": true,
+        "token_count": 4
+      },
+      "no_parse_with_bos": {
+        "aeronum_ids": [
+          1,
+          22177,
+          1044,
+          4304,
+          1033
+        ],
+        "llama_cpp_ids": [
+          1,
+          22177,
+          1044,
+          4304,
+          1033
+        ],
+        "match": true,
+        "token_count": 5,
+        "skipped": false
+      },
+      "no_parse_without_bos": {
+        "aeronum_ids": [
+          22177,
+          1044,
+          4304,
+          1033
+        ],
+        "llama_cpp_ids": [
+          22177,
+          1044,
+          4304,
+          1033
+        ],
+        "match": true,
+        "token_count": 4,
+        "skipped": false
+      }
+    },
+    {
+      "label": "leading_space",
+      "text": " Hello world",
+      "has_special": false,
+      "with_bos": {
+        "aeronum_ids": [
+          1,
+          45383,
+          4304
+        ],
+        "llama_cpp_ids": [
+          1,
+          45383,
+          4304
+        ],
+        "match": true,
+        "token_count": 3
+      },
+      "without_bos": {
+        "aeronum_ids": [
+          45383,
+          4304
+        ],
+        "llama_cpp_ids": [
+          45383,
+          4304
+        ],
+        "match": true,
+        "token_count": 2
+      },
+      "no_parse_with_bos": {
+        "aeronum_ids": [
+          1,
+          45383,
+          4304
+        ],
+        "llama_cpp_ids": [
+          1,
+          45383,
+          4304
+        ],
+        "match": true,
+        "token_count": 3,
+        "skipped": false
+      },
+      "no_parse_without_bos": {
+        "aeronum_ids": [
+          45383,
+          4304
+        ],
+        "llama_cpp_ids": [
+          45383,
+          4304
+        ],
+        "match": true,
+        "token_count": 2,
+        "skipped": false
+      }
+    },
+    {
+      "label": "lowercase_sentence",
+      "text": "this is a test",
+      "has_special": false,
+      "with_bos": {
+        "aeronum_ids": [
+          1,
+          2496,
+          1395,
+          1261,
+          2688
+        ],
+        "llama_cpp_ids": [
+          1,
+          2496,
+          1395,
+          1261,
+          2688
+        ],
+        "match": true,
+        "token_count": 5
+      },
+      "without_bos": {
+        "aeronum_ids": [
+          2496,
+          1395,
+          1261,
+          2688
+        ],
+        "llama_cpp_ids": [
+          2496,
+          1395,
+          1261,
+          2688
+        ],
+        "match": true,
+        "token_count": 4
+      },
+      "no_parse_with_bos": {
+        "aeronum_ids": [
+          1,
+          2496,
+          1395,
+          1261,
+          2688
+        ],
+        "llama_cpp_ids": [
+          1,
+          2496,
+          1395,
+          1261,
+          2688
+        ],
+        "match": true,
+        "token_count": 5,
+        "skipped": false
+      },
+      "no_parse_without_bos": {
+        "aeronum_ids": [
+          2496,
+          1395,
+          1261,
+          2688
+        ],
+        "llama_cpp_ids": [
+          2496,
+          1395,
+          1261,
+          2688
+        ],
+        "match": true,
+        "token_count": 4,
+        "skipped": false
+      }
+    },
+    {
+      "label": "artifact_prompt",
+      "text": "AeroNum GGUF tokenizer smoke",
+      "has_special": false,
+      "with_bos": {
+        "aeronum_ids": [
+          1,
+          1065,
+          3168,
+          9516,
+          105675,
+          52359,
+          128405,
+          29528
+        ],
+        "llama_cpp_ids": [
+          1,
+          1065,
+          3168,
+          9516,
+          105675,
+          52359,
+          128405,
+          29528
+        ],
+        "match": true,
+        "token_count": 8
+      },
+      "without_bos": {
+        "aeronum_ids": [
+          1065,
+          3168,
+          9516,
+          105675,
+          52359,
+          128405,
+          29528
+        ],
+        "llama_cpp_ids": [
+          1065,
+          3168,
+          9516,
+          105675,
+          52359,
+          128405,
+          29528
+        ],
+        "match": true,
+        "token_count": 7
+      },
+      "no_parse_with_bos": {
+        "aeronum_ids": [
+          1,
+          1065,
+          3168,
+          9516,
+          105675,
+          52359,
+          128405,
+          29528
+        ],
+        "llama_cpp_ids": [
+          1,
+          1065,
+          3168,
+          9516,
+          105675,
+          52359,
+          128405,
+          29528
+        ],
+        "match": true,
+        "token_count": 8,
+        "skipped": false
+      },
+      "no_parse_without_bos": {
+        "aeronum_ids": [
+          1065,
+          3168,
+          9516,
+          105675,
+          52359,
+          128405,
+          29528
+        ],
+        "llama_cpp_ids": [
+          1065,
+          3168,
+          9516,
+          105675,
+          52359,
+          128405,
+          29528
+        ],
+        "match": true,
+        "token_count": 7,
+        "skipped": false
+      }
+    },
+    {
+      "label": "digits_and_periods",
+      "text": "3.3 3..3",
+      "has_special": false,
+      "with_bos": {
+        "aeronum_ids": [
+          1,
+          1051,
+          1046,
+          1051,
+          1032,
+          1051,
+          1791,
+          1051
+        ],
+        "llama_cpp_ids": [
+          1,
+          1051,
+          1046,
+          1051,
+          1032,
+          1051,
+          1791,
+          1051
+        ],
+        "match": true,
+        "token_count": 8
+      },
+      "without_bos": {
+        "aeronum_ids": [
+          1051,
+          1046,
+          1051,
+          1032,
+          1051,
+          1791,
+          1051
+        ],
+        "llama_cpp_ids": [
+          1051,
+          1046,
+          1051,
+          1032,
+          1051,
+          1791,
+          1051
+        ],
+        "match": true,
+        "token_count": 7
+      },
+      "no_parse_with_bos": {
+        "aeronum_ids": [
+          1,
+          1051,
+          1046,
+          1051,
+          1032,
+          1051,
+          1791,
+          1051
+        ],
+        "llama_cpp_ids": [
+          1,
+          1051,
+          1046,
+          1051,
+          1032,
+          1051,
+          1791,
+          1051
+        ],
+        "match": true,
+        "token_count": 8,
+        "skipped": false
+      },
+      "no_parse_without_bos": {
+        "aeronum_ids": [
+          1051,
+          1046,
+          1051,
+          1032,
+          1051,
+          1791,
+          1051
+        ],
+        "llama_cpp_ids": [
+          1051,
+          1046,
+          1051,
+          1032,
+          1051,
+          1791,
+          1051
+        ],
+        "match": true,
+        "token_count": 7,
+        "skipped": false
+      }
+    },
+    {
+      "label": "contraction",
+      "text": "I've been told",
+      "has_special": false,
+      "with_bos": {
+        "aeronum_ids": [
+          1,
+          1073,
+          6483,
+          2151,
+          7427
+        ],
+        "llama_cpp_ids": [
+          1,
+          1073,
+          6483,
+          2151,
+          7427
+        ],
+        "match": true,
+        "token_count": 5
+      },
+      "without_bos": {
+        "aeronum_ids": [
+          1073,
+          6483,
+          2151,
+          7427
+        ],
+        "llama_cpp_ids": [
+          1073,
+          6483,
+          2151,
+          7427
+        ],
+        "match": true,
+        "token_count": 4
+      },
+      "no_parse_with_bos": {
+        "aeronum_ids": [
+          1,
+          1073,
+          6483,
+          2151,
+          7427
+        ],
+        "llama_cpp_ids": [
+          1,
+          1073,
+          6483,
+          2151,
+          7427
+        ],
+        "match": true,
+        "token_count": 5,
+        "skipped": false
+      },
+      "no_parse_without_bos": {
+        "aeronum_ids": [
+          1073,
+          6483,
+          2151,
+          7427
+        ],
+        "llama_cpp_ids": [
+          1073,
+          6483,
+          2151,
+          7427
+        ],
+        "match": true,
+        "token_count": 4,
+        "skipped": false
+      }
+    },
+    {
+      "label": "umlaut",
+      "text": "\u00c4pfel",
+      "has_special": false,
+      "with_bos": {
+        "aeronum_ids": [
+          1,
+          86169,
+          22950,
+          1299
+        ],
+        "llama_cpp_ids": [
+          1,
+          86169,
+          22950,
+          1299
+        ],
+        "match": true,
+        "token_count": 4
+      },
+      "without_bos": {
+        "aeronum_ids": [
+          86169,
+          22950,
+          1299
+        ],
+        "llama_cpp_ids": [
+          86169,
+          22950,
+          1299
+        ],
+        "match": true,
+        "token_count": 3
+      },
+      "no_parse_with_bos": {
+        "aeronum_ids": [
+          1,
+          86169,
+          22950,
+          1299
+        ],
+        "llama_cpp_ids": [
+          1,
+          86169,
+          22950,
+          1299
+        ],
+        "match": true,
+        "token_count": 4,
+        "skipped": false
+      },
+      "no_parse_without_bos": {
+        "aeronum_ids": [
+          86169,
+          22950,
+          1299
+        ],
+        "llama_cpp_ids": [
+          86169,
+          22950,
+          1299
+        ],
+        "match": true,
+        "token_count": 3,
+        "skipped": false
+      }
+    },
+    {
+      "label": "emoji_rocket",
+      "text": "\ud83d\ude80",
+      "has_special": false,
+      "with_bos": {
+        "aeronum_ids": [
+          1,
+          1240,
+          1159,
+          1154,
+          1128
+        ],
+        "llama_cpp_ids": [
+          1,
+          1240,
+          1159,
+          1154,
+          1128
+        ],
+        "match": true,
+        "token_count": 5
+      },
+      "without_bos": {
+        "aeronum_ids": [
+          1240,
+          1159,
+          1154,
+          1128
+        ],
+        "llama_cpp_ids": [
+          1240,
+          1159,
+          1154,
+          1128
+        ],
+        "match": true,
+        "token_count": 4
+      },
+      "no_parse_with_bos": {
+        "aeronum_ids": [
+          1,
+          1240,
+          1159,
+          1154,
+          1128
+        ],
+        "llama_cpp_ids": [
+          1,
+          1240,
+          1159,
+          1154,
+          1128
+        ],
+        "match": true,
+        "token_count": 5,
+        "skipped": false
+      },
+      "no_parse_without_bos": {
+        "aeronum_ids": [
+          1240,
+          1159,
+          1154,
+          1128
+        ],
+        "llama_cpp_ids": [
+          1240,
+          1159,
+          1154,
+          1128
+        ],
+        "match": true,
+        "token_count": 4,
+        "skipped": false
+      }
+    },
+    {
+      "label": "llama_cpp_text",
+      "text": "this is \ud83e\udd99.cpp",
+      "has_special": false,
+      "with_bos": {
+        "aeronum_ids": [
+          1,
+          2496,
+          1395,
+          119685,
+          1166,
+          1153,
+          1046,
+          51228
+        ],
+        "llama_cpp_ids": [
+          1,
+          2496,
+          1395,
+          119685,
+          1166,
+          1153,
+          1046,
+          51228
+        ],
+        "match": true,
+        "token_count": 8
+      },
+      "without_bos": {
+        "aeronum_ids": [
+          2496,
+          1395,
+          119685,
+          1166,
+          1153,
+          1046,
+          51228
+        ],
+        "llama_cpp_ids": [
+          2496,
+          1395,
+          119685,
+          1166,
+          1153,
+          1046,
+          51228
+        ],
+        "match": true,
+        "token_count": 7
+      },
+      "no_parse_with_bos": {
+        "aeronum_ids": [
+          1,
+          2496,
+          1395,
+          119685,
+          1166,
+          1153,
+          1046,
+          51228
+        ],
+        "llama_cpp_ids": [
+          1,
+          2496,
+          1395,
+          119685,
+          1166,
+          1153,
+          1046,
+          51228
+        ],
+        "match": true,
+        "token_count": 8,
+        "skipped": false
+      },
+      "no_parse_without_bos": {
+        "aeronum_ids": [
+          2496,
+          1395,
+          119685,
+          1166,
+          1153,
+          1046,
+          51228
+        ],
+        "llama_cpp_ids": [
+          2496,
+          1395,
+          119685,
+          1166,
+          1153,
+          1046,
+          51228
+        ],
+        "match": true,
+        "token_count": 7,
+        "skipped": false
+      }
+    },
+    {
+      "label": "inst_special",
+      "text": "[INST]",
+      "has_special": true,
+      "with_bos": {
+        "aeronum_ids": [
+          1,
+          3
+        ],
+        "llama_cpp_ids": [
+          1,
+          3
+        ],
+        "match": true,
+        "token_count": 2
+      },
+      "without_bos": {
+        "aeronum_ids": [
+          3
+        ],
+        "llama_cpp_ids": [
+          3
+        ],
+        "match": true,
+        "token_count": 1
+      },
+      "no_parse_with_bos": {
+        "aeronum_ids": [
+          1,
+          1091,
+          3174,
+          3074,
+          1093
+        ],
+        "llama_cpp_ids": null,
+        "match": null,
+        "token_count": 5,
+        "skipped": true
+      },
+      "no_parse_without_bos": {
+        "aeronum_ids": [
+          1091,
+          3174,
+          3074,
+          1093
+        ],
+        "llama_cpp_ids": null,
+        "match": null,
+        "token_count": 4,
+        "skipped": true
+      }
+    },
+    {
+      "label": "wrapped_inst_special",
+      "text": "<s>[INST]Hello[/INST]",
+      "has_special": true,
+      "with_bos": {
+        "aeronum_ids": [
+          1,
+          1,
+          3,
+          22177,
+          4
+        ],
+        "llama_cpp_ids": [
+          1,
+          1,
+          3,
+          22177,
+          4
+        ],
+        "match": true,
+        "token_count": 5
+      },
+      "without_bos": {
+        "aeronum_ids": [
+          1,
+          3,
+          22177,
+          4
+        ],
+        "llama_cpp_ids": [
+          1,
+          3,
+          22177,
+          4
+        ],
+        "match": true,
+        "token_count": 4
+      },
+      "no_parse_with_bos": {
+        "aeronum_ids": [
+          1,
+          1060,
+          1115,
+          110391,
+          3174,
+          3074,
+          1093,
+          22177,
+          1091,
+          1047,
+          3174,
+          3074,
+          1093
+        ],
+        "llama_cpp_ids": null,
+        "match": null,
+        "token_count": 13,
+        "skipped": true
+      },
+      "no_parse_without_bos": {
+        "aeronum_ids": [
+          1060,
+          1115,
+          110391,
+          3174,
+          3074,
+          1093,
+          22177,
+          1091,
+          1047,
+          3174,
+          3074,
+          1093
+        ],
+        "llama_cpp_ids": null,
+        "match": null,
+        "token_count": 12,
+        "skipped": true
+      }
+    },
+    {
+      "label": "mixed_special_text",
+      "text": "Hello [INST] world",
+      "has_special": true,
+      "with_bos": {
+        "aeronum_ids": [
+          1,
+          22177,
+          1032,
+          3,
+          4304
+        ],
+        "llama_cpp_ids": [
+          1,
+          22177,
+          1032,
+          3,
+          4304
+        ],
+        "match": true,
+        "token_count": 5
+      },
+      "without_bos": {
+        "aeronum_ids": [
+          22177,
+          1032,
+          3,
+          4304
+        ],
+        "llama_cpp_ids": [
+          22177,
+          1032,
+          3,
+          4304
+        ],
+        "match": true,
+        "token_count": 4
+      },
+      "no_parse_with_bos": {
+        "aeronum_ids": [
+          1,
+          22177,
+          1766,
+          3174,
+          3074,
+          1093,
+          4304
+        ],
+        "llama_cpp_ids": null,
+        "match": null,
+        "token_count": 7,
+        "skipped": true
+      },
+      "no_parse_without_bos": {
+        "aeronum_ids": [
+          22177,
+          1766,
+          3174,
+          3074,
+          1093,
+          4304
+        ],
+        "llama_cpp_ids": null,
+        "match": null,
+        "token_count": 6,
+        "skipped": true
+      }
+    },
+    {
+      "label": "available_tools_special",
+      "text": "[AVAILABLE_TOOLS]",
+      "has_special": true,
+      "with_bos": {
+        "aeronum_ids": [
+          1,
+          5
+        ],
+        "llama_cpp_ids": [
+          1,
+          5
+        ],
+        "match": true,
+        "token_count": 2
+      },
+      "without_bos": {
+        "aeronum_ids": [
+          5
+        ],
+        "llama_cpp_ids": [
+          5
+        ],
+        "match": true,
+        "token_count": 1
+      },
+      "no_parse_with_bos": {
+        "aeronum_ids": [
+          1,
+          1091,
+          1065,
+          129856,
+          17367,
+          1095,
+          9197,
+          8568,
+          1083,
+          1093
+        ],
+        "llama_cpp_ids": null,
+        "match": null,
+        "token_count": 10,
+        "skipped": true
+      },
+      "no_parse_without_bos": {
+        "aeronum_ids": [
+          1091,
+          1065,
+          129856,
+          17367,
+          1095,
+          9197,
+          8568,
+          1083,
+          1093
+        ],
+        "llama_cpp_ids": null,
+        "match": null,
+        "token_count": 9,
+        "skipped": true
+      }
+    }
+  ],
+  "limitations": [
+    "fixed prompt set only",
+    "does not verify exhaustive special-token parsing",
+    "does not verify literal no-parse-special parity for prompts containing special tokens",
+    "does not verify GGUF token inference throughput"
+  ]
+}

@@ -96,6 +96,7 @@ pub struct GgufTokenizerIndex {
     pub token_to_id: HashMap<String, u32>,
     pub id_to_token: Vec<String>,
     pub merge_ranks: HashMap<(String, String), usize>,
+    pub special_token_to_id: HashMap<String, u32>,
     pub unknown_token_id: Option<u32>,
     pub bos_token_id: Option<u32>,
 }
@@ -127,18 +128,65 @@ impl GgufTokenizerIndex {
     }
 
     pub fn encode_byte_bpe(&self, text: &str, add_bos: bool) -> Option<Vec<u32>> {
+        self.encode_byte_bpe_with_special(text, add_bos, true)
+    }
+
+    pub fn encode_byte_bpe_with_special(
+        &self,
+        text: &str,
+        add_bos: bool,
+        parse_special: bool,
+    ) -> Option<Vec<u32>> {
         let mut ids = Vec::new();
         if add_bos {
             ids.push(self.bos_token_id?);
         }
 
-        for piece in byte_level_pieces(text) {
-            for token in self.byte_bpe_piece(&piece) {
-                ids.push(self.token_id(&token).or(self.unknown_token_id)?);
+        let mut idx = 0;
+        while idx < text.len() {
+            if parse_special {
+                if let Some((token, token_id)) = self.special_token_at(text, idx) {
+                    ids.push(token_id);
+                    idx += token.len();
+                    continue;
+                }
             }
+
+            let next_special = if parse_special {
+                self.next_special_index(text, idx).unwrap_or(text.len())
+            } else {
+                text.len()
+            };
+            let segment = &text[idx..next_special];
+            for piece in byte_level_pieces(segment) {
+                for token in self.byte_bpe_piece(&piece) {
+                    ids.push(self.token_id(&token).or(self.unknown_token_id)?);
+                }
+            }
+            idx = next_special;
         }
 
         Some(ids)
+    }
+
+    fn special_token_at<'a>(&'a self, text: &str, idx: usize) -> Option<(&'a str, u32)> {
+        if !text.is_char_boundary(idx) {
+            return None;
+        }
+        self.special_token_to_id
+            .iter()
+            .filter(|(token, _)| text[idx..].starts_with(token.as_str()))
+            .max_by_key(|(token, _)| token.len())
+            .map(|(token, id)| (token.as_str(), *id))
+    }
+
+    fn next_special_index(&self, text: &str, idx: usize) -> Option<usize> {
+        text[idx..].char_indices().find_map(|(offset, _)| {
+            let candidate = idx + offset;
+            self.special_token_at(text, candidate)
+                .is_some()
+                .then_some(candidate)
+        })
     }
 
     fn byte_bpe_piece(&self, piece: &str) -> Vec<String> {
@@ -613,11 +661,27 @@ impl GgufHeader {
                     .collect::<HashMap<_, _>>()
             })
             .unwrap_or_default();
+        let special_token_to_id = self
+            .i32_array_values("tokenizer.ggml.token_type")
+            .map(|token_types| {
+                tokens
+                    .iter()
+                    .zip(token_types.iter())
+                    .enumerate()
+                    .filter_map(|(idx, (token, token_type))| {
+                        (*token_type == 3)
+                            .then(|| u32::try_from(idx).ok().map(|id| (token.clone(), id)))
+                            .flatten()
+                    })
+                    .collect::<HashMap<_, _>>()
+            })
+            .unwrap_or_default();
         Some(GgufTokenizerIndex {
             token_count: tokens.len(),
             token_to_id,
             id_to_token: tokens.to_vec(),
             merge_ranks,
+            special_token_to_id,
             unknown_token_id: self.u32_value("tokenizer.ggml.unknown_token_id"),
             bos_token_id: self.u32_value("tokenizer.ggml.bos_token_id"),
         })
@@ -1069,11 +1133,12 @@ mod tests {
             .expect("write array type");
         file.write_all(&8u32.to_le_bytes())
             .expect("write array string element type");
-        file.write_all(&13u64.to_le_bytes())
+        file.write_all(&14u64.to_le_bytes())
             .expect("write array len");
         write_gguf_string(&mut file, "<s>");
         write_gguf_string(&mut file, "</s>");
         write_gguf_string(&mut file, "<unk>");
+        write_gguf_string(&mut file, "[INST]");
         write_gguf_string(&mut file, "H");
         write_gguf_string(&mut file, "i");
         write_gguf_string(&mut file, "Hi");
@@ -1102,9 +1167,9 @@ mod tests {
             .expect("write array type");
         file.write_all(&5u32.to_le_bytes())
             .expect("write array i32 element type");
-        file.write_all(&13u64.to_le_bytes())
+        file.write_all(&14u64.to_le_bytes())
             .expect("write array len");
-        for token_type in [3i32, 3, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1] {
+        for token_type in [3i32, 3, 2, 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1] {
             file.write_all(&token_type.to_le_bytes())
                 .expect("write token type");
         }
@@ -1141,21 +1206,22 @@ mod tests {
             header.metadata_value("tokenizer.ggml.tokens"),
             Some(&GgufMetadataValue::Array {
                 element_type: GgufValueType::String,
-                len: 13,
+                len: 14,
                 string_samples: vec![
                     "<s>".to_string(),
                     "</s>".to_string(),
                     "<unk>".to_string(),
+                    "[INST]".to_string(),
                     "H".to_string(),
                     "i".to_string(),
                     "Hi".to_string(),
-                    "\u{0120}".to_string(),
-                    ".".to_string()
+                    "\u{0120}".to_string()
                 ],
                 string_values: vec![
                     "<s>".to_string(),
                     "</s>".to_string(),
                     "<unk>".to_string(),
+                    "[INST]".to_string(),
                     "H".to_string(),
                     "i".to_string(),
                     "Hi".to_string(),
@@ -1173,12 +1239,13 @@ mod tests {
         );
         assert_eq!(
             header.i32_array_values("tokenizer.ggml.token_type"),
-            Some(&[3, 3, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1][..])
+            Some(&[3, 3, 2, 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1][..])
         );
         let tokenizer_index = header.tokenizer_index().expect("tokenizer index");
-        assert_eq!(tokenizer_index.token_count, 13);
+        assert_eq!(tokenizer_index.token_count, 14);
         assert_eq!(tokenizer_index.token_to_id.get("<s>"), Some(&0));
         assert_eq!(tokenizer_index.token_to_id.get("</s>"), Some(&1));
+        assert_eq!(tokenizer_index.special_token_to_id.get("[INST]"), Some(&3));
         assert_eq!(
             tokenizer_index
                 .merge_ranks
@@ -1193,14 +1260,18 @@ mod tests {
             tokenizer_index.decode_ids(&[0, 1]),
             Some(vec!["<s>".to_string(), "</s>".to_string()])
         );
-        assert_eq!(tokenizer_index.encode_byte_bpe("Hi", false), Some(vec![5]));
+        assert_eq!(tokenizer_index.encode_byte_bpe("Hi", false), Some(vec![6]));
         assert_eq!(
             tokenizer_index.encode_byte_bpe(" Hi", false),
-            Some(vec![6, 5])
+            Some(vec![7, 6])
         );
         assert_eq!(
             tokenizer_index.encode_byte_bpe(".cpp", false),
-            Some(vec![7, 11])
+            Some(vec![8, 12])
+        );
+        assert_eq!(
+            tokenizer_index.encode_byte_bpe("[INST]Hi", false),
+            Some(vec![3, 6])
         );
         assert_eq!(header.tensors[0].name, "token_embd.weight");
         assert_eq!(header.tensors[0].dimensions, vec![32000, 4096]);

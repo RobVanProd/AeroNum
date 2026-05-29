@@ -49,7 +49,24 @@ fn prompt_cases() -> Vec<(&'static str, &'static str)> {
         ("umlaut", "\u{00c4}pfel"),
         ("emoji_rocket", "\u{1f680}"),
         ("llama_cpp_text", "this is \u{1f999}.cpp"),
+        ("inst_special", "[INST]"),
+        ("wrapped_inst_special", "<s>[INST]Hello[/INST]"),
+        ("mixed_special_text", "Hello [INST] world"),
+        ("available_tools_special", "[AVAILABLE_TOOLS]"),
     ]
+}
+
+fn contains_known_special(text: &str) -> bool {
+    [
+        "<s>",
+        "</s>",
+        "[INST]",
+        "[/INST]",
+        "[AVAILABLE_TOOLS]",
+        "[/AVAILABLE_TOOLS]",
+    ]
+    .iter()
+    .any(|token| text.contains(token))
 }
 
 fn main() {
@@ -65,17 +82,26 @@ fn main() {
         .into_iter()
         .map(|(label, text)| {
             let with_bos = tokenizer
-                .encode_byte_bpe(text, true)
+                .encode_byte_bpe_with_special(text, true, true)
                 .expect("encode prompt with BOS");
             let without_bos = tokenizer
-                .encode_byte_bpe(text, false)
+                .encode_byte_bpe_with_special(text, false, true)
                 .expect("encode prompt without BOS");
+            let no_parse_with_bos = tokenizer
+                .encode_byte_bpe_with_special(text, true, false)
+                .expect("encode literal prompt with BOS");
+            let no_parse_without_bos = tokenizer
+                .encode_byte_bpe_with_special(text, false, false)
+                .expect("encode literal prompt without BOS");
             format!(
-                "{{\"label\":\"{}\",\"text\":\"{}\",\"with_bos\":{},\"without_bos\":{}}}",
+                "{{\"label\":\"{}\",\"text\":\"{}\",\"has_special\":{},\"with_bos\":{},\"without_bos\":{},\"no_parse_with_bos\":{},\"no_parse_without_bos\":{}}}",
                 json_escape(label),
                 json_escape(text),
+                contains_known_special(text),
                 json_u32_array(&with_bos),
-                json_u32_array(&without_bos)
+                json_u32_array(&without_bos),
+                json_u32_array(&no_parse_with_bos),
+                json_u32_array(&no_parse_without_bos)
             )
         })
         .collect::<Vec<_>>()

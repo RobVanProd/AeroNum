@@ -1,4 +1,6 @@
-use aeronum_core::{GgufHeader, GgufQuantizedBlockSample, GgufQuantizedRowSample};
+use aeronum_core::{
+    GgufHeader, GgufQuantizedBlockSample, GgufQuantizedRowDotSample, GgufQuantizedRowSample,
+};
 use std::time::Instant;
 
 fn parse_arg(name: &str, default: &str) -> String {
@@ -130,6 +132,33 @@ fn row_sample_json(sample: &GgufQuantizedRowSample) -> String {
     )
 }
 
+fn row_dot_sample_json(sample: &GgufQuantizedRowDotSample) -> String {
+    format!(
+        concat!(
+            "{{",
+            "\"lhs_tensor\":\"{}\",",
+            "\"lhs_row\":{},",
+            "\"rhs_tensor\":\"{}\",",
+            "\"rhs_row\":{},",
+            "\"dimension\":{},",
+            "\"dot_product\":{:.12},",
+            "\"abs_sum\":{:.12},",
+            "\"lhs_decoded_checksum\":{:.8},",
+            "\"rhs_decoded_checksum\":{:.8}",
+            "}}"
+        ),
+        json_escape(&sample.lhs.name),
+        sample.lhs.row_index,
+        json_escape(&sample.rhs.name),
+        sample.rhs.row_index,
+        sample.dimension,
+        sample.dot_product,
+        sample.abs_sum,
+        sample.lhs.decoded_checksum,
+        sample.rhs.decoded_checksum
+    )
+}
+
 fn main() {
     let model_path = parse_arg("--model", "");
     if model_path.is_empty() {
@@ -155,6 +184,9 @@ fn main() {
     let q6_row_sample = header
         .read_quantized_row_sample("output.weight", q6_row)
         .expect("read output.weight Q6_K row sample");
+    let row_dot_sample = header
+        .read_quantized_row_dot_sample("token_embd.weight", q4_row, "output.weight", q6_row)
+        .expect("read quantized row dot sample");
     let elapsed_ms = start.elapsed().as_secs_f64() * 1000.0;
 
     println!(
@@ -169,9 +201,10 @@ fn main() {
             "\"file_size\":{},",
             "\"samples\":[{},{}],",
             "\"row_samples\":[{},{}],",
+            "\"row_dot_samples\":[{}],",
             "\"limitations\":[",
-            "\"selected-block and selected-row CPU decode only\",",
-            "\"not full tensor execution\",",
+            "\"selected-block selected-row and selected-row-dot CPU decode only\",",
+            "\"not full tensor execution or full logits\",",
             "\"not GPU matmul\",",
             "\"not AeroNum-native GGUF token inference throughput\"",
             "]",
@@ -186,6 +219,7 @@ fn main() {
         sample_json(&q4_sample),
         sample_json(&q6_sample),
         row_sample_json(&q4_row_sample),
-        row_sample_json(&q6_row_sample)
+        row_sample_json(&q6_row_sample),
+        row_dot_sample_json(&row_dot_sample)
     );
 }

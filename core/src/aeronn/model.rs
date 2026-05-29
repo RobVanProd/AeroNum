@@ -122,6 +122,15 @@ pub struct GgufQuantizedRowSample {
     pub decoded_checksum: f64,
 }
 
+#[derive(Clone, Debug, PartialEq)]
+pub struct GgufQuantizedRowDotSample {
+    pub lhs: GgufQuantizedRowSample,
+    pub rhs: GgufQuantizedRowSample,
+    pub dimension: usize,
+    pub dot_product: f64,
+    pub abs_sum: f64,
+}
+
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct GgufTokenizerIndex {
     pub token_count: usize,
@@ -712,6 +721,36 @@ impl GgufHeader {
             row_byte_checksum,
             decoded_values,
             decoded_checksum,
+        })
+    }
+
+    pub fn read_quantized_row_dot_sample(
+        &self,
+        lhs_tensor_name: &str,
+        lhs_row_index: u64,
+        rhs_tensor_name: &str,
+        rhs_row_index: u64,
+    ) -> Result<GgufQuantizedRowDotSample, GgufError> {
+        let lhs = self.read_quantized_row_sample(lhs_tensor_name, lhs_row_index)?;
+        let rhs = self.read_quantized_row_sample(rhs_tensor_name, rhs_row_index)?;
+        if lhs.decoded_values.len() != rhs.decoded_values.len() {
+            return Err(GgufError::InvalidTensorRange(format!(
+                "{lhs_tensor_name}:{lhs_row_index} dot {rhs_tensor_name}:{rhs_row_index}"
+            )));
+        }
+        let dot_product = dot_f32_values(&lhs.decoded_values, &rhs.decoded_values);
+        let abs_sum = lhs
+            .decoded_values
+            .iter()
+            .zip(rhs.decoded_values.iter())
+            .map(|(left, right)| ((*left as f64) * (*right as f64)).abs())
+            .sum();
+        Ok(GgufQuantizedRowDotSample {
+            dimension: lhs.decoded_values.len(),
+            lhs,
+            rhs,
+            dot_product,
+            abs_sum,
         })
     }
 
@@ -1337,6 +1376,13 @@ fn checksum_f32_values(values: &[f32]) -> f64 {
         .sum()
 }
 
+fn dot_f32_values(left: &[f32], right: &[f32]) -> f64 {
+    left.iter()
+        .zip(right.iter())
+        .map(|(left, right)| (*left as f64) * (*right as f64))
+        .sum()
+}
+
 fn skip_value(reader: &mut impl Read, value_type: GgufValueType) -> Result<(), GgufError> {
     match value_type {
         GgufValueType::U8 | GgufValueType::I8 | GgufValueType::Bool => {
@@ -1756,6 +1802,14 @@ mod tests {
         assert_eq!(values.len(), 512);
         assert_eq!(values[0], 0.5);
         assert_eq!(values[256], 0.5);
+    }
+
+    #[test]
+    fn computes_f32_dot_product() {
+        let left = [1.0f32, -2.0, 3.0];
+        let right = [4.0f32, 5.0, -6.0];
+
+        assert_eq!(dot_f32_values(&left, &right), -24.0);
     }
 
     #[test]

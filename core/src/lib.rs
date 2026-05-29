@@ -6,8 +6,8 @@ pub mod aeronn;
 pub mod gpu;
 
 pub use aeronn::{
-    GgufError, GgufHeader, GgufMetadataValue, GgufQuantizedBlockSample, GgufQuantizedRowSample,
-    GgufTensorByteSample, GgufValueType, LlamaModel,
+    GgufError, GgufHeader, GgufMetadataValue, GgufQuantizedBlockSample, GgufQuantizedRowDotSample,
+    GgufQuantizedRowSample, GgufTensorByteSample, GgufValueType, LlamaModel,
 };
 pub use gpu::{Backend, Device, GpuDevice, GpuError, HipBlas, HipBuffer, HipRuntime};
 #[derive(Clone, Debug, PartialEq)]

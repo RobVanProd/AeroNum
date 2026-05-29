@@ -118,6 +118,7 @@ pub struct GgufQuantizedRowSample {
     pub block_size: u64,
     pub type_size: u64,
     pub row_byte_checksum: u64,
+    pub row_bytes: Vec<u8>,
     pub decoded_values: Vec<f32>,
     pub decoded_checksum: f64,
 }
@@ -1057,6 +1058,7 @@ impl GgufHeader {
             block_size,
             type_size,
             row_byte_checksum,
+            row_bytes: bytes,
             decoded_values,
             decoded_checksum,
         })

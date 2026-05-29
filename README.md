@@ -288,6 +288,15 @@ Verified current results:
   logits for one fixed prompt only, not sampled or decoded generated text, GPU
   matmul, or AeroNum-native GGUF token inference throughput
   ([result JSON](claim-verification/results/aeronum_core_gguf_prompt_next_token_logits_7900xtx_20260529T073000Z/claim_result.json)).
+- `aeronum-core` now performs one-step greedy next-token piece selection for
+  the same fixed GGUF prompt. The repo-owned release command tokenized
+  `<s>[INST]Hello[/INST]` to token IDs 1, 3, 22177, and 4, ran all 40 CPU
+  layers for those four token states, and selected greedy next-token ID 22177
+  with token piece `Hello` from the decoded top logits. This is a one-step
+  greedy token-piece result for one fixed prompt only, not multi-token
+  autoregressive generated text, GPU matmul, or AeroNum-native GGUF token
+  inference throughput
+  ([result JSON](claim-verification/results/aeronum_core_gguf_prompt_greedy_decode_7900xtx_20260529T025300Z/claim_result.json)).
 - `aeronum-core` now verifies a single-token first-layer attention-plus-FFN CPU
   subpath. The repo-owned release command ran the single-token attention-output
   subpath, added the residual, applied `blk.0.ffn_norm.weight`, computed all
@@ -362,8 +371,8 @@ Blocked or omitted claims:
   no-parse-special modes matching llama.cpp on 14 fixed prompts, tokenizer
   config, selected Llama hyperparameters, tensor directory
   records, tensor byte ranges, loads all 81 F32 tensors into `LlamaModel`,
-  offloads those model weights through ROCm device 0, then reaches placeholder
-  generation. First-block decode, selected-row decode, a selected-row CPU dot
+  and offloads those model weights through ROCm device 0. First-block decode,
+  selected-row decode, a selected-row CPU dot
   product, 256-row prefix logits, full output-vocabulary CPU arithmetic, final
   RMS/output-norm full output-vocabulary CPU arithmetic for one selected Q4_K
   embedding row against Q6_K `output.weight`, first-layer V-projection CPU
@@ -375,13 +384,14 @@ Blocked or omitted claims:
   subpath, a bounded two-layer final-token transformer CPU subpath, a full
   40-layer final-token transformer CPU subpath for the fixed three-token row
   sequence, prompt-level next-token logits for one fixed prompt, and a
+  one-step greedy next-token piece selection for that prompt, plus a
   single-token first-layer attention-plus-FFN CPU subpath through
   `blk.0.ffn_gate.weight`, `blk.0.ffn_up.weight`, and `blk.0.ffn_down.weight`,
   plus full-vocabulary final-head CPU logits from that single-token layer-0
   hidden state are verified, but exhaustive tokenizer parity, external RoPE
-  parity, sampled or decoded generated text, and AeroNum-native token inference
-  throughput are not yet verified. The verified token-inference result is a
-  llama.cpp reference through an AeroNum repo wrapper.
+  parity, multi-token autoregressive generated text, and AeroNum-native token
+  inference throughput are not yet verified. The verified token-inference
+  result is a llama.cpp reference through an AeroNum repo wrapper.
 
 Historical benchmark CSVs remain in the repo, but README claims above only use
 fresh local reruns and captured artifacts.

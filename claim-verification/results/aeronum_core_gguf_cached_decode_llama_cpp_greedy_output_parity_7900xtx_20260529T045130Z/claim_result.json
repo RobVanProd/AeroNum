@@ -1,0 +1,64 @@
+{
+  "schema_version": 1,
+  "claim_id": "aeronum_core_gguf_cached_decode_llama_cpp_greedy_output_parity_20260529",
+  "status": "verified_current_limited",
+  "verified_on": "2026-05-29",
+  "source_commit": "fc0f86ff2d69191ec4536cce1e0693bdca824fbe",
+  "benchmark": "compare_llama_cpp_greedy_output_for_cached_decode",
+  "command": "python3 benchmarks/gguf/compare_llama_cpp_greedy_output.py --input claim-verification/results/aeronum_core_gguf_cached_autoregressive_decode_7900xtx_20260529T043942Z/gguf_cached_autoregressive_decode_result.json --model /home/rob/models/mistralai_Mistral-Small-3.1-24B-Instruct-2503-Q4_K_M.gguf --output claim-verification/results/aeronum_core_gguf_cached_decode_llama_cpp_greedy_output_parity_7900xtx_20260529T045130Z/llama_cpp_cached_decode_greedy_output_comparison.json --timeout 240",
+  "exit_code": 0,
+  "cargo_test_core_exit_code": 0,
+  "py_compile_compare_exit_code": 0,
+  "model_path": "/home/rob/models/mistralai_Mistral-Small-3.1-24B-Instruct-2503-Q4_K_M.gguf",
+  "model_sha256": "c5743c1bf39db0ae8a5ade5df0374b8e9e492754a199cfdad7ef393c1590f7c0",
+  "hardware": {
+    "gpu_0": "Radeon RX 7900 XTX / gfx1100 / PCI device 1002:744c",
+    "gpu_1": "AMD Radeon Graphics / gfx1036 / PCI device 1002:13c0"
+  },
+  "cached_decode_input": "claim-verification/results/aeronum_core_gguf_cached_autoregressive_decode_7900xtx_20260529T043942Z/gguf_cached_autoregressive_decode_result.json",
+  "cached_decode_source_commit": "c770141a90466d0b77cfedf6e7291d0d1aa6029b",
+  "prompt": "<s>[INST]Hello[/INST]",
+  "predict": 2,
+  "expected_text": "Hello!",
+  "llama_text": "Hello!",
+  "expected_token_ids": [
+    22177,
+    1033
+  ],
+  "llama_token_ids": [
+    22177,
+    1033
+  ],
+  "passed": true,
+  "llama_cli_returncode": 0,
+  "llama_tokenize_returncode": 0,
+  "llama_cli_wall_seconds": 2.9236598540010164,
+  "offloaded_layers": 41,
+  "total_layers": 41,
+  "cached_decode_max_logits_abs_diff": 0.0,
+  "cached_decode_max_logits_checksum_diff": 0.0,
+  "cached_decode_all_step_top_tokens_match": true,
+  "limitations": [
+    "compares cached AeroNum greedy generated text and re-tokenized IDs against llama.cpp CLI output only",
+    "uses llama.cpp CLI stdout rather than an internal detokenization or KV-cache trace",
+    "not sampled-output parity",
+    "not llama.cpp internal KV-cache parity",
+    "not optimized retained-state AeroNum KV-cache throughput",
+    "not GPU GGUF execution by AeroNum"
+  ],
+  "raw_artifacts": [
+    "claim-verification/results/aeronum_core_gguf_cached_decode_llama_cpp_greedy_output_parity_7900xtx_20260529T045130Z/llama_cpp_cached_decode_greedy_output_comparison.json",
+    "claim-verification/results/aeronum_core_gguf_cached_decode_llama_cpp_greedy_output_parity_7900xtx_20260529T045130Z/llama_cpp_cached_decode_greedy_output_comparison.stdout.log",
+    "claim-verification/results/aeronum_core_gguf_cached_decode_llama_cpp_greedy_output_parity_7900xtx_20260529T045130Z/llama_cpp_cached_decode_greedy_output_comparison.stderr.log",
+    "claim-verification/results/aeronum_core_gguf_cached_decode_llama_cpp_greedy_output_parity_7900xtx_20260529T045130Z/llama_cpp_cached_decode_greedy_output_comparison.exit_code.txt",
+    "claim-verification/results/aeronum_core_gguf_cached_decode_llama_cpp_greedy_output_parity_7900xtx_20260529T045130Z/command.txt",
+    "claim-verification/results/aeronum_core_gguf_cached_decode_llama_cpp_greedy_output_parity_7900xtx_20260529T045130Z/source_metadata.txt",
+    "claim-verification/results/aeronum_core_gguf_cached_decode_llama_cpp_greedy_output_parity_7900xtx_20260529T045130Z/hardware_software_metadata.txt",
+    "claim-verification/results/aeronum_core_gguf_cached_decode_llama_cpp_greedy_output_parity_7900xtx_20260529T045130Z/cargo_test_core.stdout.log",
+    "claim-verification/results/aeronum_core_gguf_cached_decode_llama_cpp_greedy_output_parity_7900xtx_20260529T045130Z/cargo_test_core.stderr.log",
+    "claim-verification/results/aeronum_core_gguf_cached_decode_llama_cpp_greedy_output_parity_7900xtx_20260529T045130Z/cargo_test_core.exit_code.txt",
+    "claim-verification/results/aeronum_core_gguf_cached_decode_llama_cpp_greedy_output_parity_7900xtx_20260529T045130Z/py_compile_compare.stdout.log",
+    "claim-verification/results/aeronum_core_gguf_cached_decode_llama_cpp_greedy_output_parity_7900xtx_20260529T045130Z/py_compile_compare.stderr.log",
+    "claim-verification/results/aeronum_core_gguf_cached_decode_llama_cpp_greedy_output_parity_7900xtx_20260529T045130Z/py_compile_compare.exit_code.txt"
+  ]
+}

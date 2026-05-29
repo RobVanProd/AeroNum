@@ -362,6 +362,21 @@ Verified current results:
   KV-cache parity, not GPU matmul, and not AeroNum-native GGUF token inference
   throughput
   ([result JSON](claim-verification/results/aeronum_core_gguf_cached_autoregressive_decode_7900xtx_20260529T043942Z/claim_result.json)).
+- `benchmarks/gguf/compare_llama_cpp_greedy_output.py` now compares that
+  cached AeroNum greedy decode output against llama.cpp CLI greedy output for
+  the same prompt and model. The cached AeroNum artifact generated text
+  `Hello!` with token IDs 22177 and 1033 after verifying each cached step
+  against the full-context path. llama.cpp was run with
+  `tokenizer.ggml.add_bos_token=bool:false`, `--temp 0`, `--top-k 1`,
+  `--top-p 1.0`, `--min-p 0.0`, `--repeat-penalty 1.0`,
+  `--no-conversation`, and `--no-display-prompt`; it offloaded 41/41 layers
+  to ROCm0 `Radeon RX 7900 XTX`, produced normalized generated text `Hello!`,
+  and that text tokenized with `llama-tokenize --no-bos` to IDs 22177 and
+  1033. This is cached AeroNum deterministic greedy generated-output parity
+  for one fixed prompt only; it is not an internal llama.cpp detokenization or
+  KV-cache trace, not sampled-output parity, not optimized retained-state
+  AeroNum KV-cache throughput, and not GPU GGUF execution by AeroNum
+  ([result JSON](claim-verification/results/aeronum_core_gguf_cached_decode_llama_cpp_greedy_output_parity_7900xtx_20260529T045130Z/claim_result.json)).
 - `aeronum-core` now decodes that two-token generated piece sequence to
   generated text `Hello!`, and `benchmarks/gguf/compare_generated_text_tokenization.py`
   verified that llama.cpp tokenizes `Hello!` with `--no-bos` back to token IDs
@@ -525,7 +540,8 @@ Blocked or omitted claims:
   one-layer final-token CPU KV-cache attention parity for rows 1, 3, 22177,
   and 4, plus full 40-layer cached final-token CPU logits parity for the same
   fixed row sequence, plus two-token cached-final-logits greedy autoregressive
-  CPU decode for the fixed prompt, plus
+  CPU decode for the fixed prompt, plus cached-decode deterministic greedy
+  generated-output parity against llama.cpp CLI, plus
   generated-text decoding for that output with llama.cpp re-tokenization
   parity, plus deterministic greedy generated-output parity against llama.cpp
   CLI for that output, plus one-token sampled generated-output parity against

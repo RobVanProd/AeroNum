@@ -201,6 +201,23 @@ pub struct GgufSingleTokenFfnOutputSample {
     pub ffn_output_checksum: f64,
 }
 
+#[derive(Clone, Debug, PartialEq)]
+pub struct GgufSingleTokenLayerLogitsSample {
+    pub ffn: GgufSingleTokenFfnOutputSample,
+    pub layer_output_count: usize,
+    pub layer_output_checksum: f64,
+    pub final_norm_tensor_name: String,
+    pub final_rms_epsilon: f32,
+    pub final_rms: f64,
+    pub final_norm_weight_checksum: f64,
+    pub final_normalized_input_checksum: f64,
+    pub output_tensor_name: String,
+    pub output_row_count: u64,
+    pub logits: Vec<GgufQuantizedLogitValue>,
+    pub top_logits: Vec<GgufQuantizedLogitValue>,
+    pub logits_checksum: f64,
+}
+
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct GgufTokenizerIndex {
     pub token_count: usize,
@@ -1121,6 +1138,79 @@ impl GgufHeader {
             ffn_output,
             top_ffn_output,
             ffn_output_checksum,
+        })
+    }
+
+    pub fn read_single_token_layer_logits_sample(
+        &self,
+        input_tensor_name: &str,
+        input_row_index: u64,
+        attn_norm_tensor_name: &str,
+        value_tensor_name: &str,
+        attn_output_tensor_name: &str,
+        ffn_norm_tensor_name: &str,
+        gate_tensor_name: &str,
+        up_tensor_name: &str,
+        down_tensor_name: &str,
+        final_norm_tensor_name: &str,
+        output_tensor_name: &str,
+        top_k: usize,
+    ) -> Result<GgufSingleTokenLayerLogitsSample, GgufError> {
+        let ffn = self.read_single_token_ffn_output_sample(
+            input_tensor_name,
+            input_row_index,
+            attn_norm_tensor_name,
+            value_tensor_name,
+            attn_output_tensor_name,
+            ffn_norm_tensor_name,
+            gate_tensor_name,
+            up_tensor_name,
+            down_tensor_name,
+            top_k,
+        )?;
+        let input_values = &ffn.attention.value_projection.input.decoded_values;
+        if input_values.len() != ffn.attention.attention_output.len()
+            || input_values.len() != ffn.ffn_output.len()
+        {
+            return Err(GgufError::InvalidTensorRange(
+                "single-token layer output".to_string(),
+            ));
+        }
+        let layer_output = input_values
+            .iter()
+            .zip(ffn.attention.attention_output.iter())
+            .zip(ffn.ffn_output.iter())
+            .map(|((input, attention), ffn_value)| {
+                *input + attention.value as f32 + ffn_value.value as f32
+            })
+            .collect::<Vec<_>>();
+        let layer_output_checksum = checksum_f32_values(&layer_output);
+        let final_norm_weight = self.load_f32_tensor(final_norm_tensor_name)?.to_vec();
+        let (final_normalized_input, final_rms, final_rms_epsilon) =
+            rms_normalize_values(&layer_output, &final_norm_weight, self)?;
+        let output_row_count = self.tensor_row_count(output_tensor_name)?;
+        let logits = self.read_quantized_logits_for_values(
+            &final_normalized_input,
+            output_tensor_name,
+            0,
+            output_row_count,
+        )?;
+        let top_logits = top_k_logits(&logits, top_k);
+        let logits_checksum = checksum_logits(&logits);
+        Ok(GgufSingleTokenLayerLogitsSample {
+            ffn,
+            layer_output_count: layer_output.len(),
+            layer_output_checksum,
+            final_norm_tensor_name: final_norm_tensor_name.to_string(),
+            final_rms_epsilon,
+            final_rms,
+            final_norm_weight_checksum: checksum_f32_values(&final_norm_weight),
+            final_normalized_input_checksum: checksum_f32_values(&final_normalized_input),
+            output_tensor_name: output_tensor_name.to_string(),
+            output_row_count,
+            logits,
+            top_logits,
+            logits_checksum,
         })
     }
 

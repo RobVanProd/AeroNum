@@ -1,7 +1,8 @@
 pub mod model;
 
 pub use model::{
-    GgufError, GgufHeader, GgufMetadataValue, GgufQuantizedBlockSample, GgufQuantizedLogitValue,
+    GgufAttentionScoreSample, GgufError, GgufHeader, GgufMetadataValue,
+    GgufMultiTokenAttentionSample, GgufQuantizedBlockSample, GgufQuantizedLogitValue,
     GgufQuantizedNormalizedLogitsSample, GgufQuantizedPrefixLogitsSample,
     GgufQuantizedRowDotSample, GgufQuantizedRowSample, GgufSingleTokenAttentionOutputSample,
     GgufSingleTokenFfnOutputSample, GgufSingleTokenLayerLogitsSample, GgufTensorByteSample,

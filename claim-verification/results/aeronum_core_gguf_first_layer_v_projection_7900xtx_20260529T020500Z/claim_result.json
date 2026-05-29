@@ -1,0 +1,75 @@
+{
+  "claim_id": "aeronum_core_gguf_first_layer_v_projection_20260529",
+  "status": "verified_current_limited",
+  "source_commit": "cde074905f47cd629e39108e8b66f914ce2b3ef4",
+  "model_path": "/home/rob/models/mistralai_Mistral-Small-3.1-24B-Instruct-2503-Q4_K_M.gguf",
+  "model_sha256": "c5743c1bf39db0ae8a5ade5df0374b8e9e492754a199cfdad7ef393c1590f7c0",
+  "hardware": {
+    "gpu": "Radeon RX 7900 XTX",
+    "rocm_agent": "gfx1100"
+  },
+  "command": "cargo run --release -p aeronum-core --example gguf_quantized_block_smoke -- --model /home/rob/models/mistralai_Mistral-Small-3.1-24B-Instruct-2503-Q4_K_M.gguf --input-tensor token_embd.weight --norm-tensor blk.0.attn_norm.weight --output-tensor blk.0.attn_v.weight --q4-row 22177 --q6-row 100 --logit-start 0 --logit-rows 1024 --top-k 5",
+  "exit_code": 0,
+  "cargo_test_core_exit_code": 0,
+  "scope": "first-layer V-projection CPU arithmetic from decoded GGUF tensors",
+  "not_claimed": [
+    "full transformer inference",
+    "attention output",
+    "FFN execution",
+    "transformer hidden-state logits",
+    "generated-token logits",
+    "GPU matmul",
+    "AeroNum-native GGUF token inference throughput"
+  ],
+  "result": {
+    "input_tensor": "token_embd.weight",
+    "input_row": 22177,
+    "norm_tensor": "blk.0.attn_norm.weight",
+    "output_tensor": "blk.0.attn_v.weight",
+    "output_row_start": 0,
+    "output_row_count": 1024,
+    "dimension": 5120,
+    "rms_epsilon": 1e-05,
+    "rms": 0.004437135948,
+    "norm_weight_checksum": 1313663.83500959,
+    "normalized_input_checksum": -15302.11285621,
+    "raw_projection_logits_checksum": -12.64658262687,
+    "normalized_projection_logits_checksum": -74.339591649214,
+    "normalized_top_logits": [
+      {
+        "row_index": 94,
+        "value": 0.309351991875
+      },
+      {
+        "row_index": 919,
+        "value": 0.142624900185
+      },
+      {
+        "row_index": 750,
+        "value": 0.122716894268
+      },
+      {
+        "row_index": 1007,
+        "value": 0.120158460287
+      },
+      {
+        "row_index": 104,
+        "value": 0.114237367355
+      }
+    ],
+    "elapsed_ms_reported_by_example": 136.824213
+  },
+  "artifacts": [
+    "claim-verification/results/aeronum_core_gguf_first_layer_v_projection_7900xtx_20260529T020500Z/command_config.txt",
+    "claim-verification/results/aeronum_core_gguf_first_layer_v_projection_7900xtx_20260529T020500Z/source_metadata.txt",
+    "claim-verification/results/aeronum_core_gguf_first_layer_v_projection_7900xtx_20260529T020500Z/hardware_software_metadata.txt",
+    "claim-verification/results/aeronum_core_gguf_first_layer_v_projection_7900xtx_20260529T020500Z/gguf_first_layer_v_projection.committed.stdout.log",
+    "claim-verification/results/aeronum_core_gguf_first_layer_v_projection_7900xtx_20260529T020500Z/gguf_first_layer_v_projection.committed.stderr.log",
+    "claim-verification/results/aeronum_core_gguf_first_layer_v_projection_7900xtx_20260529T020500Z/gguf_first_layer_v_projection.committed.exit_code.txt",
+    "claim-verification/results/aeronum_core_gguf_first_layer_v_projection_7900xtx_20260529T020500Z/gguf_first_layer_v_projection.committed.time.txt",
+    "claim-verification/results/aeronum_core_gguf_first_layer_v_projection_7900xtx_20260529T020500Z/gguf_first_layer_v_projection_result.json",
+    "claim-verification/results/aeronum_core_gguf_first_layer_v_projection_7900xtx_20260529T020500Z/cargo_test_core.committed.stdout.log",
+    "claim-verification/results/aeronum_core_gguf_first_layer_v_projection_7900xtx_20260529T020500Z/cargo_test_core.committed.stderr.log",
+    "claim-verification/results/aeronum_core_gguf_first_layer_v_projection_7900xtx_20260529T020500Z/cargo_test_core.committed.exit_code.txt"
+  ]
+}

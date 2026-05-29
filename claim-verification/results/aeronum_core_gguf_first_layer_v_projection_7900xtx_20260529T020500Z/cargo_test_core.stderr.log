@@ -1,0 +1,4 @@
+   Compiling aeronum-core v0.0.0 (/home/rob/.openclaw.old/workspace/repos/AeroNum/core)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.06s
+     Running unittests src/lib.rs (target/debug/deps/aeronum_core-4120dc2448c7489e)
+   Doc-tests aeronum_core

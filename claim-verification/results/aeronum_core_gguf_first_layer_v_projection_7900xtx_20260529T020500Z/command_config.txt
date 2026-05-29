@@ -1,0 +1,6 @@
+Claim candidate: aeronum-core first-layer V projection CPU arithmetic from decoded GGUF tensors.
+Scope: Decode token_embd.weight row 22177, apply blk.0.attn_norm.weight RMS normalization, stream-decode all 1024 rows of blk.0.attn_v.weight, compute CPU dot products, and report top-k values.
+Not claimed: full transformer inference, attention output, FFN execution, generated-token logits, GPU matmul, or AeroNum-native GGUF token inference throughput.
+Evidence files: use the *.committed.* rerun files and gguf_first_layer_v_projection_result.json. The initial non-committed timing attempt is retained as raw output but exited 127 because /usr/bin/time was not present.
+Command:
+cargo run --release -p aeronum-core --example gguf_quantized_block_smoke -- --model /home/rob/models/mistralai_Mistral-Small-3.1-24B-Instruct-2503-Q4_K_M.gguf --input-tensor token_embd.weight --norm-tensor blk.0.attn_norm.weight --output-tensor blk.0.attn_v.weight --q4-row 22177 --q6-row 100 --logit-start 0 --logit-rows 1024 --top-k 5

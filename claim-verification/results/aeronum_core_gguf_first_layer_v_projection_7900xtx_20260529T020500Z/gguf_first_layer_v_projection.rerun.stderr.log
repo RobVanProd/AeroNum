@@ -1,0 +1,2 @@
+    Finished `release` profile [optimized] target(s) in 0.00s
+     Running `target/release/examples/gguf_quantized_block_smoke --model /home/rob/models/mistralai_Mistral-Small-3.1-24B-Instruct-2503-Q4_K_M.gguf --input-tensor token_embd.weight --norm-tensor blk.0.attn_norm.weight --output-tensor blk.0.attn_v.weight --q4-row 22177 --q6-row 100 --logit-start 0 --logit-rows 1024 --top-k 5`

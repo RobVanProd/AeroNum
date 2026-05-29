@@ -371,6 +371,18 @@ Verified current results:
   is not GPU GGUF execution or optimized AeroNum-native GGUF token inference
   throughput
   ([result JSON](claim-verification/results/aeronum_core_gguf_full_vocab_sampled_decode_7900xtx_20260529T034016Z/claim_result.json)).
+- `benchmarks/gguf/compare_llama_cpp_sampled_output.py` now compares that
+  one-token full-vocabulary sampled output against llama.cpp CLI sampled output
+  for the same prompt and model. The llama.cpp command used
+  `tokenizer.ggml.add_bos_token=bool:false`, `--seed 12345`, `--temp 1.0`,
+  `--top-k 0`, `--top-p 1.0`, and `--no-display-prompt`; it produced
+  normalized generated text `Hello`, and `llama-tokenize --no-bos` returned
+  token ID 22177, matching the AeroNum sampled result. This verifies sampled
+  generated-output parity for one fixed prompt and one generated token only; it
+  does not prove identical RNG or sampler internals, and is not an internal
+  llama.cpp detokenization trace, KV-cache parity, GPU GGUF execution by
+  AeroNum, or optimized AeroNum-native GGUF token inference throughput
+  ([result JSON](claim-verification/results/aeronum_core_gguf_llama_cpp_sampled_output_parity_7900xtx_20260529T035536Z/claim_result.json)).
 - `aeronum-core` now verifies a single-token first-layer attention-plus-FFN CPU
   subpath. The repo-owned release command ran the single-token attention-output
   subpath, added the residual, applied `blk.0.ffn_norm.weight`, computed all
@@ -463,13 +475,14 @@ Blocked or omitted claims:
   CPU greedy autoregressive token-piece decode loop for that prompt, plus
   generated-text decoding for that output with llama.cpp re-tokenization
   parity, plus deterministic greedy generated-output parity against llama.cpp
-  CLI for that output, plus a limited CPU full-context autoregressive
-  throughput baseline, plus a
+  CLI for that output, plus one-token sampled generated-output parity against
+  llama.cpp CLI, plus a limited CPU full-context autoregressive throughput
+  baseline, plus a
   single-token first-layer attention-plus-FFN CPU subpath through
   `blk.0.ffn_gate.weight`, `blk.0.ffn_up.weight`, and `blk.0.ffn_down.weight`,
   plus full-vocabulary final-head CPU logits from that single-token layer-0
   hidden state are verified, but exhaustive tokenizer parity, llama.cpp
-  internal-trace RoPE parity, llama.cpp sampled-output parity, llama.cpp
+  internal-trace RoPE parity, llama.cpp sampler-internals parity, llama.cpp
   detokenization-trace parity, KV-cache decoding, GPU GGUF execution, and
   optimized AeroNum-native token inference throughput are not yet verified. The
   verified

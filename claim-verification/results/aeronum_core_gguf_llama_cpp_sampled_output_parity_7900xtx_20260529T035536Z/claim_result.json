@@ -1,0 +1,74 @@
+{
+  "schema_version": 1,
+  "claim_id": "aeronum_core_gguf_llama_cpp_sampled_output_parity_20260529",
+  "status": "verified_current_limited",
+  "verified_on": "2026-05-29",
+  "source_commit": "8a27262a9fcfe4db7bf5bec65d3c0f4989d5ee3f",
+  "input_aeronum_result": "claim-verification/results/aeronum_core_gguf_full_vocab_sampled_decode_7900xtx_20260529T034016Z/gguf_full_vocab_sampled_decode_result.json",
+  "input_aeronum_source_commit": "1b5aee061791c936d277fd098dda0bbc016b8922",
+  "model_path": "/home/rob/models/mistralai_Mistral-Small-3.1-24B-Instruct-2503-Q4_K_M.gguf",
+  "model_sha256": "c5743c1bf39db0ae8a5ade5df0374b8e9e492754a199cfdad7ef393c1590f7c0",
+  "hardware": {
+    "gpu_0": "Radeon RX 7900 XTX / gfx1100 / PCI device 1002:744c",
+    "gpu_1": "AMD Radeon Graphics / gfx1036 / PCI device 1002:13c0"
+  },
+  "command": "python3 benchmarks/gguf/compare_llama_cpp_sampled_output.py --input claim-verification/results/aeronum_core_gguf_full_vocab_sampled_decode_7900xtx_20260529T034016Z/gguf_full_vocab_sampled_decode_result.json --model /home/rob/models/mistralai_Mistral-Small-3.1-24B-Instruct-2503-Q4_K_M.gguf --output claim-verification/results/aeronum_core_gguf_llama_cpp_sampled_output_parity_7900xtx_20260529T035536Z/llama_cpp_sampled_output_comparison.json",
+  "prompt": "<s>[INST]Hello[/INST]",
+  "prompt_token_ids": [
+    1,
+    3,
+    22177,
+    4
+  ],
+  "prompt_token_pieces": [
+    "<s>",
+    "[INST]",
+    "Hello",
+    "[/INST]"
+  ],
+  "decode_mode": "sample",
+  "sampling_scope": "full-vocab",
+  "sampling_candidate_count": 131072,
+  "seed": 12345,
+  "temperature": 1.0,
+  "llama_top_k": 0,
+  "comparison_exit_code": 0,
+  "cargo_test_core_exit_code": 0,
+  "py_compile_compare_exit_code": 0,
+  "aeronum_generated_token_ids": [
+    22177
+  ],
+  "aeronum_generated_text": "Hello",
+  "llama_generated_text_normalized": "Hello",
+  "llama_token_ids_from_normalized_text": [
+    22177
+  ],
+  "passed": true,
+  "llama_cli_wall_seconds": 2.891738769998483,
+  "llama_offloaded_layers": 41,
+  "llama_total_layers": 41,
+  "limitations": [
+    "compares sampled generated text and re-tokenized token IDs for one fixed prompt and one generated token only",
+    "does not prove identical RNG or sampler implementation internals",
+    "llama.cpp raw stdout includes final console newlines that are recorded separately",
+    "not an internal llama.cpp detokenization trace",
+    "not KV-cache parity",
+    "not GPU GGUF execution by AeroNum",
+    "not optimized AeroNum-native GGUF token inference throughput"
+  ],
+  "raw_artifacts": [
+    "claim-verification/results/aeronum_core_gguf_llama_cpp_sampled_output_parity_7900xtx_20260529T035536Z/llama_cpp_sampled_output_comparison.json",
+    "claim-verification/results/aeronum_core_gguf_llama_cpp_sampled_output_parity_7900xtx_20260529T035536Z/llama_cpp_sampled_output_comparison.stdout.log",
+    "claim-verification/results/aeronum_core_gguf_llama_cpp_sampled_output_parity_7900xtx_20260529T035536Z/llama_cpp_sampled_output_comparison.stderr.log",
+    "claim-verification/results/aeronum_core_gguf_llama_cpp_sampled_output_parity_7900xtx_20260529T035536Z/llama_cpp_sampled_output_comparison.exit_code.txt",
+    "claim-verification/results/aeronum_core_gguf_llama_cpp_sampled_output_parity_7900xtx_20260529T035536Z/command.txt",
+    "claim-verification/results/aeronum_core_gguf_llama_cpp_sampled_output_parity_7900xtx_20260529T035536Z/source_metadata.txt",
+    "claim-verification/results/aeronum_core_gguf_llama_cpp_sampled_output_parity_7900xtx_20260529T035536Z/hardware_software_metadata.txt",
+    "claim-verification/results/aeronum_core_gguf_llama_cpp_sampled_output_parity_7900xtx_20260529T035536Z/cargo_test_core.stdout.log",
+    "claim-verification/results/aeronum_core_gguf_llama_cpp_sampled_output_parity_7900xtx_20260529T035536Z/cargo_test_core.stderr.log",
+    "claim-verification/results/aeronum_core_gguf_llama_cpp_sampled_output_parity_7900xtx_20260529T035536Z/cargo_test_core.exit_code.txt",
+    "claim-verification/results/aeronum_core_gguf_llama_cpp_sampled_output_parity_7900xtx_20260529T035536Z/py_compile_compare.stdout.log",
+    "claim-verification/results/aeronum_core_gguf_llama_cpp_sampled_output_parity_7900xtx_20260529T035536Z/py_compile_compare.stderr.log",
+    "claim-verification/results/aeronum_core_gguf_llama_cpp_sampled_output_parity_7900xtx_20260529T035536Z/py_compile_compare.exit_code.txt"
+  ]
+}

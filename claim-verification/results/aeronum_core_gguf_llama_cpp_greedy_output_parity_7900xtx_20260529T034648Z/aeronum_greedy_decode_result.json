@@ -1,0 +1,755 @@
+{
+    "benchmark": "gguf_prompt_autoregressive_decode_smoke",
+    "model_path": "/home/rob/models/mistralai_Mistral-Small-3.1-24B-Instruct-2503-Q4_K_M.gguf",
+    "elapsed_ms": 226071.011861,
+    "gguf_version": 3,
+    "tensor_count": 363,
+    "metadata_count": 45,
+    "file_size": 14333910496,
+    "prompt": "<s>[INST]Hello[/INST]",
+    "prompt_token_ids": [
+        1,
+        3,
+        22177,
+        4
+    ],
+    "prompt_token_pieces": [
+        "<s>",
+        "[INST]",
+        "Hello",
+        "[/INST]"
+    ],
+    "add_bos": false,
+    "parse_special": true,
+    "max_new_tokens": 2,
+    "decode_mode": "greedy",
+    "sampling_scope": "top-k",
+    "top_k": 5,
+    "temperature": 1.0,
+    "initial_seed": 12345,
+    "final_seed": 12345,
+    "generated_token_count": 2,
+    "generated_tokens_per_second": 0.00884677776,
+    "generated_token_ids": [
+        22177,
+        1033
+    ],
+    "generated_token_pieces": [
+        "Hello",
+        "!"
+    ],
+    "generated_piece_sequence": "Hello!",
+    "generated_text": "Hello!",
+    "final_context_token_ids": [
+        1,
+        3,
+        22177,
+        4,
+        22177,
+        1033
+    ],
+    "final_context_token_pieces": [
+        "<s>",
+        "[INST]",
+        "Hello",
+        "[/INST]",
+        "Hello",
+        "!"
+    ],
+    "steps": [
+        {
+            "step_index": 0,
+            "decode_mode": "greedy",
+            "sampling_scope": "top-k",
+            "temperature": 1.0,
+            "seed_before": 12345,
+            "seed_after": 12345,
+            "sample_draw": 0.0,
+            "sampling_candidate_count": 5,
+            "selected_probability": 0.995944206615,
+            "selected_cumulative_probability": 0.995944206615,
+            "context_token_ids": [
+                1,
+                3,
+                22177,
+                4
+            ],
+            "context_token_pieces": [
+                "<s>",
+                "[INST]",
+                "Hello",
+                "[/INST]"
+            ],
+            "context_token_count": 4,
+            "layer_start": 0,
+            "layer_count": 40,
+            "layer_summaries": [
+                {
+                    "layer_index": 0,
+                    "attention_score_count": 320,
+                    "attention_score_checksum": 52685.93341732299,
+                    "layer_output_checksum": -17684.18296758
+                },
+                {
+                    "layer_index": 1,
+                    "attention_score_count": 320,
+                    "attention_score_checksum": 56474.253118092245,
+                    "layer_output_checksum": -46496.12394618
+                },
+                {
+                    "layer_index": 2,
+                    "attention_score_count": 320,
+                    "attention_score_checksum": 73063.24551854856,
+                    "layer_output_checksum": 1253361.45293458
+                },
+                {
+                    "layer_index": 3,
+                    "attention_score_count": 320,
+                    "attention_score_checksum": -26922.455129895152,
+                    "layer_output_checksum": 1245542.63420997
+                },
+                {
+                    "layer_index": 4,
+                    "attention_score_count": 320,
+                    "attention_score_checksum": 69.750487641685,
+                    "layer_output_checksum": 1190742.00907758
+                },
+                {
+                    "layer_index": 5,
+                    "attention_score_count": 320,
+                    "attention_score_checksum": 31519.55825745335,
+                    "layer_output_checksum": 1129175.4379296
+                },
+                {
+                    "layer_index": 6,
+                    "attention_score_count": 320,
+                    "attention_score_checksum": 40415.03061501181,
+                    "layer_output_checksum": 1086783.54230229
+                },
+                {
+                    "layer_index": 7,
+                    "attention_score_count": 320,
+                    "attention_score_checksum": 40771.50015386428,
+                    "layer_output_checksum": 1091076.87058568
+                },
+                {
+                    "layer_index": 8,
+                    "attention_score_count": 320,
+                    "attention_score_checksum": 55327.954996801884,
+                    "layer_output_checksum": 1010632.63347074
+                },
+                {
+                    "layer_index": 9,
+                    "attention_score_count": 320,
+                    "attention_score_checksum": 55775.71939344511,
+                    "layer_output_checksum": 1039648.94291897
+                },
+                {
+                    "layer_index": 10,
+                    "attention_score_count": 320,
+                    "attention_score_checksum": 82849.49583499462,
+                    "layer_output_checksum": 1032398.10401037
+                },
+                {
+                    "layer_index": 11,
+                    "attention_score_count": 320,
+                    "attention_score_checksum": 77269.52317608676,
+                    "layer_output_checksum": 979189.70251057
+                },
+                {
+                    "layer_index": 12,
+                    "attention_score_count": 320,
+                    "attention_score_checksum": 110463.08470128199,
+                    "layer_output_checksum": 971952.61500612
+                },
+                {
+                    "layer_index": 13,
+                    "attention_score_count": 320,
+                    "attention_score_checksum": 99666.22666421813,
+                    "layer_output_checksum": 1031699.24268616
+                },
+                {
+                    "layer_index": 14,
+                    "attention_score_count": 320,
+                    "attention_score_checksum": 116162.29627544738,
+                    "layer_output_checksum": 1002121.0252686
+                },
+                {
+                    "layer_index": 15,
+                    "attention_score_count": 320,
+                    "attention_score_checksum": 93479.64176266867,
+                    "layer_output_checksum": 915088.33788666
+                },
+                {
+                    "layer_index": 16,
+                    "attention_score_count": 320,
+                    "attention_score_checksum": 82017.97448053153,
+                    "layer_output_checksum": 925262.76883423
+                },
+                {
+                    "layer_index": 17,
+                    "attention_score_count": 320,
+                    "attention_score_checksum": 108339.82800872216,
+                    "layer_output_checksum": 829768.18194004
+                },
+                {
+                    "layer_index": 18,
+                    "attention_score_count": 320,
+                    "attention_score_checksum": 111255.81216125592,
+                    "layer_output_checksum": 965683.36042838
+                },
+                {
+                    "layer_index": 19,
+                    "attention_score_count": 320,
+                    "attention_score_checksum": 92726.70638801284,
+                    "layer_output_checksum": 801536.04375897
+                },
+                {
+                    "layer_index": 20,
+                    "attention_score_count": 320,
+                    "attention_score_checksum": 93763.69478124382,
+                    "layer_output_checksum": 859664.05874492
+                },
+                {
+                    "layer_index": 21,
+                    "attention_score_count": 320,
+                    "attention_score_checksum": 71520.16560755997,
+                    "layer_output_checksum": 768498.84075801
+                },
+                {
+                    "layer_index": 22,
+                    "attention_score_count": 320,
+                    "attention_score_checksum": 61167.81301524634,
+                    "layer_output_checksum": 755644.07766581
+                },
+                {
+                    "layer_index": 23,
+                    "attention_score_count": 320,
+                    "attention_score_checksum": 84998.71366073284,
+                    "layer_output_checksum": 598090.59168494
+                },
+                {
+                    "layer_index": 24,
+                    "attention_score_count": 320,
+                    "attention_score_checksum": 72165.63927858032,
+                    "layer_output_checksum": 792791.89227708
+                },
+                {
+                    "layer_index": 25,
+                    "attention_score_count": 320,
+                    "attention_score_checksum": 58664.41044711263,
+                    "layer_output_checksum": 885707.24294704
+                },
+                {
+                    "layer_index": 26,
+                    "attention_score_count": 320,
+                    "attention_score_checksum": 47602.784660976125,
+                    "layer_output_checksum": 1010345.5971311
+                },
+                {
+                    "layer_index": 27,
+                    "attention_score_count": 320,
+                    "attention_score_checksum": 43502.654068414064,
+                    "layer_output_checksum": 997101.79526833
+                },
+                {
+                    "layer_index": 28,
+                    "attention_score_count": 320,
+                    "attention_score_checksum": 81835.82515392403,
+                    "layer_output_checksum": 1036679.28585617
+                },
+                {
+                    "layer_index": 29,
+                    "attention_score_count": 320,
+                    "attention_score_checksum": 60556.74248164503,
+                    "layer_output_checksum": 1104540.46903499
+                },
+                {
+                    "layer_index": 30,
+                    "attention_score_count": 320,
+                    "attention_score_checksum": 97654.32080036738,
+                    "layer_output_checksum": 1131872.62998473
+                },
+                {
+                    "layer_index": 31,
+                    "attention_score_count": 320,
+                    "attention_score_checksum": 65736.283929685,
+                    "layer_output_checksum": 1011152.23092398
+                },
+                {
+                    "layer_index": 32,
+                    "attention_score_count": 320,
+                    "attention_score_checksum": 80464.83813065219,
+                    "layer_output_checksum": 970640.38716919
+                },
+                {
+                    "layer_index": 33,
+                    "attention_score_count": 320,
+                    "attention_score_checksum": 61983.18898080347,
+                    "layer_output_checksum": 1189212.66293656
+                },
+                {
+                    "layer_index": 34,
+                    "attention_score_count": 320,
+                    "attention_score_checksum": 80798.00381233948,
+                    "layer_output_checksum": 1306754.85460796
+                },
+                {
+                    "layer_index": 35,
+                    "attention_score_count": 320,
+                    "attention_score_checksum": 91868.63340062168,
+                    "layer_output_checksum": 1391200.4720006
+                },
+                {
+                    "layer_index": 36,
+                    "attention_score_count": 320,
+                    "attention_score_checksum": 64925.437462352274,
+                    "layer_output_checksum": 1380630.65435804
+                },
+                {
+                    "layer_index": 37,
+                    "attention_score_count": 320,
+                    "attention_score_checksum": 104550.68064051645,
+                    "layer_output_checksum": 1581412.32466011
+                },
+                {
+                    "layer_index": 38,
+                    "attention_score_count": 320,
+                    "attention_score_checksum": 104873.04499356667,
+                    "layer_output_checksum": 991348.14438439
+                },
+                {
+                    "layer_index": 39,
+                    "attention_score_count": 320,
+                    "attention_score_checksum": 142508.61109070032,
+                    "layer_output_checksum": 976930.64835763
+                }
+            ],
+            "final_token_position": 3,
+            "final_rms": 0.498891906151,
+            "logit_count": 131072,
+            "logits_checksum": 8962826250.316875,
+            "greedy_token_id": 22177,
+            "greedy_token_piece": "Hello",
+            "selected_token_id": 22177,
+            "selected_token_piece": "Hello",
+            "top_next_token_logits": [
+                {
+                    "token_id": 22177,
+                    "piece": "Hello",
+                    "value": 30.702155899895
+                },
+                {
+                    "token_id": 37133,
+                    "piece": "Hi",
+                    "value": 25.080459681418
+                },
+                {
+                    "token_id": 45383,
+                    "piece": "\u0120Hello",
+                    "value": 22.986648752664
+                },
+                {
+                    "token_id": 46634,
+                    "piece": "Hey",
+                    "value": 18.484649678113
+                },
+                {
+                    "token_id": 29706,
+                    "piece": "hello",
+                    "value": 17.988335139899
+                }
+            ],
+            "sampling_candidates": [
+                {
+                    "token_id": 22177,
+                    "piece": "Hello",
+                    "value": 30.702155899895,
+                    "probability": 0.995944206615,
+                    "cumulative_probability": 0.995944206615
+                },
+                {
+                    "token_id": 37133,
+                    "piece": "Hi",
+                    "value": 25.080459681418,
+                    "probability": 0.003603822256,
+                    "cumulative_probability": 0.999548028871
+                },
+                {
+                    "token_id": 45383,
+                    "piece": "\u0120Hello",
+                    "value": 22.986648752664,
+                    "probability": 0.000444050978,
+                    "cumulative_probability": 0.999992079849
+                },
+                {
+                    "token_id": 46634,
+                    "piece": "Hey",
+                    "value": 18.484649678113,
+                    "probability": 4.923109e-06,
+                    "cumulative_probability": 0.999997002958
+                },
+                {
+                    "token_id": 29706,
+                    "piece": "hello",
+                    "value": 17.988335139899,
+                    "probability": 2.997042e-06,
+                    "cumulative_probability": 1.0
+                }
+            ],
+            "elapsed_ms": 100477.146915
+        },
+        {
+            "step_index": 1,
+            "decode_mode": "greedy",
+            "sampling_scope": "top-k",
+            "temperature": 1.0,
+            "seed_before": 12345,
+            "seed_after": 12345,
+            "sample_draw": 0.0,
+            "sampling_candidate_count": 5,
+            "selected_probability": 0.999997993185,
+            "selected_cumulative_probability": 0.999997993185,
+            "context_token_ids": [
+                1,
+                3,
+                22177,
+                4,
+                22177
+            ],
+            "context_token_pieces": [
+                "<s>",
+                "[INST]",
+                "Hello",
+                "[/INST]",
+                "Hello"
+            ],
+            "context_token_count": 5,
+            "layer_start": 0,
+            "layer_count": 40,
+            "layer_summaries": [
+                {
+                    "layer_index": 0,
+                    "attention_score_count": 480,
+                    "attention_score_checksum": 122126.48639028851,
+                    "layer_output_checksum": -36688.23985748
+                },
+                {
+                    "layer_index": 1,
+                    "attention_score_count": 480,
+                    "attention_score_checksum": 121082.10722699156,
+                    "layer_output_checksum": -77594.41088449
+                },
+                {
+                    "layer_index": 2,
+                    "attention_score_count": 480,
+                    "attention_score_checksum": 176088.78688458438,
+                    "layer_output_checksum": 1212890.94412917
+                },
+                {
+                    "layer_index": 3,
+                    "attention_score_count": 480,
+                    "attention_score_checksum": -78940.4545671016,
+                    "layer_output_checksum": 1182773.82298936
+                },
+                {
+                    "layer_index": 4,
+                    "attention_score_count": 480,
+                    "attention_score_checksum": -7108.691367531294,
+                    "layer_output_checksum": 1102715.65249324
+                },
+                {
+                    "layer_index": 5,
+                    "attention_score_count": 480,
+                    "attention_score_checksum": 50761.764173385214,
+                    "layer_output_checksum": 1002702.10568301
+                },
+                {
+                    "layer_index": 6,
+                    "attention_score_count": 480,
+                    "attention_score_checksum": 74288.0778424202,
+                    "layer_output_checksum": 922377.15036334
+                },
+                {
+                    "layer_index": 7,
+                    "attention_score_count": 480,
+                    "attention_score_checksum": 80662.78582700499,
+                    "layer_output_checksum": 992894.9656861
+                },
+                {
+                    "layer_index": 8,
+                    "attention_score_count": 480,
+                    "attention_score_checksum": 119315.08664277711,
+                    "layer_output_checksum": 877498.67998462
+                },
+                {
+                    "layer_index": 9,
+                    "attention_score_count": 480,
+                    "attention_score_checksum": 87430.4486136391,
+                    "layer_output_checksum": 854939.3545138
+                },
+                {
+                    "layer_index": 10,
+                    "attention_score_count": 480,
+                    "attention_score_checksum": 175126.19317663694,
+                    "layer_output_checksum": 842045.34700107
+                },
+                {
+                    "layer_index": 11,
+                    "attention_score_count": 480,
+                    "attention_score_checksum": 157768.24272990733,
+                    "layer_output_checksum": 734167.44176128
+                },
+                {
+                    "layer_index": 12,
+                    "attention_score_count": 480,
+                    "attention_score_checksum": 253258.046962363,
+                    "layer_output_checksum": 712571.62016563
+                },
+                {
+                    "layer_index": 13,
+                    "attention_score_count": 480,
+                    "attention_score_checksum": 223866.59063709888,
+                    "layer_output_checksum": 807662.20330308
+                },
+                {
+                    "layer_index": 14,
+                    "attention_score_count": 480,
+                    "attention_score_checksum": 282722.2865079884,
+                    "layer_output_checksum": 769081.37778439
+                },
+                {
+                    "layer_index": 15,
+                    "attention_score_count": 480,
+                    "attention_score_checksum": 206291.05844069578,
+                    "layer_output_checksum": 687116.45058682
+                },
+                {
+                    "layer_index": 16,
+                    "attention_score_count": 480,
+                    "attention_score_checksum": 167684.43057226518,
+                    "layer_output_checksum": 682933.05319317
+                },
+                {
+                    "layer_index": 17,
+                    "attention_score_count": 480,
+                    "attention_score_checksum": 251402.74401475306,
+                    "layer_output_checksum": 472362.11017824
+                },
+                {
+                    "layer_index": 18,
+                    "attention_score_count": 480,
+                    "attention_score_checksum": 265898.5483809048,
+                    "layer_output_checksum": 798923.90924107
+                },
+                {
+                    "layer_index": 19,
+                    "attention_score_count": 480,
+                    "attention_score_checksum": 193451.5555272535,
+                    "layer_output_checksum": 373172.27898927
+                },
+                {
+                    "layer_index": 20,
+                    "attention_score_count": 480,
+                    "attention_score_checksum": 185487.45106084345,
+                    "layer_output_checksum": 453129.68090525
+                },
+                {
+                    "layer_index": 21,
+                    "attention_score_count": 480,
+                    "attention_score_checksum": 138578.74367586724,
+                    "layer_output_checksum": 219938.94753223
+                },
+                {
+                    "layer_index": 22,
+                    "attention_score_count": 480,
+                    "attention_score_checksum": 116384.79670874329,
+                    "layer_output_checksum": 130203.09826182
+                },
+                {
+                    "layer_index": 23,
+                    "attention_score_count": 480,
+                    "attention_score_checksum": 172546.8913403822,
+                    "layer_output_checksum": -53936.77372518
+                },
+                {
+                    "layer_index": 24,
+                    "attention_score_count": 480,
+                    "attention_score_checksum": 141286.79110407893,
+                    "layer_output_checksum": 163311.68842691
+                },
+                {
+                    "layer_index": 25,
+                    "attention_score_count": 480,
+                    "attention_score_checksum": 98658.24351867301,
+                    "layer_output_checksum": 223858.41093668
+                },
+                {
+                    "layer_index": 26,
+                    "attention_score_count": 480,
+                    "attention_score_checksum": 78703.25222227052,
+                    "layer_output_checksum": 455141.53338835
+                },
+                {
+                    "layer_index": 27,
+                    "attention_score_count": 480,
+                    "attention_score_checksum": 72267.20402776763,
+                    "layer_output_checksum": 497485.65950039
+                },
+                {
+                    "layer_index": 28,
+                    "attention_score_count": 480,
+                    "attention_score_checksum": 150826.10916743046,
+                    "layer_output_checksum": 582812.41090243
+                },
+                {
+                    "layer_index": 29,
+                    "attention_score_count": 480,
+                    "attention_score_checksum": 117779.16402196616,
+                    "layer_output_checksum": 745360.44907991
+                },
+                {
+                    "layer_index": 30,
+                    "attention_score_count": 480,
+                    "attention_score_checksum": 187965.06519101546,
+                    "layer_output_checksum": 898625.49208325
+                },
+                {
+                    "layer_index": 31,
+                    "attention_score_count": 480,
+                    "attention_score_checksum": 130370.79812351298,
+                    "layer_output_checksum": 663911.68202841
+                },
+                {
+                    "layer_index": 32,
+                    "attention_score_count": 480,
+                    "attention_score_checksum": 150136.69000856517,
+                    "layer_output_checksum": 443311.34200236
+                },
+                {
+                    "layer_index": 33,
+                    "attention_score_count": 480,
+                    "attention_score_checksum": 124548.21920411372,
+                    "layer_output_checksum": 582407.29670245
+                },
+                {
+                    "layer_index": 34,
+                    "attention_score_count": 480,
+                    "attention_score_checksum": 154026.53100237012,
+                    "layer_output_checksum": 871202.57906389
+                },
+                {
+                    "layer_index": 35,
+                    "attention_score_count": 480,
+                    "attention_score_checksum": 188760.69953819166,
+                    "layer_output_checksum": 957586.58335005
+                },
+                {
+                    "layer_index": 36,
+                    "attention_score_count": 480,
+                    "attention_score_checksum": 124830.42039248665,
+                    "layer_output_checksum": 1317069.14316836
+                },
+                {
+                    "layer_index": 37,
+                    "attention_score_count": 480,
+                    "attention_score_checksum": 234142.68866138332,
+                    "layer_output_checksum": 1963606.64273957
+                },
+                {
+                    "layer_index": 38,
+                    "attention_score_count": 480,
+                    "attention_score_checksum": 213688.36776959396,
+                    "layer_output_checksum": 1235376.16943902
+                },
+                {
+                    "layer_index": 39,
+                    "attention_score_count": 480,
+                    "attention_score_checksum": 299863.7331269522,
+                    "layer_output_checksum": 1594956.35846305
+                }
+            ],
+            "final_token_position": 4,
+            "final_rms": 0.440909981144,
+            "logit_count": 131072,
+            "logits_checksum": -12572921663.746782,
+            "greedy_token_id": 1033,
+            "greedy_token_piece": "!",
+            "selected_token_id": 1033,
+            "selected_token_piece": "!",
+            "top_next_token_logits": [
+                {
+                    "token_id": 1033,
+                    "piece": "!",
+                    "value": 30.194520660236
+                },
+                {
+                    "token_id": 5338,
+                    "piece": "!\u010a\u010a",
+                    "value": 16.133496891497
+                },
+                {
+                    "token_id": 1044,
+                    "piece": ",",
+                    "value": 15.718870704124
+                },
+                {
+                    "token_id": 2156,
+                    "piece": "\u0120there",
+                    "value": 15.36322797206
+                },
+                {
+                    "token_id": 45949,
+                    "piece": "!,",
+                    "value": 15.316588928011
+                }
+            ],
+            "sampling_candidates": [
+                {
+                    "token_id": 1033,
+                    "piece": "!",
+                    "value": 30.194520660236,
+                    "probability": 0.999997993185,
+                    "cumulative_probability": 0.999997993185
+                },
+                {
+                    "token_id": 5338,
+                    "piece": "!\u010a\u010a",
+                    "value": 16.133496891497,
+                    "probability": 7.82301e-07,
+                    "cumulative_probability": 0.999998775486
+                },
+                {
+                    "token_id": 1044,
+                    "piece": ",",
+                    "value": 15.718870704124,
+                    "probability": 5.16778e-07,
+                    "cumulative_probability": 0.999999292264
+                },
+                {
+                    "token_id": 2156,
+                    "piece": "\u0120there",
+                    "value": 15.36322797206,
+                    "probability": 3.62118e-07,
+                    "cumulative_probability": 0.999999654383
+                },
+                {
+                    "token_id": 45949,
+                    "piece": "!,",
+                    "value": 15.316588928011,
+                    "probability": 3.45617e-07,
+                    "cumulative_probability": 1.0
+                }
+            ],
+            "elapsed_ms": 125397.343223
+        }
+    ],
+    "limitations": [
+        "CPU autoregressive token-piece selection for one fixed prompt only",
+        "sample mode supports top-k or full-vocabulary sampling according to sampling_scope",
+        "recomputes the full context for each generated token without KV cache",
+        "generated_piece_sequence is tokenizer piece concatenation, not full detokenization parity",
+        "not GPU matmul",
+        "not AeroNum-native GGUF token inference throughput"
+    ]
+}

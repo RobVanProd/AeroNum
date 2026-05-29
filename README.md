@@ -322,6 +322,19 @@ Verified current results:
   sampled decoding, KV-cache decoding, or AeroNum-native GGUF token inference
   throughput
   ([result JSON](claim-verification/results/aeronum_core_gguf_generated_text_tokenization_7900xtx_20260529T031341Z/claim_result.json)).
+- `benchmarks/gguf/compare_llama_cpp_greedy_output.py` now compares the current
+  AeroNum two-token greedy output against llama.cpp CLI greedy output for the
+  same prompt and model. The current AeroNum release command generated token
+  IDs 22177 and 1033, pieces `Hello` and `!`, and text `Hello!`; llama.cpp was
+  run with `tokenizer.ggml.add_bos_token=bool:false`, `--temp 0`, `--top-k 1`,
+  and `--no-display-prompt`, then its normalized generated text `Hello!` was
+  tokenized back to IDs 22177 and 1033. This verifies deterministic greedy
+  generated-output parity for one fixed prompt only; llama.cpp raw stdout
+  includes final console newlines that are recorded separately, and this is not
+  sampled-output parity, an internal llama.cpp detokenization trace, KV-cache
+  parity, GPU GGUF execution by AeroNum, or optimized AeroNum-native GGUF token
+  inference throughput
+  ([result JSON](claim-verification/results/aeronum_core_gguf_llama_cpp_greedy_output_parity_7900xtx_20260529T034648Z/claim_result.json)).
 - The same CPU full-context autoregressive path now reports a limited
   generated-token throughput metric. On the fixed two-token greedy decode above,
   the repo-owned release command reported `generated_tokens_per_second` of
@@ -449,8 +462,9 @@ Blocked or omitted claims:
   one-step greedy next-token piece selection for that prompt, plus a two-token
   CPU greedy autoregressive token-piece decode loop for that prompt, plus
   generated-text decoding for that output with llama.cpp re-tokenization
-  parity, plus a limited CPU full-context autoregressive throughput baseline,
-  plus a
+  parity, plus deterministic greedy generated-output parity against llama.cpp
+  CLI for that output, plus a limited CPU full-context autoregressive
+  throughput baseline, plus a
   single-token first-layer attention-plus-FFN CPU subpath through
   `blk.0.ffn_gate.weight`, `blk.0.ffn_up.weight`, and `blk.0.ffn_down.weight`,
   plus full-vocabulary final-head CPU logits from that single-token layer-0

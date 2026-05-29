@@ -144,6 +144,7 @@ fn main() {
     let logit_start = parse_u64_arg("--logit-start", 0);
     let logit_rows = parse_u64_arg("--logit-rows", 4096);
     let device_id = parse_i32_arg("--device", 0);
+    let retained_runtime = parse_bool_arg("--retained-runtime", false);
     let input_tensor = parse_arg("--input-tensor", "token_embd.weight");
     let final_norm_tensor = parse_arg("--final-norm-tensor", "output_norm.weight");
     let output_tensor = parse_arg("--output-tensor", "output.weight");
@@ -161,8 +162,8 @@ fn main() {
         .iter()
         .map(|token_id| *token_id as u64)
         .collect::<Vec<_>>();
-    let retained = header
-        .read_multi_layer_retained_kv_greedy_decode_sample(
+    let retained = if retained_runtime {
+        header.read_multi_layer_retained_kv_runtime_decode_sample(
             &input_tensor,
             &prompt_rows,
             layer_start,
@@ -172,7 +173,19 @@ fn main() {
             top_k,
             max_new_tokens,
         )
-        .expect("read retained KV decode sample");
+    } else {
+        header.read_multi_layer_retained_kv_greedy_decode_sample(
+            &input_tensor,
+            &prompt_rows,
+            layer_start,
+            layer_count,
+            &final_norm_tensor,
+            &output_tensor,
+            top_k,
+            max_new_tokens,
+        )
+    }
+    .expect("read retained KV decode sample");
     let retained_step = retained
         .steps
         .last()
@@ -232,14 +245,17 @@ fn main() {
             "\"generated_token_ids\":{},",
             "\"generated_token_pieces\":{},",
             "\"generated_text\":\"{}\",",
+            "\"retained_runtime\":{},",
+            "\"retained_full_context_verification\":{},",
             "\"retained_step_index\":{},",
             "\"retained_step_max_logits_abs_diff\":{:.12},",
             "\"retained_step_logits_checksum_diff\":{:.12},",
             "\"retained_step_top_token_matches\":{},",
             "\"gpu_logits\":{},",
-            "\"validation\":\"gpu_final_head_logits_match_cpu_prefix\",",
+            "\"validation\":\"{}\",",
             "\"limitations\":[",
             "\"uses retained CPU transformer state as the final-head input\",",
+            "\"retained runtime mode does not run full-context comparison inside the retained decode loop\",",
             "\"decodes GGUF quantized output.weight rows on CPU before GPU execution\",",
             "\"runs hipBLAS SGEMM for a configured output-vocabulary row range only\",",
             "\"not full q4_K/q6_K tensor execution on GPU\",",
@@ -261,10 +277,17 @@ fn main() {
         json_u64_array(&retained.generated_token_ids),
         json_string_array(&generated_token_pieces),
         json_escape(&generated_text),
+        retained_runtime,
+        retained.full_context_verification,
         retained_step.step_index,
         retained_step.logits_abs_max_diff,
         retained_step.logits_checksum_diff,
         retained_step.top_token_matches,
-        sample_json(&sample, &cpu_top_pieces, &gpu_top_pieces)
+        sample_json(&sample, &cpu_top_pieces, &gpu_top_pieces),
+        if sample.top_token_matches {
+            "gpu_final_head_logits_match_cpu"
+        } else {
+            "gpu_final_head_logits_differs_from_cpu"
+        }
     );
 }

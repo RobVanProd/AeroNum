@@ -260,6 +260,27 @@
       ]
     },
     {
+      "id": "aeronum_core_gguf_quantized_row_decode_20260529",
+      "status": "verified_current_limited",
+      "claim": "aeronum-core can locate GGUF Q4_K token_embd.weight and Q6_K output.weight tensors in the local Mistral GGUF file, validate known GGML block sizes, read selected full tensor rows, and CPU-decode 5120 values from each selected row. The repo-owned command `cargo run -p aeronum-core --example gguf_quantized_block_smoke -- --model /home/rob/models/mistralai_Mistral-Small-3.1-24B-Instruct-2503-Q4_K_M.gguf --q4-row 22177 --q6-row 100` passed against source commit 36365e312eb633d875dfa0e2cdec478b74764ceb and local model SHA-256 c5743c1bf39db0ae8a5ade5df0374b8e9e492754a199cfdad7ef393c1590f7c0. It reported GGUF version 3, 363 parsed tensor infos, 45 parsed metadata entries, file size 14333910496, token_embd.weight row 22177 as Q4_K with row count 131072, column count 5120, absolute row offset 622276896, row byte size 2880, 20 quantized blocks, block size 256, type size 144, row byte checksum 545126211, decoded count 5120, decoded checksum -708.97353995, decoded min -0.01200128, decoded max 0.01159585, and first decoded values 0.00040722, -0.00156045, -0.00057662, -0.00057662, -0.00156045, -0.00254428, -0.00451195, and 0.00631022. It reported output.weight row 100 as Q6_K with row count 131072, column count 5120, absolute row offset 8304256, row byte size 4200, 20 quantized blocks, block size 256, type size 210, row byte checksum 1067259579, decoded count 5120, decoded checksum -411.11805451, decoded min -0.03311157, decoded max 0.02814484, and first decoded values 0.00369918, -0.00143194, -0.00238657, -0.00202858, 0.00107396, 0.00214791, 0.00167060, and 0.00322187. This is selected-row CPU decode only, not full q4_K/q6_K tensor execution, not GPU matmul, and not AeroNum-native GGUF token inference throughput.",
+      "artifacts": [
+        "core/src/aeronn/model.rs",
+        "core/src/aeronn/mod.rs",
+        "core/src/lib.rs",
+        "core/examples/gguf_quantized_block_smoke.rs",
+        "claim-verification/results/aeronum_core_gguf_quantized_row_decode_7900xtx_20260529T011641Z/claim_result.json",
+        "claim-verification/results/aeronum_core_gguf_quantized_row_decode_7900xtx_20260529T011641Z/gguf_quantized_row_smoke_result.json",
+        "claim-verification/results/aeronum_core_gguf_quantized_row_decode_7900xtx_20260529T011641Z/gguf_quantized_row_smoke.stdout.log",
+        "claim-verification/results/aeronum_core_gguf_quantized_row_decode_7900xtx_20260529T011641Z/gguf_quantized_row_smoke.stderr.log",
+        "claim-verification/results/aeronum_core_gguf_quantized_row_decode_7900xtx_20260529T011641Z/gguf_quantized_row_smoke.exit_code.txt",
+        "claim-verification/results/aeronum_core_gguf_quantized_row_decode_7900xtx_20260529T011641Z/cargo_test_core.stdout.log",
+        "claim-verification/results/aeronum_core_gguf_quantized_row_decode_7900xtx_20260529T011641Z/cargo_test_core.stderr.log",
+        "claim-verification/results/aeronum_core_gguf_quantized_row_decode_7900xtx_20260529T011641Z/cargo_test_core.exit_code.txt",
+        "claim-verification/results/aeronum_core_gguf_quantized_row_decode_7900xtx_20260529T011641Z/command_config.txt",
+        "claim-verification/results/aeronum_core_gguf_quantized_row_decode_7900xtx_20260529T011641Z/hardware_software_metadata.txt"
+      ]
+    },
+    {
       "id": "aeronum_llama_cpp_cli_gguf_reference_20260528",
       "status": "verified_reference_only",
       "claim": "benchmarks/gguf/run_llama_cpp_cli.py ran a real local llama.cpp CLI ROCm GGUF inference reference on the local Mistral GGUF file. The llama.cpp build reported version 7074 (22e1ce2f8) with HIP 6.2.41133-dd7f95766, offloaded 41/41 layers to ROCm0 Radeon RX 7900 XTX, and measured 125.22 prompt eval tokens/s plus 44.58 eval tokens/s for 16 predicted tokens. This is a llama.cpp reference benchmark through an AeroNum repo wrapper, not AeroNum-native GGUF tensor execution.",
@@ -329,7 +350,7 @@
     {
       "id": "aeronum_gpt2_nccl_gguf_claims_20260528",
       "status": "blocked",
-      "claim": "AeroNum-vs-PyTorch GPT-2 training speedup, NCCL/MPI multi-GPU scaling, and AeroNum-native GGUF token-inference throughput claims are not included because no current AeroNum artifact or rerun verified them. A PyTorch/Hugging Face GPT-2 reference passed, AeroNum-owned tiny language-model, tiny transformer-forward, and tiny transformer output-projection training analogues passed but are not GPT-2, NCCL/DDP world size 1 passed, the integrated distributed_compare.py guard blocks the local two-device NCCL topology before launch, post-reboot NCCL attempts failed on the local Radeon RX 7900 XTX plus integrated AMD Radeon Graphics topology, a two-rank single-XTX attempt was rejected by RCCL as duplicate GPU usage, the AeroNum GGUF core result parses metadata, tokenizer string-array samples, the full tokenizer token array, tokenizer merges, tokenizer token-type array, exact-token-piece encode/decode for known special tokens, a byte-level BPE path with default and literal no-parse-special modes matching llama.cpp on 14 fixed prompts, tokenizer config, selected Llama hyperparameters, tensor directory records, tensor byte ranges, loads all 81 F32 tensors into LlamaModel, offloads those model weights through ROCm device 0, and verifies first-block CPU decode for one Q4_K tensor and one Q6_K tensor, but still reaches only placeholder generation. Full q4_K/q6_K tensor execution is not verified, and the GGUF token-inference result is a llama.cpp reference through an AeroNum repo wrapper.",
+      "claim": "AeroNum-vs-PyTorch GPT-2 training speedup, NCCL/MPI multi-GPU scaling, and AeroNum-native GGUF token-inference throughput claims are not included because no current AeroNum artifact or rerun verified them. A PyTorch/Hugging Face GPT-2 reference passed, AeroNum-owned tiny language-model, tiny transformer-forward, and tiny transformer output-projection training analogues passed but are not GPT-2, NCCL/DDP world size 1 passed, the integrated distributed_compare.py guard blocks the local two-device NCCL topology before launch, post-reboot NCCL attempts failed on the local Radeon RX 7900 XTX plus integrated AMD Radeon Graphics topology, a two-rank single-XTX attempt was rejected by RCCL as duplicate GPU usage, the AeroNum GGUF core result parses metadata, tokenizer string-array samples, the full tokenizer token array, tokenizer merges, tokenizer token-type array, exact-token-piece encode/decode for known special tokens, a byte-level BPE path with default and literal no-parse-special modes matching llama.cpp on 14 fixed prompts, tokenizer config, selected Llama hyperparameters, tensor directory records, tensor byte ranges, loads all 81 F32 tensors into LlamaModel, offloads those model weights through ROCm device 0, and verifies first-block plus selected-row CPU decode for one Q4_K tensor and one Q6_K tensor, but still reaches only placeholder generation. Full q4_K/q6_K tensor execution is not verified, and the GGUF token-inference result is a llama.cpp reference through an AeroNum repo wrapper.",
       "artifacts": [
         "claim-verification/results/aeronum_pytorch_gpt2_reference_7900xtx_20260528T224500Z/claim_result.json",
         "claim-verification/results/aeronum_tiny_lm_train_7900xtx_20260528T231229Z/claim_result.json",
@@ -357,7 +378,9 @@
         "claim-verification/results/aeronum_core_gguf_tokenizer_parse_modes_7900xtx_20260529T010000Z/claim_result.json",
         "claim-verification/results/aeronum_core_gguf_tokenizer_parse_modes_7900xtx_20260529T010000Z/tokenizer_compare_result.json",
         "claim-verification/results/aeronum_core_gguf_quantized_block_decode_7900xtx_20260529T010756Z/claim_result.json",
-        "claim-verification/results/aeronum_core_gguf_quantized_block_decode_7900xtx_20260529T010756Z/gguf_quantized_block_smoke_result.json"
+        "claim-verification/results/aeronum_core_gguf_quantized_block_decode_7900xtx_20260529T010756Z/gguf_quantized_block_smoke_result.json",
+        "claim-verification/results/aeronum_core_gguf_quantized_row_decode_7900xtx_20260529T011641Z/claim_result.json",
+        "claim-verification/results/aeronum_core_gguf_quantized_row_decode_7900xtx_20260529T011641Z/gguf_quantized_row_smoke_result.json"
       ]
     }
   ]

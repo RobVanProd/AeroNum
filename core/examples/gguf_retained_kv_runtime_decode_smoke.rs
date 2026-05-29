@@ -90,10 +90,6 @@ fn steps_json(sample: &GgufRetainedKvAutoregressiveDecodeSample, pieces: &[Vec<S
         .iter()
         .zip(pieces.iter())
         .map(|(step, top_pieces)| {
-            let full_sample = step
-                .full_sample
-                .as_ref()
-                .expect("full-context verifier sample");
             format!(
                 concat!(
                     "{{",
@@ -102,14 +98,9 @@ fn steps_json(sample: &GgufRetainedKvAutoregressiveDecodeSample, pieces: &[Vec<S
                     "\"query_input_row\":{},",
                     "\"cache_token_counts_before\":{},",
                     "\"cache_token_counts_after\":{},",
-                    "\"full_logits_checksum\":{:.12},",
                     "\"retained_logits_checksum\":{:.12},",
-                    "\"logits_abs_max_diff\":{:.12},",
-                    "\"logits_checksum_diff\":{:.12},",
-                    "\"top_token_matches\":{},",
                     "\"selected_token_id\":{},",
-                    "\"retained_top_logits\":{},",
-                    "\"validation\":\"{}\"",
+                    "\"retained_top_logits\":{}",
                     "}}"
                 ),
                 step.step_index,
@@ -117,21 +108,9 @@ fn steps_json(sample: &GgufRetainedKvAutoregressiveDecodeSample, pieces: &[Vec<S
                 step.query_input_row,
                 json_usize_array(&step.cache_token_counts_before),
                 json_usize_array(&step.cache_token_counts_after),
-                full_sample.logits_checksum,
                 step.retained_logits_checksum,
-                step.logits_abs_max_diff,
-                step.logits_checksum_diff,
-                step.top_token_matches,
                 step.selected_token_id,
-                json_top_token_array(&step.retained_top_logits, top_pieces),
-                if step.logits_abs_max_diff <= 0.000000001
-                    && step.logits_checksum_diff <= 0.000001
-                    && step.top_token_matches
-                {
-                    "retained_kv_logits_match_full_context"
-                } else {
-                    "retained_kv_logits_diff_exceeds_threshold"
-                }
+                json_top_token_array(&step.retained_top_logits, top_pieces)
             )
         })
         .collect::<Vec<_>>()
@@ -142,7 +121,7 @@ fn main() {
     let model_path = parse_arg("--model", "");
     if model_path.is_empty() {
         eprintln!(
-            "usage: gguf_retained_kv_autoregressive_decode_smoke --model <path> [--prompt <text>] [--max-new-tokens <count>]"
+            "usage: gguf_retained_kv_runtime_decode_smoke --model <path> [--prompt <text>] [--max-new-tokens <count>]"
         );
         std::process::exit(2);
     }
@@ -171,7 +150,7 @@ fn main() {
         .map(|token_id| *token_id as u64)
         .collect::<Vec<_>>();
     let sample = header
-        .read_multi_layer_retained_kv_greedy_decode_sample(
+        .read_multi_layer_retained_kv_runtime_decode_sample(
             &input_tensor,
             &prompt_rows,
             layer_start,
@@ -181,7 +160,7 @@ fn main() {
             top_k,
             max_new_tokens,
         )
-        .expect("read retained KV autoregressive decode sample");
+        .expect("read retained KV runtime decode sample");
     let generated_token_ids = sample
         .generated_token_ids
         .iter()
@@ -225,7 +204,7 @@ fn main() {
     println!(
         concat!(
             "{{",
-            "\"benchmark\":\"gguf_retained_kv_autoregressive_decode_smoke\",",
+            "\"benchmark\":\"gguf_retained_kv_runtime_decode_smoke\",",
             "\"model_path\":\"{}\",",
             "\"elapsed_ms\":{:.6},",
             "\"gguf_version\":{},",
@@ -251,14 +230,11 @@ fn main() {
             "\"generated_text\":\"{}\",",
             "\"final_context_token_ids\":{},",
             "\"final_context_token_pieces\":{},",
-            "\"max_logits_abs_diff\":{:.12},",
-            "\"max_logits_checksum_diff\":{:.12},",
-            "\"all_step_top_tokens_match\":{},",
             "\"steps\":[{}],",
             "\"limitations\":[",
-            "\"CPU retained-KV greedy autoregressive decode for one fixed prompt only\",",
-            "\"prefills prior prompt token K/V once and appends per-layer K/V for each decoded query token\",",
-            "\"each retained-KV step is verified against the full-context CPU logits path before token selection\",",
+            "\"CPU retained-KV greedy autoregressive decode timing for one fixed prompt only\",",
+            "\"full-context comparison is intentionally disabled in this runtime path\",",
+            "\"correctness is established only by comparing output to separately verified artifacts\",",
             "\"not sampled decoding\",",
             "\"not llama.cpp internal KV-cache parity\",",
             "\"not GPU GGUF execution\",",
@@ -290,9 +266,6 @@ fn main() {
         json_escape(&generated_text),
         json_u32_array(&final_context_token_ids),
         json_string_array(&final_context_token_pieces),
-        sample.max_logits_abs_diff,
-        sample.max_logits_checksum_diff,
-        sample.all_step_top_tokens_match,
         steps_json(&sample, &step_top_pieces)
     );
 }

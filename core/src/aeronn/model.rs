@@ -397,7 +397,7 @@ pub struct GgufRetainedKvDecodeStepSample {
     pub query_input_row: u64,
     pub cache_token_counts_before: Vec<usize>,
     pub cache_token_counts_after: Vec<usize>,
-    pub full_sample: GgufMultiLayerFinalLogitsSample,
+    pub full_sample: Option<GgufMultiLayerFinalLogitsSample>,
     pub retained_layer_summaries: Vec<GgufLayerExecutionSummary>,
     pub retained_final_rms: f64,
     pub retained_final_norm_weight_checksum: f64,
@@ -428,6 +428,7 @@ pub struct GgufRetainedKvAutoregressiveDecodeSample {
     pub rope_freq_base: f32,
     pub prefill_layer_summaries: Vec<GgufLayerExecutionSummary>,
     pub steps: Vec<GgufRetainedKvDecodeStepSample>,
+    pub full_context_verification: bool,
     pub max_logits_abs_diff: f64,
     pub max_logits_checksum_diff: f64,
     pub all_step_top_tokens_match: bool,
@@ -2895,6 +2896,55 @@ impl GgufHeader {
         top_k: usize,
         max_new_tokens: usize,
     ) -> Result<GgufRetainedKvAutoregressiveDecodeSample, GgufError> {
+        self.read_multi_layer_retained_kv_greedy_decode_sample_with_options(
+            input_tensor_name,
+            initial_input_rows,
+            layer_start,
+            layer_count,
+            final_norm_tensor_name,
+            output_tensor_name,
+            top_k,
+            max_new_tokens,
+            true,
+        )
+    }
+
+    pub fn read_multi_layer_retained_kv_runtime_decode_sample(
+        &self,
+        input_tensor_name: &str,
+        initial_input_rows: &[u64],
+        layer_start: usize,
+        layer_count: usize,
+        final_norm_tensor_name: &str,
+        output_tensor_name: &str,
+        top_k: usize,
+        max_new_tokens: usize,
+    ) -> Result<GgufRetainedKvAutoregressiveDecodeSample, GgufError> {
+        self.read_multi_layer_retained_kv_greedy_decode_sample_with_options(
+            input_tensor_name,
+            initial_input_rows,
+            layer_start,
+            layer_count,
+            final_norm_tensor_name,
+            output_tensor_name,
+            top_k,
+            max_new_tokens,
+            false,
+        )
+    }
+
+    fn read_multi_layer_retained_kv_greedy_decode_sample_with_options(
+        &self,
+        input_tensor_name: &str,
+        initial_input_rows: &[u64],
+        layer_start: usize,
+        layer_count: usize,
+        final_norm_tensor_name: &str,
+        output_tensor_name: &str,
+        top_k: usize,
+        max_new_tokens: usize,
+        verify_full_context: bool,
+    ) -> Result<GgufRetainedKvAutoregressiveDecodeSample, GgufError> {
         if initial_input_rows.len() < 2 || layer_count == 0 {
             return Err(GgufError::InvalidTensorRange(
                 "retained KV decode input".to_string(),
@@ -3211,15 +3261,19 @@ impl GgufHeader {
         for step_index in 0..max_new_tokens {
             let mut full_rows = context_prefix_rows.clone();
             full_rows.push(query_input_row);
-            let full_sample = self.read_multi_layer_final_logits_sample(
-                input_tensor_name,
-                &full_rows,
-                layer_start,
-                layer_count,
-                final_norm_tensor_name,
-                output_tensor_name,
-                top_k,
-            )?;
+            let full_sample = if verify_full_context {
+                Some(self.read_multi_layer_final_logits_sample(
+                    input_tensor_name,
+                    &full_rows,
+                    layer_start,
+                    layer_count,
+                    final_norm_tensor_name,
+                    output_tensor_name,
+                    top_k,
+                )?)
+            } else {
+                None
+            };
             let cache_token_counts_before = layer_caches
                 .iter()
                 .map(|cache| cache.keys.len())
@@ -3449,18 +3503,30 @@ impl GgufHeader {
             let retained_top_logits = top_k_logits(&retained_logits, top_k);
             let retained_logits_checksum = checksum_logits(&retained_logits);
             let logits_abs_max_diff = full_sample
-                .logits
-                .iter()
-                .zip(retained_logits.iter())
-                .map(|(left, right)| (left.value - right.value).abs())
-                .fold(0.0f64, f64::max);
-            let logits_checksum_diff =
-                (full_sample.logits_checksum - retained_logits_checksum).abs();
+                .as_ref()
+                .map(|sample| {
+                    sample
+                        .logits
+                        .iter()
+                        .zip(retained_logits.iter())
+                        .map(|(left, right)| (left.value - right.value).abs())
+                        .fold(0.0f64, f64::max)
+                })
+                .unwrap_or(0.0);
+            let logits_checksum_diff = full_sample
+                .as_ref()
+                .map(|sample| (sample.logits_checksum - retained_logits_checksum).abs())
+                .unwrap_or(0.0);
             let top_token_matches = full_sample
-                .top_logits
-                .first()
-                .zip(retained_top_logits.first())
-                .is_some_and(|(left, right)| left.row_index == right.row_index);
+                .as_ref()
+                .map(|sample| {
+                    sample
+                        .top_logits
+                        .first()
+                        .zip(retained_top_logits.first())
+                        .is_some_and(|(left, right)| left.row_index == right.row_index)
+                })
+                .unwrap_or(true);
             let selected_token_id = retained_top_logits
                 .first()
                 .ok_or_else(|| GgufError::InvalidTensorRange("retained top token".to_string()))?
@@ -3520,6 +3586,7 @@ impl GgufHeader {
             rope_freq_base,
             prefill_layer_summaries,
             steps,
+            full_context_verification: verify_full_context,
             max_logits_abs_diff,
             max_logits_checksum_diff,
             all_step_top_tokens_match,

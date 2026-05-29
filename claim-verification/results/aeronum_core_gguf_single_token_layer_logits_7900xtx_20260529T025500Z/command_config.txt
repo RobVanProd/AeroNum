@@ -1,0 +1,5 @@
+Claim candidate: aeronum-core single-token first-layer hidden-state final-head CPU logits from decoded GGUF tensors.
+Scope: Decode token_embd.weight row 22177, run the verified single-token attention-plus-FFN layer-0 CPU subpath, form the layer-0 residual hidden state, apply output_norm.weight RMS normalization, stream-decode all 131072 rows of output.weight, compute full-vocabulary logits, and report top-k values.
+Not claimed: full q4_K/q6_K transformer execution, multi-token attention scores, RoPE validation, generated-token logits, GPU matmul, or AeroNum-native GGUF token inference throughput.
+Command:
+cargo run --release -p aeronum-core --example gguf_single_token_layer_logits_smoke -- --model /home/rob/models/mistralai_Mistral-Small-3.1-24B-Instruct-2503-Q4_K_M.gguf --input-row 22177 --layer 0 --top-k 5

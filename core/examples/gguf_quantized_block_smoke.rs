@@ -255,10 +255,13 @@ fn main() {
     let model_path = parse_arg("--model", "");
     if model_path.is_empty() {
         eprintln!(
-            "usage: gguf_quantized_block_smoke --model <path> [--q4-row <index>] [--q6-row <index>]"
+            "usage: gguf_quantized_block_smoke --model <path> [--input-tensor <name>] [--output-tensor <name>] [--norm-tensor <name>] [--q4-row <index>] [--q6-row <index>]"
         );
         std::process::exit(2);
     }
+    let input_tensor = parse_arg("--input-tensor", "token_embd.weight");
+    let output_tensor = parse_arg("--output-tensor", "output.weight");
+    let norm_tensor = parse_arg("--norm-tensor", "output_norm.weight");
     let q4_row = parse_u64_arg("--q4-row", 22177);
     let q6_row = parse_u64_arg("--q6-row", 100);
     let logit_start = parse_u64_arg("--logit-start", 0);
@@ -268,25 +271,25 @@ fn main() {
     let start = Instant::now();
     let header = GgufHeader::read(&model_path).expect("read GGUF header");
     let q4_sample = header
-        .read_quantized_block_sample("token_embd.weight")
-        .expect("read token_embd.weight Q4_K block sample");
+        .read_quantized_block_sample(&input_tensor)
+        .expect("read input quantized block sample");
     let q6_sample = header
-        .read_quantized_block_sample("output.weight")
-        .expect("read output.weight Q6_K block sample");
+        .read_quantized_block_sample(&output_tensor)
+        .expect("read output quantized block sample");
     let q4_row_sample = header
-        .read_quantized_row_sample("token_embd.weight", q4_row)
-        .expect("read token_embd.weight Q4_K row sample");
+        .read_quantized_row_sample(&input_tensor, q4_row)
+        .expect("read input quantized row sample");
     let q6_row_sample = header
-        .read_quantized_row_sample("output.weight", q6_row)
-        .expect("read output.weight Q6_K row sample");
+        .read_quantized_row_sample(&output_tensor, q6_row)
+        .expect("read output quantized row sample");
     let row_dot_sample = header
-        .read_quantized_row_dot_sample("token_embd.weight", q4_row, "output.weight", q6_row)
+        .read_quantized_row_dot_sample(&input_tensor, q4_row, &output_tensor, q6_row)
         .expect("read quantized row dot sample");
     let prefix_logits_sample = header
         .read_quantized_prefix_logits_sample(
-            "token_embd.weight",
+            &input_tensor,
             q4_row,
-            "output.weight",
+            &output_tensor,
             logit_start,
             logit_rows,
             top_k,
@@ -294,10 +297,10 @@ fn main() {
         .expect("read quantized prefix logits sample");
     let normalized_logits_sample = header
         .read_quantized_normalized_logits_sample(
-            "token_embd.weight",
+            &input_tensor,
             q4_row,
-            "output_norm.weight",
-            "output.weight",
+            &norm_tensor,
+            &output_tensor,
             logit_start,
             logit_rows,
             top_k,
@@ -315,13 +318,16 @@ fn main() {
             "\"tensor_count\":{},",
             "\"metadata_count\":{},",
             "\"file_size\":{},",
+            "\"input_tensor\":\"{}\",",
+            "\"output_tensor\":\"{}\",",
+            "\"norm_tensor\":\"{}\",",
             "\"samples\":[{},{}],",
             "\"row_samples\":[{},{}],",
             "\"row_dot_samples\":[{}],",
             "\"prefix_logits_samples\":[{}],",
             "\"normalized_logits_samples\":[{}],",
             "\"limitations\":[",
-            "\"selected-block selected-row selected-row-dot logit-range and final-norm CPU decode only\",",
+            "\"selected-block selected-row selected-row-dot logit-range and configured RMS-norm CPU decode only\",",
             "\"not full transformer inference or generated-token logits\",",
             "\"not GPU matmul\",",
             "\"not AeroNum-native GGUF token inference throughput\"",
@@ -334,6 +340,9 @@ fn main() {
         header.tensors.len(),
         header.metadata.len(),
         header.file_size,
+        json_escape(&input_tensor),
+        json_escape(&output_tensor),
+        json_escape(&norm_tensor),
         sample_json(&q4_sample),
         sample_json(&q6_sample),
         row_sample_json(&q4_row_sample),

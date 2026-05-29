@@ -1,4 +1,6 @@
 use aeronum_core::{GgufGpuQuantizedLogitsSample, GgufHeader, GgufQuantizedLogitValue};
+use std::fs::File;
+use std::io::Write;
 use std::time::Instant;
 
 fn parse_arg(name: &str, default: &str) -> String {
@@ -87,6 +89,50 @@ fn json_top_logits(values: &[GgufQuantizedLogitValue], pieces: &[String]) -> Str
     format!("[{items}]")
 }
 
+fn checksum_logits(values: &[GgufQuantizedLogitValue]) -> f64 {
+    values
+        .iter()
+        .enumerate()
+        .map(|(idx, logit)| (idx as f64 + 1.0) * logit.value)
+        .sum()
+}
+
+fn checksum_f32(values: &[f32]) -> f64 {
+    values
+        .iter()
+        .enumerate()
+        .map(|(idx, value)| (idx as f64 + 1.0) * (*value as f64))
+        .sum()
+}
+
+fn top_k_logits(values: &[GgufQuantizedLogitValue], top_k: usize) -> Vec<GgufQuantizedLogitValue> {
+    let mut sorted = values.to_vec();
+    sorted.sort_by(|left, right| {
+        right
+            .value
+            .total_cmp(&left.value)
+            .then_with(|| left.row_index.cmp(&right.row_index))
+    });
+    sorted.truncate(top_k);
+    sorted
+}
+
+fn write_f32_file(path: &str, values: &[f32]) {
+    let mut file = File::create(path).expect("create f32 output file");
+    for value in values {
+        file.write_all(&value.to_le_bytes())
+            .expect("write f32 output file");
+    }
+}
+
+fn write_f64_file(path: &str, values: &[f64]) {
+    let mut file = File::create(path).expect("create f64 output file");
+    for value in values {
+        file.write_all(&value.to_le_bytes())
+            .expect("write f64 output file");
+    }
+}
+
 fn sample_json(
     sample: &GgufGpuQuantizedLogitsSample,
     cpu_pieces: &[String],
@@ -145,6 +191,9 @@ fn main() {
     let logit_rows = parse_u64_arg("--logit-rows", 4096);
     let device_id = parse_i32_arg("--device", 0);
     let retained_runtime = parse_bool_arg("--retained-runtime", false);
+    let dump_only = parse_bool_arg("--dump-only", false);
+    let dump_input_bin = parse_arg("--dump-input-bin", "");
+    let expected_logits_bin = parse_arg("--expected-logits-bin", "");
     let input_tensor = parse_arg("--input-tensor", "token_embd.weight");
     let final_norm_tensor = parse_arg("--final-norm-tensor", "output_norm.weight");
     let output_tensor = parse_arg("--output-tensor", "output.weight");
@@ -190,6 +239,132 @@ fn main() {
         .steps
         .last()
         .expect("retained KV decode must produce at least one step");
+    if dump_only {
+        if !dump_input_bin.is_empty() {
+            write_f32_file(
+                &dump_input_bin,
+                &retained_step.retained_final_normalized_input,
+            );
+        }
+        let cpu_logits = header
+            .read_quantized_logits_for_values(
+                &retained_step.retained_final_normalized_input,
+                &output_tensor,
+                logit_start,
+                logit_rows,
+            )
+            .expect("read CPU final-head logits");
+        if !expected_logits_bin.is_empty() {
+            let values = cpu_logits
+                .iter()
+                .map(|logit| logit.value)
+                .collect::<Vec<_>>();
+            write_f64_file(&expected_logits_bin, &values);
+        }
+        let cpu_top_logits = top_k_logits(&cpu_logits, top_k);
+        let cpu_top_ids = cpu_top_logits
+            .iter()
+            .map(|value| value.row_index as u32)
+            .collect::<Vec<_>>();
+        let cpu_top_pieces = tokenizer
+            .decode_ids(&cpu_top_ids)
+            .expect("decode CPU top token ids");
+        let generated_token_ids = retained
+            .generated_token_ids
+            .iter()
+            .map(|token_id| *token_id as u32)
+            .collect::<Vec<_>>();
+        let generated_token_pieces = tokenizer
+            .decode_ids(&generated_token_ids)
+            .expect("decode generated token ids");
+        let generated_text = tokenizer
+            .decode_byte_bpe_text(&generated_token_ids)
+            .expect("decode generated token text");
+        let output_info = header
+            .tensors
+            .iter()
+            .find(|tensor| tensor.name == output_tensor)
+            .expect("output tensor");
+        let output_total_rows = output_info.dimensions.get(1).copied().unwrap_or(1);
+        let output_row_nbytes =
+            output_info.nbytes.expect("output tensor byte size") / output_total_rows;
+        let output_range_absolute_offset =
+            output_info.absolute_offset + logit_start * output_row_nbytes;
+        let output_range_nbytes = logit_rows * output_row_nbytes;
+        let elapsed_ms = start.elapsed().as_secs_f64() * 1000.0;
+
+        println!(
+            concat!(
+                "{{",
+                "\"benchmark\":\"gguf_gpu_final_head_logits_dump\",",
+                "\"model_path\":\"{}\",",
+                "\"elapsed_ms\":{:.6},",
+                "\"gguf_version\":{},",
+                "\"tensor_count\":{},",
+                "\"metadata_count\":{},",
+                "\"file_size\":{},",
+                "\"prompt\":\"{}\",",
+                "\"prompt_token_ids\":{},",
+                "\"prompt_token_pieces\":{},",
+                "\"generated_token_ids\":{},",
+                "\"generated_token_pieces\":{},",
+                "\"generated_text\":\"{}\",",
+                "\"retained_runtime\":{},",
+                "\"retained_full_context_verification\":{},",
+                "\"retained_step_index\":{},",
+                "\"retained_step_top_token_matches\":{},",
+                "\"input_bin\":\"{}\",",
+                "\"expected_logits_bin\":\"{}\",",
+                "\"input_value_count\":{},",
+                "\"input_checksum\":{:.12},",
+                "\"output_tensor_name\":\"{}\",",
+                "\"output_row_start\":{},",
+                "\"output_row_count\":{},",
+                "\"output_range_absolute_offset\":{},",
+                "\"output_range_nbytes\":{},",
+                "\"cpu_logits_checksum\":{:.12},",
+                "\"cpu_top_logits\":{},",
+                "\"validation\":\"dumped_retained_final_head_input_and_cpu_logits\",",
+                "\"limitations\":[",
+                "\"uses retained CPU transformer state as the final-head input\",",
+                "\"CPU reference logits decode GGUF quantized output.weight rows on CPU\",",
+                "\"not GPU execution\",",
+                "\"not transformer layer execution on GPU\",",
+                "\"not GPU autoregressive decoding\",",
+                "\"not optimized AeroNum-native GGUF token inference throughput\"",
+                "]",
+                "}}"
+            ),
+            json_escape(&model_path),
+            elapsed_ms,
+            header.version,
+            header.tensors.len(),
+            header.metadata.len(),
+            header.file_size,
+            json_escape(&prompt),
+            json_u32_array(&prompt_token_ids),
+            json_string_array(&prompt_token_pieces),
+            json_u64_array(&retained.generated_token_ids),
+            json_string_array(&generated_token_pieces),
+            json_escape(&generated_text),
+            retained_runtime,
+            retained.full_context_verification,
+            retained_step.step_index,
+            retained_step.top_token_matches,
+            json_escape(&dump_input_bin),
+            json_escape(&expected_logits_bin),
+            retained_step.retained_final_normalized_input.len(),
+            checksum_f32(&retained_step.retained_final_normalized_input),
+            json_escape(&output_tensor),
+            logit_start,
+            logit_rows,
+            output_range_absolute_offset,
+            output_range_nbytes,
+            checksum_logits(&cpu_logits),
+            json_top_logits(&cpu_top_logits, &cpu_top_pieces)
+        );
+        return;
+    }
     let sample = header
         .read_gpu_quantized_logits_for_values_sample(
             &retained_step.retained_final_normalized_input,

@@ -3608,7 +3608,7 @@ impl GgufHeader {
             .ok_or_else(|| GgufError::InvalidTensorRange(tensor_name.to_string()))
     }
 
-    fn read_quantized_logits_for_values(
+    pub fn read_quantized_logits_for_values(
         &self,
         input_values: &[f32],
         output_tensor_name: &str,

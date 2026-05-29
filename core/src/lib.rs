@@ -6,9 +6,10 @@ pub mod aeronn;
 pub mod gpu;
 
 pub use aeronn::{
-    GgufAttentionScoreSample, GgufError, GgufHeader, GgufMetadataValue,
-    GgufMultiTokenAttentionSample, GgufMultiTokenLayerLogitsSample, GgufQuantizedBlockSample,
-    GgufQuantizedLogitValue, GgufQuantizedNormalizedLogitsSample, GgufQuantizedPrefixLogitsSample,
+    GgufAttentionScoreSample, GgufError, GgufHeader, GgufLayerExecutionSummary, GgufMetadataValue,
+    GgufMultiLayerFinalLogitsSample, GgufMultiTokenAttentionSample,
+    GgufMultiTokenLayerLogitsSample, GgufQuantizedBlockSample, GgufQuantizedLogitValue,
+    GgufQuantizedNormalizedLogitsSample, GgufQuantizedPrefixLogitsSample,
     GgufQuantizedRowDotSample, GgufQuantizedRowSample, GgufSingleTokenAttentionOutputSample,
     GgufSingleTokenFfnOutputSample, GgufSingleTokenLayerLogitsSample, GgufTensorByteSample,
     GgufValueType, LlamaModel,

@@ -1,10 +1,12 @@
 #include <hip/hip_runtime.h>
 
+#include <algorithm>
 #include <cmath>
 #include <cstdint>
 #include <fstream>
 #include <iomanip>
 #include <iostream>
+#include <sstream>
 #include <string>
 #include <vector>
 
@@ -36,6 +38,24 @@ static std::vector<uint8_t> read_u8_file(const std::string &path) {
         std::exit(2);
     }
     return std::vector<uint8_t>((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
+}
+
+static std::vector<double> read_f64_file(const std::string &path) {
+    std::ifstream file(path, std::ios::binary);
+    if (!file) {
+        std::cerr << "could not open " << path << "\n";
+        std::exit(2);
+    }
+    std::vector<double> values;
+    double value = 0.0;
+    while (file.read(reinterpret_cast<char *>(&value), sizeof(double))) {
+        values.push_back(value);
+    }
+    if (!file.eof()) {
+        std::cerr << "could not read complete f64 values from " << path << "\n";
+        std::exit(2);
+    }
+    return values;
 }
 
 __device__ float f16_to_f32_device(uint16_t bits) {
@@ -136,12 +156,13 @@ __device__ float decode_q6k_value(const uint8_t *block, int t) {
 
 __global__ void q4q6_decode_dot_kernel(const uint8_t *q4, const uint8_t *q6, float *partials, int block_count) {
     __shared__ float scratch[256];
+    int row_index = blockIdx.y;
     int block_index = blockIdx.x;
     int t = threadIdx.x;
     float value = 0.0f;
     if (block_index < block_count && t < 256) {
         const uint8_t *q4_block = q4 + block_index * 144;
-        const uint8_t *q6_block = q6 + block_index * 210;
+        const uint8_t *q6_block = q6 + (row_index * block_count + block_index) * 210;
         value = decode_q4k_value(q4_block, t) * decode_q6k_value(q6_block, t);
     }
     scratch[t] = value;
@@ -153,16 +174,17 @@ __global__ void q4q6_decode_dot_kernel(const uint8_t *q4, const uint8_t *q6, flo
         __syncthreads();
     }
     if (t == 0) {
-        partials[block_index] = scratch[0];
+        partials[row_index * block_count + block_index] = scratch[0];
     }
 }
 
-__global__ void reduce_partials_kernel(const float *partials, float *output, int count) {
+__global__ void reduce_partials_kernel(const float *partials, float *output, int block_count, int row_count) {
     __shared__ float scratch[256];
+    int row_index = blockIdx.x;
     int t = threadIdx.x;
     float value = 0.0f;
-    for (int i = t; i < count; i += blockDim.x) {
-        value += partials[i];
+    for (int i = t; i < block_count; i += blockDim.x) {
+        value += partials[row_index * block_count + i];
     }
     scratch[t] = value;
     __syncthreads();
@@ -172,14 +194,15 @@ __global__ void reduce_partials_kernel(const float *partials, float *output, int
         }
         __syncthreads();
     }
-    if (t == 0) {
-        output[0] = scratch[0];
+    if (t == 0 && row_index < row_count) {
+        output[row_index] = scratch[0];
     }
 }
 
 int main(int argc, char **argv) {
     std::string q4_path = arg_value(argc, argv, "--q4-bin");
     std::string q6_path = arg_value(argc, argv, "--q6-bin");
+    std::string expected_logits_path = arg_value(argc, argv, "--expected-logits-bin");
     int device = std::stoi(arg_value(argc, argv, "--device", "0"));
     double expected = std::stod(arg_value(argc, argv, "--expected-dot", "0"));
     bool gpu_final_reduction = bool_arg(argc, argv, "--gpu-final-reduction", false);
@@ -190,11 +213,21 @@ int main(int argc, char **argv) {
 
     auto q4 = read_u8_file(q4_path);
     auto q6 = read_u8_file(q6_path);
-    if (q4.size() % 144 != 0 || q6.size() % 210 != 0 || q4.size() / 144 != q6.size() / 210) {
+    if (q4.size() % 144 != 0 || q6.size() % 210 != 0) {
         std::cerr << "input dimensions do not match Q4_K/Q6_K row layout\n";
         return 2;
     }
     int block_count = static_cast<int>(q4.size() / 144);
+    if (block_count == 0 || (q6.size() / 210) % block_count != 0) {
+        std::cerr << "Q6_K input must contain a whole-number row count matching the Q4_K dimension\n";
+        return 2;
+    }
+    int row_count = static_cast<int>((q6.size() / 210) / block_count);
+    auto expected_logits = expected_logits_path.empty() ? std::vector<double>{} : read_f64_file(expected_logits_path);
+    if (!expected_logits.empty() && static_cast<int>(expected_logits.size()) != row_count) {
+        std::cerr << "expected logits count does not match Q6_K row count\n";
+        return 2;
+    }
     check_hip(hipSetDevice(device), "hipSetDevice");
     hipDeviceProp_t props{};
     check_hip(hipGetDeviceProperties(&props, device), "hipGetDeviceProperties");
@@ -205,27 +238,30 @@ int main(int argc, char **argv) {
     float *d_output = nullptr;
     check_hip(hipMalloc(&d_q4, q4.size()), "hipMalloc q4");
     check_hip(hipMalloc(&d_q6, q6.size()), "hipMalloc q6");
-    check_hip(hipMalloc(&d_partials, block_count * sizeof(float)), "hipMalloc partials");
-    check_hip(hipMalloc(&d_output, sizeof(float)), "hipMalloc output");
+    check_hip(hipMalloc(&d_partials, row_count * block_count * sizeof(float)), "hipMalloc partials");
+    check_hip(hipMalloc(&d_output, row_count * sizeof(float)), "hipMalloc output");
     check_hip(hipMemcpy(d_q4, q4.data(), q4.size(), hipMemcpyHostToDevice), "hipMemcpy q4");
     check_hip(hipMemcpy(d_q6, q6.data(), q6.size(), hipMemcpyHostToDevice), "hipMemcpy q6");
 
-    q4q6_decode_dot_kernel<<<block_count, 256>>>(d_q4, d_q6, d_partials, block_count);
+    dim3 grid(block_count, row_count);
+    q4q6_decode_dot_kernel<<<grid, 256>>>(d_q4, d_q6, d_partials, block_count);
     check_hip(hipGetLastError(), "q4q6_decode_dot_kernel");
     check_hip(hipDeviceSynchronize(), "hipDeviceSynchronize");
 
-    double gpu_dot = 0.0;
-    std::vector<float> partials(block_count);
+    std::vector<double> gpu_logits(row_count, 0.0);
+    std::vector<float> partials(row_count * block_count);
     check_hip(hipMemcpy(partials.data(), d_partials, partials.size() * sizeof(float), hipMemcpyDeviceToHost), "hipMemcpy partials");
     check_hip(hipDeviceSynchronize(), "hipDeviceSynchronize copy");
     if (gpu_final_reduction) {
-        reduce_partials_kernel<<<1, 256>>>(d_partials, d_output, block_count);
+        reduce_partials_kernel<<<row_count, 256>>>(d_partials, d_output, block_count, row_count);
         check_hip(hipGetLastError(), "reduce_partials_kernel");
         check_hip(hipDeviceSynchronize(), "hipDeviceSynchronize reduce");
-        float output = 0.0f;
-        check_hip(hipMemcpy(&output, d_output, sizeof(float), hipMemcpyDeviceToHost), "hipMemcpy output");
+        std::vector<float> output(row_count);
+        check_hip(hipMemcpy(output.data(), d_output, output.size() * sizeof(float), hipMemcpyDeviceToHost), "hipMemcpy output");
         check_hip(hipDeviceSynchronize(), "hipDeviceSynchronize output");
-        gpu_dot = static_cast<double>(output);
+        for (int row = 0; row < row_count; ++row) {
+            gpu_logits[row] = static_cast<double>(output[row]);
+        }
     }
     check_hip(hipFree(d_q4), "hipFree q4");
     check_hip(hipFree(d_q6), "hipFree q6");
@@ -233,13 +269,35 @@ int main(int argc, char **argv) {
     check_hip(hipFree(d_output), "hipFree output");
 
     double partial_checksum = 0.0;
-    for (size_t i = 0; i < partials.size(); ++i) {
-        if (!gpu_final_reduction) {
-            gpu_dot += static_cast<double>(partials[i]);
+    for (int row = 0; row < row_count; ++row) {
+        for (int block = 0; block < block_count; ++block) {
+            size_t i = static_cast<size_t>(row) * block_count + block;
+            if (!gpu_final_reduction) {
+                gpu_logits[row] += static_cast<double>(partials[i]);
+            }
+            partial_checksum += static_cast<double>(i + 1) * static_cast<double>(partials[i]);
         }
-        partial_checksum += static_cast<double>(i + 1) * static_cast<double>(partials[i]);
     }
-    double abs_diff = std::abs(gpu_dot - expected);
+    double gpu_dot = gpu_logits.empty() ? 0.0 : gpu_logits[0];
+    double abs_diff = expected_logits.empty() ? std::abs(gpu_dot - expected) : 0.0;
+    double logits_checksum = 0.0;
+    for (int row = 0; row < row_count; ++row) {
+        logits_checksum += static_cast<double>(row + 1) * gpu_logits[row];
+        if (!expected_logits.empty()) {
+            abs_diff = std::max(abs_diff, std::abs(gpu_logits[row] - expected_logits[row]));
+        }
+    }
+    std::string first_logits = "[";
+    int first_count = std::min(row_count, 8);
+    for (int row = 0; row < first_count; ++row) {
+        if (row != 0) {
+            first_logits += ",";
+        }
+        std::ostringstream item;
+        item << std::fixed << std::setprecision(12) << gpu_logits[row];
+        first_logits += item.str();
+    }
+    first_logits += "]";
 
     std::cout << std::fixed << std::setprecision(12)
               << "{"
@@ -251,14 +309,18 @@ int main(int argc, char **argv) {
               << "\"q4k_row_bytes\":" << q4.size() << ","
               << "\"q6k_block_count\":" << block_count << ","
               << "\"q6k_row_bytes\":" << q6.size() << ","
+              << "\"q6k_row_count\":" << row_count << ","
               << "\"expected_cpu_dot\":" << expected << ","
+              << "\"expected_logits_count\":" << expected_logits.size() << ","
               << "\"gpu_q4q6_decode_dot\":" << gpu_dot << ","
               << "\"abs_diff\":" << abs_diff << ","
+              << "\"gpu_logits_checksum\":" << logits_checksum << ","
+              << "\"gpu_first_logits\":" << first_logits << ","
               << "\"gpu_final_reduction\":" << (gpu_final_reduction ? "true" : "false") << ","
               << "\"partial_checksum\":" << partial_checksum << ","
               << "\"validation\":\"gpu_q4q6_decode_dot_matches_cpu_reference\","
               << "\"limitations\":["
-              << "\"GPU decodes one Q4_K row and one Q6_K row and computes per-block dot partials\","
+              << "\"GPU decodes one Q4_K row and one or more Q6_K rows and computes per-block dot partials\","
               << (gpu_final_reduction ? "\"final sum over GPU partials is performed by a second GPU kernel\"" : "\"final sum over GPU partials is performed on host\"") << ","
               << "\"not full q4_K/q6_K tensor execution on GPU\","
               << "\"not transformer layer execution on GPU\","

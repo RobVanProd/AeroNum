@@ -37,6 +37,23 @@ fn write_u8_file(path: &str, values: &[u8]) {
     file.write_all(values).expect("write byte output file");
 }
 
+fn write_f64_file(path: &str, values: &[f64]) {
+    let mut file = File::create(path).expect("create f64 output file");
+    for value in values {
+        file.write_all(&value.to_le_bytes())
+            .expect("write f64 output file");
+    }
+}
+
+fn json_logit_array(values: &[(u64, f64)]) -> String {
+    let items = values
+        .iter()
+        .map(|(row, value)| format!("{{\"row_index\":{},\"value\":{:.12}}}", row, value))
+        .collect::<Vec<_>>()
+        .join(",");
+    format!("[{items}]")
+}
+
 fn row_json(row: &GgufQuantizedRowSample) -> String {
     format!(
         concat!(
@@ -92,15 +109,27 @@ fn main() {
     let q6_tensor = parse_arg("--q6-tensor", "output.weight");
     let q4_row = parse_u64_arg("--q4-row", 22177);
     let q6_row = parse_u64_arg("--q6-row", 100);
+    let q6_row_count = parse_u64_arg("--q6-row-count", 1);
+    let expected_logits_bin = parse_arg("--expected-logits-bin", "");
 
     let start = Instant::now();
     let header = GgufHeader::read(&model_path).expect("read GGUF header");
     let q4 = header
         .read_quantized_row_sample(&q4_tensor, q4_row)
         .expect("read q4 GGUF row");
-    let q6 = header
-        .read_quantized_row_sample(&q6_tensor, q6_row)
-        .expect("read q6 GGUF row");
+    let mut q6_rows = Vec::new();
+    let mut q6_bytes = Vec::new();
+    let mut logits = Vec::new();
+    for row in q6_row..q6_row + q6_row_count {
+        let q6_sample = header
+            .read_quantized_row_sample(&q6_tensor, row)
+            .expect("read q6 GGUF row");
+        let cpu_dot = dot_f32(&q4.decoded_values, &q6_sample.decoded_values);
+        q6_bytes.extend_from_slice(&q6_sample.row_bytes);
+        logits.push((row, cpu_dot));
+        q6_rows.push(q6_sample);
+    }
+    let q6 = q6_rows.first().expect("q6 row count must be nonzero");
     if q4.tensor_type != 12 || q6.tensor_type != 14 {
         eprintln!("q4 tensor must be Q4_K and q6 tensor must be Q6_K");
         std::process::exit(3);
@@ -110,8 +139,18 @@ fn main() {
         std::process::exit(3);
     }
     write_u8_file(&q4_bin, &q4.row_bytes);
-    write_u8_file(&q6_bin, &q6.row_bytes);
-    let cpu_dot = dot_f32(&q4.decoded_values, &q6.decoded_values);
+    write_u8_file(&q6_bin, &q6_bytes);
+    if !expected_logits_bin.is_empty() {
+        let values = logits.iter().map(|(_, value)| *value).collect::<Vec<_>>();
+        write_f64_file(&expected_logits_bin, &values);
+    }
+    let cpu_dot = logits.first().map(|(_, value)| *value).unwrap_or(0.0);
+    let logits_checksum = logits
+        .iter()
+        .enumerate()
+        .map(|(idx, (_, value))| (idx as f64 + 1.0) * *value)
+        .sum::<f64>();
+    let first_logits = logits.iter().take(8).copied().collect::<Vec<_>>();
     let elapsed_ms = start.elapsed().as_secs_f64() * 1000.0;
 
     println!(
@@ -126,10 +165,15 @@ fn main() {
             "\"file_size\":{},",
             "\"q4_bin\":\"{}\",",
             "\"q6_bin\":\"{}\",",
+            "\"expected_logits_bin\":\"{}\",",
             "\"q4\":{},",
             "\"q6\":{},",
+            "\"q6_row_count\":{},",
             "\"dimension\":{},",
             "\"cpu_dot\":{:.12},",
+            "\"logit_count\":{},",
+            "\"logits_checksum\":{:.12},",
+            "\"first_logits\":{},",
             "\"validation\":\"dumped_raw_q4k_and_q6k_rows\"",
             "}}"
         ),
@@ -141,9 +185,14 @@ fn main() {
         header.file_size,
         json_escape(&q4_bin),
         json_escape(&q6_bin),
+        json_escape(&expected_logits_bin),
         row_json(&q4),
         row_json(&q6),
+        q6_row_count,
         q4.decoded_values.len(),
-        cpu_dot
+        cpu_dot,
+        logits.len(),
+        logits_checksum,
+        json_logit_array(&first_logits)
     );
 }

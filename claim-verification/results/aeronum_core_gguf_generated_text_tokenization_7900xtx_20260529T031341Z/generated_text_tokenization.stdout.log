@@ -1,0 +1,25 @@
+{
+  "comparison": "generated_text_tokenization",
+  "input": "claim-verification/results/aeronum_core_gguf_generated_text_tokenization_7900xtx_20260529T031341Z/gguf_prompt_autoregressive_decode_result.json",
+  "model": "/home/rob/models/mistralai_Mistral-Small-3.1-24B-Instruct-2503-Q4_K_M.gguf",
+  "llama_tokenize": "/home/rob/llama.cpp/build-gpu/bin/llama-tokenize",
+  "llama_tokenize_returncode": 0,
+  "llama_tokenize_stderr": "",
+  "generated_text": "Hello!",
+  "generated_token_ids": [
+    22177,
+    1033
+  ],
+  "llama_token_ids": [
+    22177,
+    1033
+  ],
+  "passed": true,
+  "limitations": [
+    "verifies generated text re-tokenizes to generated token IDs",
+    "not a llama.cpp detokenization trace",
+    "not sampled decoding",
+    "not KV-cache decoding",
+    "not AeroNum-native GGUF token inference throughput"
+  ]
+}

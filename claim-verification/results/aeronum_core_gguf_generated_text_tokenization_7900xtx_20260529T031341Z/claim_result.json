@@ -1,0 +1,73 @@
+{
+  "claim_id": "aeronum_core_gguf_generated_text_tokenization_20260529",
+  "status": "verified_current_limited",
+  "source_commit": "fa31da89c3ba0a950ae7efb13e1f05a05eac4e2e",
+  "model_path": "/home/rob/models/mistralai_Mistral-Small-3.1-24B-Instruct-2503-Q4_K_M.gguf",
+  "model_sha256": "c5743c1bf39db0ae8a5ade5df0374b8e9e492754a199cfdad7ef393c1590f7c0",
+  "commands": [
+    "cargo run --release -p aeronum-core --example gguf_prompt_autoregressive_decode_smoke -- --model /home/rob/models/mistralai_Mistral-Small-3.1-24B-Instruct-2503-Q4_K_M.gguf --prompt <s>[INST]Hello[/INST] --add-bos false --parse-special true --layer-start 0 --layers 40 --top-k 5 --max-new-tokens 2",
+    "python3 benchmarks/gguf/compare_generated_text_tokenization.py --input claim-verification/results/aeronum_core_gguf_generated_text_tokenization_7900xtx_20260529T031341Z/gguf_prompt_autoregressive_decode_result.json --model /home/rob/models/mistralai_Mistral-Small-3.1-24B-Instruct-2503-Q4_K_M.gguf --output claim-verification/results/aeronum_core_gguf_generated_text_tokenization_7900xtx_20260529T031341Z/generated_text_tokenization_result.json"
+  ],
+  "decode_exit_code": 0,
+  "generated_text_tokenization_exit_code": 0,
+  "cargo_test_core_exit_code": 0,
+  "elapsed_ms_reported": 209726.376002,
+  "wall_time_seconds": 211.061,
+  "prompt": "<s>[INST]Hello[/INST]",
+  "prompt_token_ids": [
+    1,
+    3,
+    22177,
+    4
+  ],
+  "generated_token_ids": [
+    22177,
+    1033
+  ],
+  "generated_token_pieces": [
+    "Hello",
+    "!"
+  ],
+  "generated_piece_sequence": "Hello!",
+  "generated_text": "Hello!",
+  "llama_token_ids_for_generated_text": [
+    22177,
+    1033
+  ],
+  "generated_text_tokenization_passed": true,
+  "llama_tokenize": "/home/rob/llama.cpp/build-gpu/bin/llama-tokenize",
+  "final_context_token_ids": [
+    1,
+    3,
+    22177,
+    4,
+    22177,
+    1033
+  ],
+  "step_count": 2,
+  "limitations": [
+    "verifies generated text re-tokenizes to generated token IDs",
+    "not a llama.cpp detokenization trace",
+    "not sampled decoding",
+    "not KV-cache decoding",
+    "not AeroNum-native GGUF token inference throughput"
+  ],
+  "artifact_files": [
+    "claim-verification/results/aeronum_core_gguf_generated_text_tokenization_7900xtx_20260529T031341Z/claim_result.json",
+    "claim-verification/results/aeronum_core_gguf_generated_text_tokenization_7900xtx_20260529T031341Z/gguf_prompt_autoregressive_decode_result.json",
+    "claim-verification/results/aeronum_core_gguf_generated_text_tokenization_7900xtx_20260529T031341Z/gguf_prompt_autoregressive_decode.stdout.log",
+    "claim-verification/results/aeronum_core_gguf_generated_text_tokenization_7900xtx_20260529T031341Z/gguf_prompt_autoregressive_decode.stderr.log",
+    "claim-verification/results/aeronum_core_gguf_generated_text_tokenization_7900xtx_20260529T031341Z/gguf_prompt_autoregressive_decode.exit_code.txt",
+    "claim-verification/results/aeronum_core_gguf_generated_text_tokenization_7900xtx_20260529T031341Z/gguf_prompt_autoregressive_decode.time.txt",
+    "claim-verification/results/aeronum_core_gguf_generated_text_tokenization_7900xtx_20260529T031341Z/generated_text_tokenization_result.json",
+    "claim-verification/results/aeronum_core_gguf_generated_text_tokenization_7900xtx_20260529T031341Z/generated_text_tokenization.stdout.log",
+    "claim-verification/results/aeronum_core_gguf_generated_text_tokenization_7900xtx_20260529T031341Z/generated_text_tokenization.stderr.log",
+    "claim-verification/results/aeronum_core_gguf_generated_text_tokenization_7900xtx_20260529T031341Z/generated_text_tokenization.exit_code.txt",
+    "claim-verification/results/aeronum_core_gguf_generated_text_tokenization_7900xtx_20260529T031341Z/cargo_test_core.stdout.log",
+    "claim-verification/results/aeronum_core_gguf_generated_text_tokenization_7900xtx_20260529T031341Z/cargo_test_core.stderr.log",
+    "claim-verification/results/aeronum_core_gguf_generated_text_tokenization_7900xtx_20260529T031341Z/cargo_test_core.exit_code.txt",
+    "claim-verification/results/aeronum_core_gguf_generated_text_tokenization_7900xtx_20260529T031341Z/command_config.txt",
+    "claim-verification/results/aeronum_core_gguf_generated_text_tokenization_7900xtx_20260529T031341Z/source_metadata.txt",
+    "claim-verification/results/aeronum_core_gguf_generated_text_tokenization_7900xtx_20260529T031341Z/hardware_software_metadata.txt"
+  ]
+}

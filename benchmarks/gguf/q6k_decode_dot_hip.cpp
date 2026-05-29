@@ -90,6 +90,42 @@ static bool bool_arg(int argc, char **argv, const std::string &name, bool fallba
     return value == "1" || value == "true" || value == "yes";
 }
 
+struct TopLogit {
+    int row_index;
+    double value;
+};
+
+static std::vector<TopLogit> top_k_logits(const std::vector<double> &values, int top_k, int row_start) {
+    std::vector<TopLogit> top;
+    for (size_t i = 0; i < values.size(); ++i) {
+        top.push_back(TopLogit{row_start + static_cast<int>(i), values[i]});
+    }
+    std::sort(top.begin(), top.end(), [](const TopLogit &left, const TopLogit &right) {
+        if (left.value == right.value) {
+            return left.row_index < right.row_index;
+        }
+        return left.value > right.value;
+    });
+    if (static_cast<int>(top.size()) > top_k) {
+        top.resize(top_k);
+    }
+    return top;
+}
+
+static std::string top_logits_json(const std::vector<TopLogit> &values) {
+    std::ostringstream out;
+    out << "[";
+    for (size_t i = 0; i < values.size(); ++i) {
+        if (i != 0) {
+            out << ",";
+        }
+        out << std::fixed << std::setprecision(12)
+            << "{\"row_index\":" << values[i].row_index << ",\"value\":" << values[i].value << "}";
+    }
+    out << "]";
+    return out.str();
+}
+
 __device__ float f16_to_f32_device(uint16_t bits) {
     uint32_t sign = (static_cast<uint32_t>(bits & 0x8000u)) << 16;
     int32_t exp = static_cast<int32_t>((bits >> 10) & 0x1fu);
@@ -210,6 +246,8 @@ int main(int argc, char **argv) {
     std::uint64_t rhs_offset = std::stoull(arg_value(argc, argv, "--rhs-q6k-offset", "0"));
     std::uint64_t rhs_bytes = std::stoull(arg_value(argc, argv, "--rhs-q6k-bytes", "0"));
     std::string expected_logits_path = arg_value(argc, argv, "--expected-logits-bin");
+    int row_start = std::stoi(arg_value(argc, argv, "--row-start", "0"));
+    int top_k = std::stoi(arg_value(argc, argv, "--top-k", "5"));
     int device = std::stoi(arg_value(argc, argv, "--device", "0"));
     double expected = std::stod(arg_value(argc, argv, "--expected-dot", "0"));
     bool gpu_final_reduction = bool_arg(argc, argv, "--gpu-final-reduction", false);
@@ -305,6 +343,12 @@ int main(int argc, char **argv) {
         first_logits += item.str();
     }
     first_logits += "]";
+    auto gpu_top_logits = top_k_logits(gpu_logits, top_k, row_start);
+    auto expected_top_logits = expected_logits.empty()
+        ? std::vector<TopLogit>{}
+        : top_k_logits(expected_logits, top_k, row_start);
+    bool top_token_matches = !expected_top_logits.empty() && !gpu_top_logits.empty()
+        && expected_top_logits.front().row_index == gpu_top_logits.front().row_index;
 
     std::cout << std::fixed << std::setprecision(12)
               << "{"
@@ -321,6 +365,9 @@ int main(int argc, char **argv) {
               << "\"abs_diff\":" << abs_diff << ","
               << "\"gpu_logits_checksum\":" << logits_checksum << ","
               << "\"gpu_first_logits\":" << first_logits << ","
+              << "\"expected_top_logits\":" << top_logits_json(expected_top_logits) << ","
+              << "\"gpu_top_logits\":" << top_logits_json(gpu_top_logits) << ","
+              << "\"top_token_matches\":" << (top_token_matches ? "true" : "false") << ","
               << "\"gpu_final_reduction\":" << (gpu_final_reduction ? "true" : "false") << ","
               << "\"partial_checksum\":" << partial_checksum << ","
               << "\"validation\":\"gpu_q6k_decode_dot_matches_cpu_reference\","

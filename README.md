@@ -117,22 +117,24 @@ Verified current results:
   ([result JSON](claim-verification/results/aeronum_distributed_compare_guard_7900xtx_20260528T233403Z/claim_result.json)).
 - `aeronum-core` now parses GGUF metadata, sampled tokenizer string-array
   metadata, tensor directory records, tensor data byte ranges, loads a complete
-  small F32 tensor into `NdArray`, and round-trips that tensor through ROCm
-  device 0. The repo-owned command
-  `cargo run -p aeronum-core --example gguf_header_smoke -- --model /home/rob/models/mistralai_Mistral-Small-3.1-24B-Instruct-2503-Q4_K_M.gguf --device rocm --max-tokens 16 --prompt "AeroNum GGUF ROCm tensor roundtrip prompt"`
+  small F32 tensor into `LlamaModel`, and offloads that model weight through
+  the model ROCm path. The repo-owned command
+  `cargo run -p aeronum-core --example gguf_header_smoke -- --model /home/rob/models/mistralai_Mistral-Small-3.1-24B-Instruct-2503-Q4_K_M.gguf --device rocm --max-tokens 16 --prompt "AeroNum GGUF model ROCm offload prompt"`
   passed against the local Mistral GGUF file, SHA-256
   `c5743c1bf39db0ae8a5ade5df0374b8e9e492754a199cfdad7ef393c1590f7c0`, and
   reported GGUF version 3, 363 parsed tensor infos, 45 parsed metadata entries,
   alignment `32`, data offset `7884256`, file size `14333910496`, 363 tensors
   with known byte sizes, and `tensor_layout_within_file=true`. It loaded all
-  5,120 F32 values from `output_norm.weight` into an AeroNum `NdArray`, with
-  checksum `57094807.65625` and F32 samples `4.21875`, `4.46875`, `4.34375`,
-  and `4.3125`. It copied that 20,480-byte tensor to ROCm device 0
+  5,120 F32 values from `output_norm.weight` into `LlamaModel` weight index 0,
+  with checksum `57094807.65625` and F32 samples `4.21875`, `4.46875`,
+  `4.34375`, and `4.3125`. It copied that 20,480-byte tensor to ROCm device 0
   (`Radeon RX 7900 XTX`) and back with round-trip checksum `57094807.65625`
-  and `max_abs_diff=0.0`. This is a metadata/directory/layout/F32 tensor
-  round-trip smoke result with placeholder generation, not real GGUF token
-  inference throughput
-  ([result JSON](claim-verification/results/aeronum_core_gguf_rocm_tensor_roundtrip_7900xtx_20260529T000017Z/claim_result.json)).
+  and `max_abs_diff=0.0`; `model.to("rocm")` then reported
+  `loaded_weight_count=1`, `hip_weight_count=1`, and
+  `weight_names=["output_norm.weight"]`. This is a
+  metadata/directory/layout/F32 model-weight offload smoke result with
+  placeholder generation, not real GGUF token inference throughput
+  ([result JSON](claim-verification/results/aeronum_core_gguf_model_rocm_offload_7900xtx_20260529T000456Z/claim_result.json)).
 - `benchmarks/gguf/run_llama_cpp_cli.py` ran a real local llama.cpp CLI ROCm
   GGUF inference reference on the same Mistral GGUF file. The llama.cpp build
   reported version 7074 (`22e1ce2f8`) with HIP 6.2.41133-dd7f95766, offloaded
@@ -183,8 +185,8 @@ Blocked or omitted claims:
 - AeroNum-native GGUF token-inference throughput claims are omitted. The
   verified current AeroNum core result parses local GGUF metadata, tokenizer
   string-array samples, tensor directory records, tensor byte ranges, loads a
-  complete small F32 tensor into `NdArray`, round-trips that tensor through
-  ROCm device 0, then reaches placeholder generation. The verified
+  complete small F32 tensor into `LlamaModel`, offloads that model weight
+  through ROCm device 0, then reaches placeholder generation. The verified
   token-inference result is a llama.cpp reference through an AeroNum repo
   wrapper.
 

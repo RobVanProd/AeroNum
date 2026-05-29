@@ -158,6 +158,7 @@ impl From<io::Error> for GgufError {
 
 pub struct LlamaModel {
     pub weights: Vec<NdArray>,
+    pub weight_names: Vec<String>,
     pub device: GpuDevice,
     pub hip_runtime: Option<HipRuntime>,
     pub hip_weights: Vec<HipBuffer>,
@@ -177,11 +178,23 @@ impl LlamaModel {
         );
         Ok(Self {
             weights: Vec::new(),
+            weight_names: Vec::new(),
             device: GpuDevice::auto_detect(),
             hip_runtime: None,
             hip_weights: Vec::new(),
             gguf_header: Some(header),
         })
+    }
+
+    pub fn load_f32_weight(&mut self, tensor_name: &str) -> Result<usize, GgufError> {
+        let header = self
+            .gguf_header
+            .as_ref()
+            .ok_or_else(|| GgufError::TensorNotFound(tensor_name.to_string()))?;
+        let tensor = header.load_f32_tensor(tensor_name)?;
+        self.weights.push(tensor);
+        self.weight_names.push(tensor_name.to_string());
+        Ok(self.weights.len() - 1)
     }
 
     pub fn to(&mut self, target: &str) {
@@ -689,7 +702,7 @@ fn read_f64_le(reader: &mut impl Read) -> Result<f64, io::Error> {
 mod tests {
     use super::*;
     use std::fs;
-    use std::io::Write;
+    use std::io::{Seek, Write};
 
     fn write_gguf_string(file: &mut File, value: &str) {
         file.write_all(&(value.len() as u64).to_le_bytes())
@@ -770,6 +783,54 @@ mod tests {
         assert_eq!(header.tensors[0].name, "token_embd.weight");
         assert_eq!(header.tensors[0].dimensions, vec![32000, 4096]);
         assert_eq!(header.tensors[0].tensor_type, 15);
+
+        fs::remove_file(path).expect("remove GGUF test file");
+    }
+
+    #[test]
+    fn llama_model_loads_f32_weight_from_gguf() {
+        let path = std::env::temp_dir().join(format!(
+            "aeronum-gguf-header-{}-{}.gguf",
+            std::process::id(),
+            "f32-weight"
+        ));
+        let mut file = File::create(&path).expect("create GGUF test file");
+        file.write_all(b"GGUF").expect("write magic");
+        file.write_all(&3u32.to_le_bytes()).expect("write version");
+        file.write_all(&1u64.to_le_bytes())
+            .expect("write tensor count");
+        file.write_all(&0u64.to_le_bytes())
+            .expect("write metadata count");
+
+        write_gguf_string(&mut file, "output_norm.weight");
+        file.write_all(&1u32.to_le_bytes())
+            .expect("write tensor dims");
+        file.write_all(&2u64.to_le_bytes())
+            .expect("write tensor dim 0");
+        file.write_all(&0u32.to_le_bytes())
+            .expect("write F32 tensor type");
+        file.write_all(&0u64.to_le_bytes())
+            .expect("write tensor offset");
+
+        let directory_end = file.stream_position().expect("directory end");
+        let padding = align_to(directory_end, 32) - directory_end;
+        file.write_all(&vec![0u8; padding as usize])
+            .expect("write data padding");
+        file.write_all(&1.25f32.to_le_bytes())
+            .expect("write tensor value 0");
+        file.write_all(&2.5f32.to_le_bytes())
+            .expect("write tensor value 1");
+        drop(file);
+
+        let mut model =
+            LlamaModel::try_load_gguf(path.to_str().expect("utf8 temp path")).expect("load model");
+        let weight_index = model
+            .load_f32_weight("output_norm.weight")
+            .expect("load f32 weight");
+        assert_eq!(weight_index, 0);
+        assert_eq!(model.weight_names, vec!["output_norm.weight".to_string()]);
+        assert_eq!(model.weights[0].shape(), &[2]);
+        assert_eq!(model.weights[0].to_vec(), vec![1.25, 2.5]);
 
         fs::remove_file(path).expect("remove GGUF test file");
     }

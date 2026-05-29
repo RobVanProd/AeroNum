@@ -1,0 +1,70 @@
+{
+  "claim_id": "aeronum_core_gguf_model_rocm_offload_20260529",
+  "command": "cargo run -p aeronum-core --example gguf_header_smoke -- --model /home/rob/models/mistralai_Mistral-Small-3.1-24B-Instruct-2503-Q4_K_M.gguf --device rocm --max-tokens 16 --prompt \"AeroNum GGUF model ROCm offload prompt\"",
+  "hardware_software_metadata": "claim-verification/results/aeronum_core_gguf_model_rocm_offload_7900xtx_20260529T000456Z/hardware_software_metadata.txt",
+  "raw_outputs": {
+    "exit_code": "claim-verification/results/aeronum_core_gguf_model_rocm_offload_7900xtx_20260529T000456Z/gguf_model_rocm_offload.exit_code.txt",
+    "stderr": "claim-verification/results/aeronum_core_gguf_model_rocm_offload_7900xtx_20260529T000456Z/gguf_model_rocm_offload.stderr.log",
+    "stdout": "claim-verification/results/aeronum_core_gguf_model_rocm_offload_7900xtx_20260529T000456Z/gguf_model_rocm_offload.stdout.log"
+  },
+  "repo_commit_at_rerun": "5ac83f8f62ea395ea0bebe98a80f1e12bc7ba54a",
+  "repo_state_note": "The rerun included modified GGUF model weight-loading/offload code that is committed with this artifact.",
+  "result_json": "claim-verification/results/aeronum_core_gguf_model_rocm_offload_7900xtx_20260529T000456Z/gguf_model_rocm_offload_result.json",
+  "status": "verified_current_limited",
+  "summary": {
+    "benchmark": "aeronum_core_gguf_directory_smoke",
+    "gguf_version": 3,
+    "loaded_f32_tensor": {
+      "checksum": 57094807.65625,
+      "f32_samples": [
+        4.21875,
+        4.46875,
+        4.34375,
+        4.3125,
+        4.21875,
+        4.28125,
+        4.3125,
+        4.34375
+      ],
+      "len": 5120,
+      "model_weight_index": 0,
+      "name": "output_norm.weight",
+      "shape": [
+        5120
+      ]
+    },
+    "model_path": "/home/rob/models/mistralai_Mistral-Small-3.1-24B-Instruct-2503-Q4_K_M.gguf",
+    "model_rocm_offload": {
+      "hip_weight_count": 1,
+      "loaded_weight_count": 1,
+      "weight_names": [
+        "output_norm.weight"
+      ]
+    },
+    "output_kind": "placeholder",
+    "parsed_metadata_entries": 45,
+    "parsed_tensor_infos": 363,
+    "rocm_tensor_roundtrip": {
+      "attempted": true,
+      "bytes": 20480,
+      "device_id": 0,
+      "device_name": "Radeon RX 7900 XTX",
+      "elements": 5120,
+      "f32_samples": [
+        4.21875,
+        4.46875,
+        4.34375,
+        4.3125,
+        4.21875,
+        4.28125,
+        4.3125,
+        4.34375
+      ],
+      "max_abs_diff": 0.0,
+      "roundtrip_checksum": 57094807.65625,
+      "success": true,
+      "tensor_name": "output_norm.weight"
+    },
+    "tensor_layout_within_file": true
+  }
+}

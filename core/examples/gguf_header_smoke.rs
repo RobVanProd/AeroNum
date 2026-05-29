@@ -129,9 +129,10 @@ fn main() {
         json_string_array(&tensor_byte_sample.first_bytes_hex),
         json_f32_array(&tensor_byte_sample.f32_samples)
     );
-    let output_norm = header
-        .load_f32_tensor("output_norm.weight")
-        .expect("load output_norm.weight F32 tensor");
+    let loaded_weight_index = model
+        .load_f32_weight("output_norm.weight")
+        .expect("load output_norm.weight F32 tensor into LlamaModel");
+    let output_norm = &model.weights[loaded_weight_index];
     let output_norm_values = output_norm.to_vec();
     let output_norm_checksum = checksum_f32(&output_norm_values);
     let output_norm_samples = output_norm_values
@@ -140,7 +141,9 @@ fn main() {
         .copied()
         .collect::<Vec<_>>();
     let output_norm_tensor_json = format!(
-        "{{\"name\":\"output_norm.weight\",\"shape\":[{}],\"len\":{},\"checksum\":{:.8},\"f32_samples\":{}}}",
+        "{{\"name\":\"{}\",\"model_weight_index\":{},\"shape\":[{}],\"len\":{},\"checksum\":{:.8},\"f32_samples\":{}}}",
+        json_escape(&model.weight_names[loaded_weight_index]),
+        loaded_weight_index,
         output_norm
             .shape()
             .iter()
@@ -228,11 +231,17 @@ fn main() {
             _ => (0, Vec::new()),
         };
     model.to(&device);
+    let model_rocm_offload_json = format!(
+        "{{\"loaded_weight_count\":{},\"hip_weight_count\":{},\"weight_names\":{}}}",
+        model.weights.len(),
+        model.hip_weights.len(),
+        json_string_array(&model.weight_names)
+    );
     let output = model.generate(&prompt, max_tokens, temperature);
     let elapsed_ms = start.elapsed().as_secs_f64() * 1000.0;
 
     println!(
-        "{{\"benchmark\":\"aeronum_core_gguf_directory_smoke\",\"model_path\":\"{}\",\"gguf_version\":{},\"tensor_count\":{},\"metadata_kv_count\":{},\"parsed_tensor_infos\":{},\"parsed_metadata_entries\":{},\"alignment\":{},\"data_offset\":{},\"file_size\":{},\"tensors_with_known_nbytes\":{},\"max_tensor_end\":{},\"tensor_layout_within_file\":{},\"tensor_byte_sample\":{},\"loaded_f32_tensor\":{},\"rocm_tensor_roundtrip\":{},\"architecture\":\"{}\",\"quantization_version\":\"{}\",\"tokenizer_model\":\"{}\",\"tokenizer_token_count\":{},\"sample_tokenizer_tokens\":{},\"sample_metadata_keys\":{},\"sample_tensor_names\":{},\"sample_tensor_layouts\":[{}],\"device\":\"{}\",\"max_tokens\":{},\"elapsed_ms\":{:.6},\"output_kind\":\"placeholder\",\"output\":\"{}\"}}",
+        "{{\"benchmark\":\"aeronum_core_gguf_directory_smoke\",\"model_path\":\"{}\",\"gguf_version\":{},\"tensor_count\":{},\"metadata_kv_count\":{},\"parsed_tensor_infos\":{},\"parsed_metadata_entries\":{},\"alignment\":{},\"data_offset\":{},\"file_size\":{},\"tensors_with_known_nbytes\":{},\"max_tensor_end\":{},\"tensor_layout_within_file\":{},\"tensor_byte_sample\":{},\"loaded_f32_tensor\":{},\"rocm_tensor_roundtrip\":{},\"model_rocm_offload\":{},\"architecture\":\"{}\",\"quantization_version\":\"{}\",\"tokenizer_model\":\"{}\",\"tokenizer_token_count\":{},\"sample_tokenizer_tokens\":{},\"sample_metadata_keys\":{},\"sample_tensor_names\":{},\"sample_tensor_layouts\":[{}],\"device\":\"{}\",\"max_tokens\":{},\"elapsed_ms\":{:.6},\"output_kind\":\"placeholder\",\"output\":\"{}\"}}",
         json_escape(&model_path),
         header.version,
         header.tensor_count,
@@ -248,6 +257,7 @@ fn main() {
         tensor_byte_sample_json,
         output_norm_tensor_json,
         rocm_roundtrip_json,
+        model_rocm_offload_json,
         json_escape(&architecture),
         json_escape(&quantization_version),
         json_escape(&tokenizer_model),

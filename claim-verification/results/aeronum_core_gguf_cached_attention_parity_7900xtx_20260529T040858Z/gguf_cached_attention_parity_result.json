@@ -1,0 +1,67 @@
+{
+    "benchmark": "gguf_cached_attention_parity_smoke",
+    "model_path": "/home/rob/models/mistralai_Mistral-Small-3.1-24B-Instruct-2503-Q4_K_M.gguf",
+    "elapsed_ms": 372.230703,
+    "gguf_version": 3,
+    "tensor_count": 363,
+    "metadata_count": 45,
+    "file_size": 14333910496,
+    "layer": 0,
+    "samples": [
+        {
+            "input_tensor": "token_embd.weight",
+            "cached_input_rows": [
+                1,
+                3,
+                22177
+            ],
+            "query_input_row": 4,
+            "full_input_rows": [
+                1,
+                3,
+                22177,
+                4
+            ],
+            "norm_tensor": "blk.0.attn_norm.weight",
+            "query_tensor": "blk.0.attn_q.weight",
+            "key_tensor": "blk.0.attn_k.weight",
+            "value_tensor": "blk.0.attn_v.weight",
+            "output_tensor": "blk.0.attn_output.weight",
+            "cache_token_count": 3,
+            "total_token_count": 4,
+            "embedding_dimension": 5120,
+            "head_count": 32,
+            "kv_head_count": 8,
+            "head_dimension": 128,
+            "value_repeat_factor": 4,
+            "rope_freq_base": 1000000000.0,
+            "cached_key_checksum": 123120.68500721,
+            "cached_value_checksum": 1644.67535642,
+            "query_projection_checksum": 17359.55209335,
+            "query_key_checksum": 1671.49438956,
+            "query_value_checksum": 345.20533625,
+            "rope_query_checksum": 900.46524467,
+            "rope_key_cache_checksum": 123120.68500721,
+            "full_attention_score_count": 320,
+            "full_attention_score_checksum": 52685.93341732299,
+            "final_attention_score_count": 128,
+            "final_attention_score_checksum": 6537.650386513418,
+            "full_last_attention_input_checksum": -727.3217814,
+            "cached_last_attention_input_checksum": -727.3217814,
+            "full_attention_output_checksum": -129.429365865331,
+            "cached_attention_output_checksum": -129.429365865331,
+            "attention_output_abs_max_diff": 0.0,
+            "attention_output_checksum_diff": 0.0,
+            "validation": "cached_attention_matches_full_context_final_token"
+        }
+    ],
+    "limitations": [
+        "CPU one-layer final-token attention KV-cache parity only",
+        "caches K/V projections for prior tokens and computes only the final query attention",
+        "not FFN execution",
+        "not full transformer KV-cache decoding",
+        "not generated-token logits",
+        "not GPU matmul",
+        "not AeroNum-native GGUF token inference throughput"
+    ]
+}

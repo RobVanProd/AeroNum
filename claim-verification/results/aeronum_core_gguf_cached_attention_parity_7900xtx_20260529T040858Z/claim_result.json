@@ -1,0 +1,69 @@
+{
+  "schema_version": 1,
+  "claim_id": "aeronum_core_gguf_cached_attention_parity_20260529",
+  "status": "verified_current_limited",
+  "verified_on": "2026-05-29",
+  "source_commit": "6dc337b01876f44b88b7c3e1889f12eff8eb98ba",
+  "benchmark": "gguf_cached_attention_parity_smoke",
+  "command": "cargo run --release -p aeronum-core --example gguf_cached_attention_parity_smoke -- --model /home/rob/models/mistralai_Mistral-Small-3.1-24B-Instruct-2503-Q4_K_M.gguf --cached-rows 1,3,22177 --query-row 4 --layer 0 --top-k 5",
+  "exit_code": 0,
+  "cargo_test_core_exit_code": 0,
+  "model_path": "/home/rob/models/mistralai_Mistral-Small-3.1-24B-Instruct-2503-Q4_K_M.gguf",
+  "model_sha256": "c5743c1bf39db0ae8a5ade5df0374b8e9e492754a199cfdad7ef393c1590f7c0",
+  "hardware": {
+    "gpu_0": "Radeon RX 7900 XTX / gfx1100 / PCI device 1002:744c",
+    "gpu_1": "AMD Radeon Graphics / gfx1036 / PCI device 1002:13c0"
+  },
+  "layer": 0,
+  "cached_input_rows": [
+    1,
+    3,
+    22177
+  ],
+  "query_input_row": 4,
+  "full_input_rows": [
+    1,
+    3,
+    22177,
+    4
+  ],
+  "cache_token_count": 3,
+  "total_token_count": 4,
+  "head_count": 32,
+  "kv_head_count": 8,
+  "head_dimension": 128,
+  "value_repeat_factor": 4,
+  "full_attention_score_count": 320,
+  "final_attention_score_count": 128,
+  "full_last_attention_input_checksum": -727.3217814,
+  "cached_last_attention_input_checksum": -727.3217814,
+  "full_attention_output_checksum": -129.429365865331,
+  "cached_attention_output_checksum": -129.429365865331,
+  "attention_output_abs_max_diff": 0.0,
+  "attention_output_checksum_diff": 0.0,
+  "elapsed_ms": 372.230703,
+  "wall_time_seconds": 0.41255101,
+  "validation": "cached_attention_matches_full_context_final_token",
+  "limitations": [
+    "CPU one-layer final-token attention KV-cache parity only",
+    "caches K/V projections for prior tokens and computes only the final query attention",
+    "not FFN execution",
+    "not full transformer KV-cache decoding",
+    "not generated-token logits",
+    "not GPU matmul",
+    "not AeroNum-native GGUF token inference throughput"
+  ],
+  "raw_artifacts": [
+    "claim-verification/results/aeronum_core_gguf_cached_attention_parity_7900xtx_20260529T040858Z/gguf_cached_attention_parity.stdout.log",
+    "claim-verification/results/aeronum_core_gguf_cached_attention_parity_7900xtx_20260529T040858Z/gguf_cached_attention_parity.stderr.log",
+    "claim-verification/results/aeronum_core_gguf_cached_attention_parity_7900xtx_20260529T040858Z/gguf_cached_attention_parity.exit_code.txt",
+    "claim-verification/results/aeronum_core_gguf_cached_attention_parity_7900xtx_20260529T040858Z/gguf_cached_attention_parity_result.json",
+    "claim-verification/results/aeronum_core_gguf_cached_attention_parity_7900xtx_20260529T040858Z/command.txt",
+    "claim-verification/results/aeronum_core_gguf_cached_attention_parity_7900xtx_20260529T040858Z/source_metadata.txt",
+    "claim-verification/results/aeronum_core_gguf_cached_attention_parity_7900xtx_20260529T040858Z/hardware_software_metadata.txt",
+    "claim-verification/results/aeronum_core_gguf_cached_attention_parity_7900xtx_20260529T040858Z/wall_time.json",
+    "claim-verification/results/aeronum_core_gguf_cached_attention_parity_7900xtx_20260529T040858Z/cargo_test_core.stdout.log",
+    "claim-verification/results/aeronum_core_gguf_cached_attention_parity_7900xtx_20260529T040858Z/cargo_test_core.stderr.log",
+    "claim-verification/results/aeronum_core_gguf_cached_attention_parity_7900xtx_20260529T040858Z/cargo_test_core.exit_code.txt"
+  ]
+}

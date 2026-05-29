@@ -1,0 +1,53 @@
+
+running 43 tests
+test aeronn::model::tests::computes_silu_activation ... ok
+test aeronn::model::tests::computes_f32_dot_product ... ok
+test aeronn::model::tests::decodes_f16_values_for_quantized_blocks ... ok
+test aeronn::model::tests::decodes_synthetic_q4_k_block ... ok
+test aeronn::model::tests::decodes_synthetic_q6_k_block ... ok
+test aeronn::model::tests::decodes_multiple_quantized_blocks_for_row_access ... ok
+test aeronn::model::tests::repeats_values_for_gqa_output_projection ... ok
+test aeronn::model::tests::rejects_non_gguf_magic ... ok
+test aeronn::model::tests::reads_minimal_gguf_directory ... ok
+test gpu::tests::rocm_profile_metadata_is_stable ... ok
+test tests::broadcasting_scalar_with_zero_sized_dim_keeps_zero ... ok
+test tests::indexing_get_set ... ok
+test tests::broadcasting_scalar_mul_matrix ... ok
+test tests::broadcasting_zero_sized_dim_with_ones_keeps_zero ... ok
+test tests::broadcasting_vector_plus_matrix ... ok
+test tests::matmul_2d ... ok
+test tests::reshape_non_contiguous_transpose_like_returns_none ... ok
+test tests::matmul_rectangular_identity_right ... ok
+test tests::reshape_non_contiguous_returns_none ... ok
+test tests::reshape_contiguous_view_with_offset_allowed ... ok
+test tests::matmul_with_transposed_view_uses_strides ... ok
+test tests::matmul_inner_dim_mismatch_panics - should panic ... ok
+test tests::broadcasting_incompatible_shapes_panics - should panic ... ok
+test tests::shape_stride_invariants_c_contiguous ... ok
+test tests::reshape_zero_sized_dimensions_roundtrip ... ok
+test tests::matmul_non_2d_panics - should panic ... ok
+test tests::reshape_contiguous_preserves_row_major_order ... ok
+test aeronn::model::tests::selects_top_k_logits_by_value_then_row_index ... ok
+test tests::reshape_scalar_to_matrix_and_back ... ok
+test tests::sum_axis_0_and_1_shapes_and_values ... ok
+test tests::broadcast_scalar_plus_matrix ... ok
+test tests::broadcasting_higher_rank_edge_case ... ok
+test tests::broadcasting_3d_plus_vector_trailing_dim ... ok
+test tests::broadcasting_leading_dim_1_plus_matrix ... ok
+test tests::broadcasting_matrix_3x1_plus_1x4 ... ok
+test tests::broadcasting_zero_sized_dim_incompatible_panics - should panic ... ok
+test tests::reshape_size_mismatch_returns_none ... ok
+test tests::sum_axis_none_scalar ... ok
+test tests::view_uses_strides_and_offset ... ok
+test gpu::tests::runtime_creation_is_result_typed ... ok
+test aeronn::model::tests::llama_model_loads_f32_weight_from_gguf ... ok
+test gpu::tests::runtime_can_roundtrip_device_copy_when_available ... ok
+test gpu::tests::hipblas_sgemm_2x2_when_available ... ok
+
+test result: ok. 43 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.30s
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+

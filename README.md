@@ -256,6 +256,22 @@ Verified current results:
   transformer layer execution on GPU, not GPU autoregressive decoding, and not
   optimized AeroNum-native GGUF token inference throughput
   ([result JSON](claim-verification/results/aeronum_core_gguf_q4q6_gpu_decode_dot_gpu_reduce_7900xtx_20260529T072500Z/claim_result.json)).
+- `benchmarks/gguf/q4q6_decode_dot_hip.cpp` now verifies a 256-row
+  prefix-logits GPU subpath for one selected Q4_K input row. The repo-owned
+  dump command wrote the raw 2,880-byte Q4_K `token_embd.weight` row 22177,
+  the first 256 raw Q6_K `output.weight` rows, and 256 CPU reference logits.
+  The HIP verifier compiled with `hipcc` for `gfx1100`, copied the raw
+  quantized rows to ROCm device 0 (`Radeon RX 7900 XTX`), GPU-decoded the
+  Q4_K row and each Q6_K row, reduced each row's dot partials with a second
+  GPU kernel, and compared all 256 GPU logits to the CPU references. The first
+  CPU reference logit was `-0.000094391383`; the first GPU logit was
+  `-0.000094391347`, and the maximum absolute difference across the 256 logits
+  was `0.000000000236`. This verifies a prefix-logits subpath for one selected
+  Q4_K row against the first 256 Q6_K rows only, and it is not full
+  output-vocabulary logits, not full q4_K/q6_K GPU tensor execution, not
+  transformer layer execution on GPU, not GPU autoregressive decoding, and not
+  optimized AeroNum-native GGUF token inference throughput
+  ([result JSON](claim-verification/results/aeronum_core_gguf_q4q6_gpu_prefix_logits_7900xtx_20260529T080000Z/claim_result.json)).
 - `aeronum-core` now verifies a full-output-vocabulary GPU final-head logits
   subpath for one retained-KV GGUF decode step. The repo-owned release command
   uses the retained CPU transformer state for the first generated token from
@@ -657,7 +673,7 @@ Blocked or omitted claims:
   GPU decode-plus-dot subpath, one selected Q4_K row GPU decode-plus-dot
   subpath, one selected combined Q4_K and Q6_K GPU decode-plus-dot subpath,
   one selected combined Q4_K and Q6_K GPU decode-plus-dot subpath with GPU
-  final reduction, 256-row prefix
+  final reduction, a 256-row GPU Q4_K/Q6_K prefix-logits subpath, 256-row prefix
   logits, full-output-vocabulary GPU final-head logits for the first and
   second retained-KV decode steps with CPU-side quantized weight decode, full output-vocabulary CPU arithmetic, final
   RMS/output-norm full output-vocabulary CPU arithmetic for one selected Q4_K

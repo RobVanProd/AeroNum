@@ -166,6 +166,18 @@ pub struct GgufQuantizedNormalizedLogitsSample {
     pub logits_checksum: f64,
 }
 
+#[derive(Clone, Debug, PartialEq)]
+pub struct GgufSingleTokenAttentionOutputSample {
+    pub value_projection: GgufQuantizedNormalizedLogitsSample,
+    pub output_tensor_name: String,
+    pub value_repeat_factor: u64,
+    pub output_row_count: u64,
+    pub output_dimension: usize,
+    pub attention_output: Vec<GgufQuantizedLogitValue>,
+    pub top_attention_output: Vec<GgufQuantizedLogitValue>,
+    pub attention_output_checksum: f64,
+}
+
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct GgufTokenizerIndex {
     pub token_count: usize,
@@ -951,6 +963,73 @@ impl GgufHeader {
         })
     }
 
+    pub fn read_single_token_attention_output_sample(
+        &self,
+        input_tensor_name: &str,
+        input_row_index: u64,
+        norm_tensor_name: &str,
+        value_tensor_name: &str,
+        output_tensor_name: &str,
+        top_k: usize,
+    ) -> Result<GgufSingleTokenAttentionOutputSample, GgufError> {
+        let value_row_count = self.tensor_row_count(value_tensor_name)?;
+        let value_projection = self.read_quantized_normalized_logits_sample(
+            input_tensor_name,
+            input_row_index,
+            norm_tensor_name,
+            value_tensor_name,
+            0,
+            value_row_count,
+            top_k,
+        )?;
+        let value_projection_values = value_projection
+            .logits
+            .iter()
+            .map(|logit| logit.value as f32)
+            .collect::<Vec<_>>();
+        let value_repeat_factor = self
+            .u32_value("llama.attention.head_count")
+            .zip(self.u32_value("llama.attention.head_count_kv"))
+            .and_then(|(head_count, kv_head_count)| {
+                (kv_head_count != 0 && head_count % kv_head_count == 0)
+                    .then_some((head_count / kv_head_count) as u64)
+            })
+            .unwrap_or(1);
+        let attention_input = repeat_values(&value_projection_values, value_repeat_factor)?;
+        let output_row_count = self.tensor_row_count(output_tensor_name)?;
+        let attention_output = self.read_quantized_logits_for_values(
+            &attention_input,
+            output_tensor_name,
+            0,
+            output_row_count,
+        )?;
+        let top_attention_output = top_k_logits(&attention_output, top_k);
+        let attention_output_checksum = checksum_logits(&attention_output);
+        Ok(GgufSingleTokenAttentionOutputSample {
+            output_tensor_name: output_tensor_name.to_string(),
+            value_repeat_factor,
+            output_row_count,
+            output_dimension: attention_input.len(),
+            value_projection,
+            attention_output,
+            top_attention_output,
+            attention_output_checksum,
+        })
+    }
+
+    fn tensor_row_count(&self, tensor_name: &str) -> Result<u64, GgufError> {
+        let tensor = self
+            .tensors
+            .iter()
+            .find(|tensor| tensor.name == tensor_name)
+            .ok_or_else(|| GgufError::TensorNotFound(tensor_name.to_string()))?;
+        tensor
+            .dimensions
+            .get(1)
+            .copied()
+            .ok_or_else(|| GgufError::InvalidTensorRange(tensor_name.to_string()))
+    }
+
     fn read_quantized_logits_for_values(
         &self,
         input_values: &[f32],
@@ -1664,6 +1743,24 @@ fn dot_f32_values(left: &[f32], right: &[f32]) -> f64 {
         .sum()
 }
 
+fn repeat_values(values: &[f32], repeat_factor: u64) -> Result<Vec<f32>, GgufError> {
+    let repeat_factor: usize = repeat_factor
+        .try_into()
+        .map_err(|_| GgufError::TensorShapeTooLarge("GQA repeat factor".to_string()))?;
+    if repeat_factor == 0 {
+        return Err(GgufError::InvalidTensorRange(
+            "GQA repeat factor".to_string(),
+        ));
+    }
+    let mut repeated = Vec::with_capacity(values.len() * repeat_factor);
+    for value in values {
+        for _ in 0..repeat_factor {
+            repeated.push(*value);
+        }
+    }
+    Ok(repeated)
+}
+
 fn top_k_logits(logits: &[GgufQuantizedLogitValue], top_k: usize) -> Vec<GgufQuantizedLogitValue> {
     let mut values = logits.to_vec();
     values.sort_by(|left, right| {
@@ -2111,6 +2208,18 @@ mod tests {
         let right = [4.0f32, 5.0, -6.0];
 
         assert_eq!(dot_f32_values(&left, &right), -24.0);
+    }
+
+    #[test]
+    fn repeats_values_for_gqa_output_projection() {
+        let values = [1.0f32, -2.0, 3.5];
+
+        let repeated = repeat_values(&values, 3).expect("repeat values");
+
+        assert_eq!(
+            repeated,
+            vec![1.0, 1.0, 1.0, -2.0, -2.0, -2.0, 3.5, 3.5, 3.5]
+        );
     }
 
     #[test]

@@ -187,6 +187,17 @@ Verified current results:
   selected-row arithmetic smoke only, not full logits, full q4_K/q6_K tensor
   execution, GPU matmul, or AeroNum-native GGUF token inference throughput
   ([result JSON](claim-verification/results/aeronum_core_gguf_quantized_row_dot_7900xtx_20260529T012052Z/claim_result.json)).
+- `aeronum-core` now runs a limited GGUF-derived GPU compute smoke. The
+  repo-owned command CPU-decodes Q4_K `token_embd.weight` row 22177 and Q6_K
+  `output.weight` row 100, copies the decoded 5,120-value vectors to ROCm
+  device 0 (`Radeon RX 7900 XTX`), runs a 1x1 hipBLAS SGEMM dot product, and
+  compares it to the CPU dot. The run reported CPU dot `-0.000096131074`, GPU
+  dot `-0.000096129981`, and absolute difference `0.000000001093`. This is
+  one decoded-row GPU dot only; GGUF quantized decode remains CPU-side, and it
+  is not full q4_K/q6_K GPU tensor execution, not transformer layer execution
+  on GPU, not GPU autoregressive decoding, and not AeroNum-native GGUF token
+  inference throughput
+  ([result JSON](claim-verification/results/aeronum_core_gguf_gpu_row_dot_7900xtx_20260529T040003Z/claim_result.json)).
 - `aeronum-core` now computes CPU prefix logits over decoded quantized rows.
   The repo-owned command
   `cargo run -p aeronum-core --example gguf_quantized_block_smoke -- --model /home/rob/models/mistralai_Mistral-Small-3.1-24B-Instruct-2503-Q4_K_M.gguf --q4-row 22177 --q6-row 100 --logit-start 0 --logit-rows 256 --top-k 5`
@@ -459,7 +470,8 @@ Blocked or omitted claims:
   records, tensor byte ranges, loads all 81 F32 tensors into `LlamaModel`,
   and offloads those model weights through ROCm device 0. First-block decode,
   selected-row decode, a selected-row CPU dot
-  product, 256-row prefix logits, full output-vocabulary CPU arithmetic, final
+  product, a limited decoded-row hipBLAS GPU dot product, 256-row prefix
+  logits, full output-vocabulary CPU arithmetic, final
   RMS/output-norm full output-vocabulary CPU arithmetic for one selected Q4_K
   embedding row against Q6_K `output.weight`, first-layer V-projection CPU
   arithmetic against Q6_K `blk.0.attn_v.weight`, a single-token first-layer
@@ -483,8 +495,9 @@ Blocked or omitted claims:
   plus full-vocabulary final-head CPU logits from that single-token layer-0
   hidden state are verified, but exhaustive tokenizer parity, llama.cpp
   internal-trace RoPE parity, llama.cpp sampler-internals parity, llama.cpp
-  detokenization-trace parity, KV-cache decoding, GPU GGUF execution, and
-  optimized AeroNum-native token inference throughput are not yet verified. The
+  detokenization-trace parity, KV-cache decoding, full GPU GGUF tensor/layer
+  execution, GPU autoregressive decoding, and optimized AeroNum-native token
+  inference throughput are not yet verified. The
   verified
   token-inference result is a llama.cpp reference through an AeroNum repo
   wrapper.

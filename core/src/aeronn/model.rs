@@ -386,6 +386,15 @@ impl GgufTokenizerIndex {
             .collect()
     }
 
+    pub fn decode_byte_bpe_text(&self, ids: &[u32]) -> Option<String> {
+        let pieces = self.decode_ids(ids)?;
+        let bytes = pieces
+            .iter()
+            .flat_map(|piece| piece.chars().map(byte_level_byte))
+            .collect::<Option<Vec<_>>>()?;
+        String::from_utf8(bytes).ok()
+    }
+
     pub fn encode_byte_bpe(&self, text: &str, add_bos: bool) -> Option<Vec<u32>> {
         self.encode_byte_bpe_with_special(text, add_bos, true)
     }
@@ -2394,6 +2403,26 @@ fn byte_level_char(byte: u8) -> char {
     }
 }
 
+fn byte_level_byte(ch: char) -> Option<u8> {
+    let value = ch as u32;
+    if matches!(value, 33..=126 | 161..=172 | 174..=255) {
+        return u8::try_from(value).ok();
+    }
+
+    let mut offset = 0u32;
+    for byte in 0u16..=255 {
+        let byte = byte as u8;
+        if matches!(byte, 33..=126 | 161..=172 | 174..=255) {
+            continue;
+        }
+        if value == 256 + offset {
+            return Some(byte);
+        }
+        offset += 1;
+    }
+    None
+}
+
 impl GgufMetadataEntry {
     fn read(reader: &mut impl Read) -> Result<Self, GgufError> {
         let key = read_gguf_string(reader, "metadata key")?;
@@ -3204,12 +3233,24 @@ mod tests {
         );
         assert_eq!(tokenizer_index.encode_byte_bpe("Hi", false), Some(vec![6]));
         assert_eq!(
+            tokenizer_index.decode_byte_bpe_text(&[6]),
+            Some("Hi".to_string())
+        );
+        assert_eq!(
             tokenizer_index.encode_byte_bpe(" Hi", false),
             Some(vec![7, 6])
         );
         assert_eq!(
+            tokenizer_index.decode_byte_bpe_text(&[7, 6]),
+            Some(" Hi".to_string())
+        );
+        assert_eq!(
             tokenizer_index.encode_byte_bpe(".cpp", false),
             Some(vec![8, 12])
+        );
+        assert_eq!(
+            tokenizer_index.decode_byte_bpe_text(&[8, 12]),
+            Some(".cpp".to_string())
         );
         assert_eq!(
             tokenizer_index.encode_byte_bpe("[INST]Hi", false),

@@ -228,6 +228,9 @@ fn main() {
     let final_context_pieces = tokenizer
         .decode_ids(&context_token_ids)
         .expect("decode final context tokens");
+    let generated_text = tokenizer
+        .decode_byte_bpe_text(&generated_token_ids)
+        .expect("decode generated token text");
     let elapsed_ms = start.elapsed().as_secs_f64() * 1000.0;
 
     println!(
@@ -249,6 +252,7 @@ fn main() {
             "\"generated_token_ids\":{},",
             "\"generated_token_pieces\":{},",
             "\"generated_piece_sequence\":\"{}\",",
+            "\"generated_text\":\"{}\",",
             "\"final_context_token_ids\":{},",
             "\"final_context_token_pieces\":{},",
             "\"steps\":[{}],",
@@ -277,6 +281,7 @@ fn main() {
         json_u32_array(&generated_token_ids),
         json_string_array(&generated_token_pieces),
         json_escape(&generated_token_pieces.join("")),
+        json_escape(&generated_text),
         json_u32_array(&context_token_ids),
         json_string_array(&final_context_pieces),
         step_json_values.join(",")

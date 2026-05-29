@@ -169,6 +169,17 @@ impl GgufTokenizerIndex {
         Some(ids)
     }
 
+    pub fn encode_byte_bpe_literal(&self, text: &str, add_bos: bool) -> Option<Vec<u32>> {
+        let mut ids = Vec::new();
+        if add_bos {
+            ids.push(self.bos_token_id?);
+        }
+        for token in self.byte_bpe_piece(&byte_level_text(text)) {
+            ids.push(self.token_id(&token).or(self.unknown_token_id)?);
+        }
+        Some(ids)
+    }
+
     fn special_token_at<'a>(&'a self, text: &str, idx: usize) -> Option<(&'a str, u32)> {
         if !text.is_char_boundary(idx) {
             return None;
@@ -689,15 +700,13 @@ impl GgufHeader {
 }
 
 fn byte_level_pieces(text: &str) -> Vec<String> {
-    pretokenize(text)
-        .into_iter()
-        .map(|piece| {
-            piece
-                .as_bytes()
-                .iter()
-                .map(|byte| byte_level_char(*byte))
-                .collect()
-        })
+    pretokenize(text).into_iter().map(byte_level_text).collect()
+}
+
+fn byte_level_text(text: &str) -> String {
+    text.as_bytes()
+        .iter()
+        .map(|byte| byte_level_char(*byte))
         .collect()
 }
 

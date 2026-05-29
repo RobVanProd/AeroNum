@@ -1,0 +1,17 @@
+Command:
+benchmarks/gguf/compare_tokenizer.py --model /home/rob/models/mistralai_Mistral-Small-3.1-24B-Instruct-2503-Q4_K_M.gguf
+
+This command runs:
+- cargo run -q -p aeronum-core --example gguf_tokenizer_compare -- --model /home/rob/models/mistralai_Mistral-Small-3.1-24B-Instruct-2503-Q4_K_M.gguf
+- /home/rob/llama.cpp/build-gpu/bin/llama-tokenize with and without BOS for every prompt
+- /home/rob/llama.cpp/build-gpu/bin/llama-tokenize --no-parse-special with and without BOS for every prompt
+
+Purpose:
+Verify AeroNum GGUF byte-level BPE token IDs, default special-token parsing, and literal --no-parse-special behavior against llama.cpp token IDs for a fixed prompt set including spaces, punctuation, contractions, digits, non-ASCII text, emoji, an emoji-plus-suffix case, and selected special tokens.
+
+Scope limits:
+This does not verify exhaustive tokenizer parity, q4_K/q6_K tensor execution, or AeroNum-native GGUF token inference throughput.
+
+Model file:
+/home/rob/models/mistralai_Mistral-Small-3.1-24B-Instruct-2503-Q4_K_M.gguf
+c5743c1bf39db0ae8a5ade5df0374b8e9e492754a199cfdad7ef393c1590f7c0  /home/rob/models/mistralai_Mistral-Small-3.1-24B-Instruct-2503-Q4_K_M.gguf

@@ -81,23 +81,30 @@ fn main() {
     let checks = prompt_cases()
         .into_iter()
         .map(|(label, text)| {
+            let has_special = contains_known_special(text);
             let with_bos = tokenizer
                 .encode_byte_bpe_with_special(text, true, true)
                 .expect("encode prompt with BOS");
             let without_bos = tokenizer
                 .encode_byte_bpe_with_special(text, false, true)
                 .expect("encode prompt without BOS");
-            let no_parse_with_bos = tokenizer
-                .encode_byte_bpe_with_special(text, true, false)
-                .expect("encode literal prompt with BOS");
-            let no_parse_without_bos = tokenizer
-                .encode_byte_bpe_with_special(text, false, false)
-                .expect("encode literal prompt without BOS");
+            let no_parse_with_bos = if has_special {
+                tokenizer.encode_byte_bpe_literal(text, true)
+            } else {
+                tokenizer.encode_byte_bpe_with_special(text, true, false)
+            }
+            .expect("encode literal prompt with BOS");
+            let no_parse_without_bos = if has_special {
+                tokenizer.encode_byte_bpe_literal(text, false)
+            } else {
+                tokenizer.encode_byte_bpe_with_special(text, false, false)
+            }
+            .expect("encode literal prompt without BOS");
             format!(
                 "{{\"label\":\"{}\",\"text\":\"{}\",\"has_special\":{},\"with_bos\":{},\"without_bos\":{},\"no_parse_with_bos\":{},\"no_parse_without_bos\":{}}}",
                 json_escape(label),
                 json_escape(text),
-                contains_known_special(text),
+                has_special,
                 json_u32_array(&with_bos),
                 json_u32_array(&without_bos),
                 json_u32_array(&no_parse_with_bos),

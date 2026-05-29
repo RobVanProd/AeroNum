@@ -110,13 +110,16 @@ def main() -> int:
         ]
         with_bos = run_command(with_bos_command, repo_root)
         without_bos = run_command(without_bos_command, repo_root)
-        no_parse_with_bos = None if has_special else run_command(no_parse_with_bos_command, repo_root)
-        no_parse_without_bos = (
-            None if has_special else run_command(no_parse_without_bos_command, repo_root)
+        no_parse_with_bos = run_command(no_parse_with_bos_command, repo_root)
+        no_parse_without_bos = run_command(no_parse_without_bos_command, repo_root)
+        llama_commands.extend(
+            [
+                with_bos_command,
+                without_bos_command,
+                no_parse_with_bos_command,
+                no_parse_without_bos_command,
+            ]
         )
-        llama_commands.extend([with_bos_command, without_bos_command])
-        if not has_special:
-            llama_commands.extend([no_parse_with_bos_command, no_parse_without_bos_command])
 
         if (
             with_bos.returncode != 0
@@ -147,19 +150,15 @@ def main() -> int:
                         "aeronum_ids": check["no_parse_with_bos"],
                         "llama_cpp_ids": None,
                         "match": False,
-                        "exit_code": None if no_parse_with_bos is None else no_parse_with_bos.returncode,
-                        "stderr": None if no_parse_with_bos is None else no_parse_with_bos.stderr,
+                        "exit_code": no_parse_with_bos.returncode,
+                        "stderr": no_parse_with_bos.stderr,
                     },
                     "no_parse_without_bos": {
                         "aeronum_ids": check["no_parse_without_bos"],
                         "llama_cpp_ids": None,
                         "match": False,
-                        "exit_code": None
-                        if no_parse_without_bos is None
-                        else no_parse_without_bos.returncode,
-                        "stderr": None
-                        if no_parse_without_bos is None
-                        else no_parse_without_bos.stderr,
+                        "exit_code": no_parse_without_bos.returncode,
+                        "stderr": no_parse_without_bos.stderr,
                     },
                 }
             )
@@ -167,14 +166,8 @@ def main() -> int:
 
         llama_with_bos = parse_llama_ids(with_bos.stdout)
         llama_without_bos = parse_llama_ids(without_bos.stdout)
-        llama_no_parse_with_bos = (
-            None if no_parse_with_bos is None else parse_llama_ids(no_parse_with_bos.stdout)
-        )
-        llama_no_parse_without_bos = (
-            None
-            if no_parse_without_bos is None
-            else parse_llama_ids(no_parse_without_bos.stdout)
-        )
+        llama_no_parse_with_bos = parse_llama_ids(no_parse_with_bos.stdout)
+        llama_no_parse_without_bos = parse_llama_ids(no_parse_without_bos.stdout)
         comparisons.append(
             {
                 "label": check["label"],
@@ -195,20 +188,14 @@ def main() -> int:
                 "no_parse_with_bos": {
                     "aeronum_ids": check["no_parse_with_bos"],
                     "llama_cpp_ids": llama_no_parse_with_bos,
-                    "match": None
-                    if has_special
-                    else check["no_parse_with_bos"] == llama_no_parse_with_bos,
+                    "match": check["no_parse_with_bos"] == llama_no_parse_with_bos,
                     "token_count": len(check["no_parse_with_bos"]),
-                    "skipped": has_special,
                 },
                 "no_parse_without_bos": {
                     "aeronum_ids": check["no_parse_without_bos"],
                     "llama_cpp_ids": llama_no_parse_without_bos,
-                    "match": None
-                    if has_special
-                    else check["no_parse_without_bos"] == llama_no_parse_without_bos,
+                    "match": check["no_parse_without_bos"] == llama_no_parse_without_bos,
                     "token_count": len(check["no_parse_without_bos"]),
-                    "skipped": has_special,
                 },
             }
         )
@@ -216,16 +203,11 @@ def main() -> int:
     all_match = all(
         item["with_bos"]["match"]
         and item["without_bos"]["match"]
-        and (
-            item["has_special"]
-            or (
-                item["no_parse_with_bos"]["match"]
-                and item["no_parse_without_bos"]["match"]
-            )
-        )
+        and item["no_parse_with_bos"]["match"]
+        and item["no_parse_without_bos"]["match"]
         for item in comparisons
     )
-    comparison_count = sum(2 if item["has_special"] else 4 for item in comparisons)
+    comparison_count = len(comparisons) * 4
     output = {
         "benchmark": "aeronum_core_gguf_tokenizer_llama_cpp_compare",
         "model_path": model_path,
@@ -244,7 +226,6 @@ def main() -> int:
         "limitations": [
             "fixed prompt set only",
             "does not verify exhaustive special-token parsing",
-            "does not verify literal no-parse-special parity for prompts containing special tokens",
             "does not verify GGUF token inference throughput",
         ],
     }

@@ -150,17 +150,17 @@ Verified current results:
   ([result JSON](claim-verification/results/aeronum_core_gguf_all_f32_weights_7900xtx_20260529T002801Z/claim_result.json)).
 - `aeronum-core` now includes a byte-level BPE tokenizer path built from GGUF
   `tokenizer.ggml.tokens`, `tokenizer.ggml.merges`, and
-  `tokenizer.ggml.token_type`, with GPT-style pre-tokenization and default
-  special-token parsing. The repo-owned comparison wrapper matched
+  `tokenizer.ggml.token_type`, with GPT-style pre-tokenization, default
+  special-token parsing, and literal `--no-parse-special` behavior for the
+  fixed prompt set. The repo-owned comparison wrapper matched
   `/home/rob/llama.cpp/build-gpu/bin/llama-tokenize` on the same local Mistral
-  GGUF file for 14 fixed prompts and 48 comparisons. The prompt set includes
+  GGUF file for 14 fixed prompts and 56 comparisons. The prompt set includes
   punctuation, leading spaces, contractions, digits, `Äpfel`, `🚀`,
   `this is 🦙.cpp`, `[INST]`, `<s>[INST]Hello[/INST]`,
   `Hello [INST] world`, and `[AVAILABLE_TOOLS]`. This is a fixed-prompt
-  tokenizer parity check, not exhaustive tokenizer parity, literal
-  `--no-parse-special` parity for prompts containing special tokens, or GGUF
-  token inference throughput
-  ([result JSON](claim-verification/results/aeronum_core_gguf_special_tokenizer_compare_7900xtx_20260529T005251Z/claim_result.json)).
+  tokenizer parity check, not exhaustive tokenizer parity or GGUF token
+  inference throughput
+  ([result JSON](claim-verification/results/aeronum_core_gguf_tokenizer_parse_modes_7900xtx_20260529T010000Z/claim_result.json)).
 - `benchmarks/gguf/run_llama_cpp_cli.py` ran a real local llama.cpp CLI ROCm
   GGUF inference reference on the same Mistral GGUF file. The llama.cpp build
   reported version 7074 (`22e1ce2f8`) with HIP 6.2.41133-dd7f95766, offloaded
@@ -212,13 +212,13 @@ Blocked or omitted claims:
   verified current AeroNum core result parses local GGUF metadata, tokenizer
   string-array samples, the full tokenizer token array, tokenizer merges,
   tokenizer token-type array, exact-token-piece encode/decode for known
-  special tokens, a byte-level BPE path with default special-token parsing
-  matching llama.cpp on 14 fixed prompts, tokenizer config, selected Llama hyperparameters, tensor directory
+  special tokens, a byte-level BPE path with default and literal
+  no-parse-special modes matching llama.cpp on 14 fixed prompts, tokenizer
+  config, selected Llama hyperparameters, tensor directory
   records, tensor byte ranges, loads all 81 F32 tensors into `LlamaModel`,
   offloads those model weights through ROCm device 0, then reaches placeholder
-  generation. Exhaustive tokenizer parity, literal no-parse-special parity for prompts
-  containing special tokens, q4_K/q6_K tensor execution, and AeroNum-native
-  token inference throughput are not yet verified. The verified
+  generation. Exhaustive tokenizer parity, q4_K/q6_K tensor execution, and
+  AeroNum-native token inference throughput are not yet verified. The verified
   token-inference result is a llama.cpp reference through an AeroNum repo
   wrapper.
 

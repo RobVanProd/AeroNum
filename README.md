@@ -305,6 +305,15 @@ Verified current results:
   autoregressive generated text, GPU matmul, or AeroNum-native GGUF token
   inference throughput
   ([result JSON](claim-verification/results/aeronum_core_gguf_prompt_greedy_decode_7900xtx_20260529T025300Z/claim_result.json)).
+- `aeronum-core` now runs a bounded CPU autoregressive greedy decode loop for
+  the same fixed GGUF prompt by appending each greedy token to the next-step
+  context and recomputing all 40 CPU layers. The repo-owned release command
+  generated two token pieces from `<s>[INST]Hello[/INST]`: token IDs 22177 and
+  1033, pieces `Hello` and `!`, with piece sequence `Hello!`. This is a
+  two-token greedy token-piece decode for one fixed prompt only; it has no KV
+  cache, does not prove full detokenization parity, and is not sampled decoding,
+  GPU matmul, or AeroNum-native GGUF token inference throughput
+  ([result JSON](claim-verification/results/aeronum_core_gguf_prompt_autoregressive_decode_7900xtx_20260529T030511Z/claim_result.json)).
 - `aeronum-core` now verifies a single-token first-layer attention-plus-FFN CPU
   subpath. The repo-owned release command ran the single-token attention-output
   subpath, added the residual, applied `blk.0.ffn_norm.weight`, computed all
@@ -393,15 +402,16 @@ Blocked or omitted claims:
   subpath, a bounded two-layer final-token transformer CPU subpath, a full
   40-layer final-token transformer CPU subpath for the fixed three-token row
   sequence, prompt-level next-token logits for one fixed prompt, and a
-  one-step greedy next-token piece selection for that prompt, plus a
+  one-step greedy next-token piece selection for that prompt, plus a two-token
+  CPU greedy autoregressive token-piece decode loop for that prompt, plus a
   single-token first-layer attention-plus-FFN CPU subpath through
   `blk.0.ffn_gate.weight`, `blk.0.ffn_up.weight`, and `blk.0.ffn_down.weight`,
   plus full-vocabulary final-head CPU logits from that single-token layer-0
   hidden state are verified, but exhaustive tokenizer parity, llama.cpp
-  internal-trace RoPE parity, multi-token autoregressive generated text, and
-  AeroNum-native token inference throughput are not yet verified. The verified
-  token-inference result is a llama.cpp reference through an AeroNum repo
-  wrapper.
+  internal-trace RoPE parity, sampled decoding, full detokenization parity,
+  KV-cache decoding, and AeroNum-native token inference throughput are not yet
+  verified. The verified token-inference result is a llama.cpp reference
+  through an AeroNum repo wrapper.
 
 Historical benchmark CSVs remain in the repo, but README claims above only use
 fresh local reruns and captured artifacts.

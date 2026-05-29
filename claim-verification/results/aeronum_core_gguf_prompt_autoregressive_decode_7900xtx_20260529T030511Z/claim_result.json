@@ -1,0 +1,163 @@
+{
+  "claim_id": "aeronum_core_gguf_prompt_autoregressive_decode_20260529",
+  "status": "verified_current_limited",
+  "source_commit": "0487e657771dcc93c6ba67e26bb4b0539f57840f",
+  "model_path": "/home/rob/models/mistralai_Mistral-Small-3.1-24B-Instruct-2503-Q4_K_M.gguf",
+  "model_sha256": "c5743c1bf39db0ae8a5ade5df0374b8e9e492754a199cfdad7ef393c1590f7c0",
+  "command": "cargo run --release -p aeronum-core --example gguf_prompt_autoregressive_decode_smoke -- --model /home/rob/models/mistralai_Mistral-Small-3.1-24B-Instruct-2503-Q4_K_M.gguf --prompt <s>[INST]Hello[/INST] --add-bos false --parse-special true --layer-start 0 --layers 40 --top-k 5 --max-new-tokens 2",
+  "exit_code": 0,
+  "cargo_test_core_exit_code": 0,
+  "elapsed_ms_reported": 225376.685655,
+  "wall_time_seconds": 225.607,
+  "prompt": "<s>[INST]Hello[/INST]",
+  "prompt_token_ids": [
+    1,
+    3,
+    22177,
+    4
+  ],
+  "prompt_token_pieces": [
+    "<s>",
+    "[INST]",
+    "Hello",
+    "[/INST]"
+  ],
+  "max_new_tokens": 2,
+  "generated_token_ids": [
+    22177,
+    1033
+  ],
+  "generated_token_pieces": [
+    "Hello",
+    "!"
+  ],
+  "generated_piece_sequence": "Hello!",
+  "final_context_token_ids": [
+    1,
+    3,
+    22177,
+    4,
+    22177,
+    1033
+  ],
+  "final_context_token_pieces": [
+    "<s>",
+    "[INST]",
+    "Hello",
+    "[/INST]",
+    "Hello",
+    "!"
+  ],
+  "step_count": 2,
+  "steps": [
+    {
+      "step_index": 0,
+      "context_token_count": 4,
+      "context_token_ids": [
+        1,
+        3,
+        22177,
+        4
+      ],
+      "greedy_token_id": 22177,
+      "greedy_token_piece": "Hello",
+      "final_token_position": 3,
+      "final_rms": 0.498891906151,
+      "logit_count": 131072,
+      "logits_checksum": 8962826250.316875,
+      "top_next_token_logits": [
+        {
+          "token_id": 22177,
+          "piece": "Hello",
+          "value": 30.702155899895
+        },
+        {
+          "token_id": 37133,
+          "piece": "Hi",
+          "value": 25.080459681418
+        },
+        {
+          "token_id": 45383,
+          "piece": "\u0120Hello",
+          "value": 22.986648752664
+        },
+        {
+          "token_id": 46634,
+          "piece": "Hey",
+          "value": 18.484649678113
+        },
+        {
+          "token_id": 29706,
+          "piece": "hello",
+          "value": 17.988335139899
+        }
+      ]
+    },
+    {
+      "step_index": 1,
+      "context_token_count": 5,
+      "context_token_ids": [
+        1,
+        3,
+        22177,
+        4,
+        22177
+      ],
+      "greedy_token_id": 1033,
+      "greedy_token_piece": "!",
+      "final_token_position": 4,
+      "final_rms": 0.440909981144,
+      "logit_count": 131072,
+      "logits_checksum": -12572921663.746782,
+      "top_next_token_logits": [
+        {
+          "token_id": 1033,
+          "piece": "!",
+          "value": 30.194520660236
+        },
+        {
+          "token_id": 5338,
+          "piece": "!\u010a\u010a",
+          "value": 16.133496891497
+        },
+        {
+          "token_id": 1044,
+          "piece": ",",
+          "value": 15.718870704124
+        },
+        {
+          "token_id": 2156,
+          "piece": "\u0120there",
+          "value": 15.36322797206
+        },
+        {
+          "token_id": 45949,
+          "piece": "!,",
+          "value": 15.316588928011
+        }
+      ]
+    }
+  ],
+  "limitations": [
+    "CPU autoregressive greedy token-piece selection for one fixed prompt only",
+    "recomputes the full context for each generated token without KV cache",
+    "generated_piece_sequence is tokenizer piece concatenation, not full detokenization parity",
+    "not sampled decoding",
+    "not GPU matmul",
+    "not AeroNum-native GGUF token inference throughput"
+  ],
+  "artifact_files": [
+    "claim-verification/results/aeronum_core_gguf_prompt_autoregressive_decode_7900xtx_20260529T030511Z/claim_result.json",
+    "claim-verification/results/aeronum_core_gguf_prompt_autoregressive_decode_7900xtx_20260529T030511Z/gguf_prompt_autoregressive_decode_result.json",
+    "claim-verification/results/aeronum_core_gguf_prompt_autoregressive_decode_7900xtx_20260529T030511Z/gguf_prompt_autoregressive_decode.stdout.log",
+    "claim-verification/results/aeronum_core_gguf_prompt_autoregressive_decode_7900xtx_20260529T030511Z/gguf_prompt_autoregressive_decode.stderr.log",
+    "claim-verification/results/aeronum_core_gguf_prompt_autoregressive_decode_7900xtx_20260529T030511Z/gguf_prompt_autoregressive_decode.exit_code.txt",
+    "claim-verification/results/aeronum_core_gguf_prompt_autoregressive_decode_7900xtx_20260529T030511Z/gguf_prompt_autoregressive_decode.time.txt",
+    "claim-verification/results/aeronum_core_gguf_prompt_autoregressive_decode_7900xtx_20260529T030511Z/cargo_test_core.stdout.log",
+    "claim-verification/results/aeronum_core_gguf_prompt_autoregressive_decode_7900xtx_20260529T030511Z/cargo_test_core.stderr.log",
+    "claim-verification/results/aeronum_core_gguf_prompt_autoregressive_decode_7900xtx_20260529T030511Z/cargo_test_core.exit_code.txt",
+    "claim-verification/results/aeronum_core_gguf_prompt_autoregressive_decode_7900xtx_20260529T030511Z/command_config.txt",
+    "claim-verification/results/aeronum_core_gguf_prompt_autoregressive_decode_7900xtx_20260529T030511Z/source_metadata.txt",
+    "claim-verification/results/aeronum_core_gguf_prompt_autoregressive_decode_7900xtx_20260529T030511Z/hardware_software_metadata.txt"
+  ]
+}

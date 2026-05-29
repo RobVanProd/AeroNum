@@ -116,38 +116,38 @@ Verified current results:
   tokens/s for the one-step smoke
   ([result JSON](claim-verification/results/aeronum_distributed_compare_guard_7900xtx_20260528T233403Z/claim_result.json)).
 - `aeronum-core` now parses GGUF metadata, sampled tokenizer string-array
-  metadata, tensor directory records, tensor data byte ranges, loads a complete
-  small F32 tensor into `LlamaModel`, and offloads that model weight through
-  the model ROCm path. It also builds an exact-token lookup index from the
-  GGUF tokenizer metadata and round-trips known token pieces through that
-  index. The repo-owned command
-  `cargo run -p aeronum-core --example gguf_header_smoke -- --model /home/rob/models/mistralai_Mistral-Small-3.1-24B-Instruct-2503-Q4_K_M.gguf --device rocm --max-tokens 16 --prompt "AeroNum GGUF exact token pieces prompt"`
+  metadata, tensor directory records, tensor data byte ranges, loads all 81
+  F32 tensors into `LlamaModel`, and offloads those model weights through the
+  model ROCm path. It also builds an exact-token lookup index from the GGUF
+  tokenizer metadata and round-trips known token pieces through that index. The
+  repo-owned command
+  `cargo run -p aeronum-core --example gguf_header_smoke -- --model /home/rob/models/mistralai_Mistral-Small-3.1-24B-Instruct-2503-Q4_K_M.gguf --device rocm --max-tokens 16 --prompt "AeroNum GGUF all F32 weights prompt"`
   passed against the local Mistral GGUF file, SHA-256
   `c5743c1bf39db0ae8a5ade5df0374b8e9e492754a199cfdad7ef393c1590f7c0`, and
   reported GGUF version 3, 363 parsed tensor infos, 45 parsed metadata entries,
   alignment `32`, data offset `7884256`, file size `14333910496`, 363 tensors
-  with known byte sizes, and `tensor_layout_within_file=true`. It loaded all
-  5,120 F32 values from `output_norm.weight` into `LlamaModel` weight index 0,
-  with checksum `57094807.65625` and F32 samples `4.21875`, `4.46875`,
+  with known byte sizes, and `tensor_layout_within_file=true`. It loaded
+  414,720 F32 values across 81 F32 tensors, totaling 1,658,880 bytes. The
+  `output_norm.weight` tensor remained at weight index 0 with 5,120 values,
+  checksum `57094807.65625`, and F32 samples `4.21875`, `4.46875`,
   `4.34375`, and `4.3125`. It copied that 20,480-byte tensor to ROCm device 0
   (`Radeon RX 7900 XTX`) and back with round-trip checksum `57094807.65625`
   and `max_abs_diff=0.0`; `model.to("rocm")` then reported
-  `loaded_weight_count=1`, `hip_weight_count=1`, and
-  `weight_names=["output_norm.weight"]`. The tokenizer index reported 131,072
-  tokens, 269,443 merges, BOS token id 1, EOS token id 2, unknown token id 0,
-  exact-token ids for `<unk>`, `<s>`, `</s>`, `[INST]`, and `[/INST]`, and
-  exact-piece encode/decode for `["<s>","[INST]","[/INST]","</s>"]` as
-  `[1,3,4,2]`. It also parsed 131,072 `tokenizer.ggml.token_type` entries
-  and reported token types `[3,3,3,3]` for those exact pieces. This is a
-  metadata/directory/layout/tokenizer-array/F32 model-weight offload smoke
-  result. The same artifact reported tokenizer config `pre=tekken`, padding
-  token id 11, add-BOS true, add-EOS false, add-space-prefix false, chat
-  template length 2,002, chat template checksum 156,939,758, context length
-  131,072, embedding length 5,120, 40 blocks, 32 attention heads, 8 KV heads,
-  rope frequency base 1,000,000,000, and RMS epsilon 0.00001. Generation is
-  still placeholder; this is not full BPE tokenization and not real GGUF token
-  inference throughput
-  ([result JSON](claim-verification/results/aeronum_core_gguf_tokenizer_config_7900xtx_20260529T002218Z/claim_result.json)).
+  `loaded_weight_count=81` and `hip_weight_count=81`. The tokenizer index
+  reported 131,072 tokens, 269,443 merges, BOS token id 1, EOS token id 2,
+  unknown token id 0, exact-token ids for `<unk>`, `<s>`, `</s>`, `[INST]`,
+  and `[/INST]`, and exact-piece encode/decode for
+  `["<s>","[INST]","[/INST]","</s>"]` as `[1,3,4,2]`. It also parsed 131,072
+  `tokenizer.ggml.token_type` entries and reported token types `[3,3,3,3]`
+  for those exact pieces. This is a metadata/directory/layout/tokenizer-array
+  and F32 model-weight offload smoke result. The same artifact reported
+  tokenizer config `pre=tekken`, padding token id 11, add-BOS true, add-EOS
+  false, add-space-prefix false, chat template length 2,002, chat template
+  checksum 156,939,758, context length 131,072, embedding length 5,120, 40
+  blocks, 32 attention heads, 8 KV heads, rope frequency base 1,000,000,000,
+  and RMS epsilon 0.00001. Generation is still placeholder; this is not full
+  BPE tokenization and not real GGUF token inference throughput
+  ([result JSON](claim-verification/results/aeronum_core_gguf_all_f32_weights_7900xtx_20260529T002801Z/claim_result.json)).
 - `benchmarks/gguf/run_llama_cpp_cli.py` ran a real local llama.cpp CLI ROCm
   GGUF inference reference on the same Mistral GGUF file. The llama.cpp build
   reported version 7074 (`22e1ce2f8`) with HIP 6.2.41133-dd7f95766, offloaded

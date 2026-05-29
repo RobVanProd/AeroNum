@@ -235,6 +235,24 @@ impl LlamaModel {
         Ok(self.weights.len() - 1)
     }
 
+    pub fn load_all_f32_weights(&mut self) -> Result<usize, GgufError> {
+        let tensor_names = self
+            .gguf_header
+            .as_ref()
+            .ok_or_else(|| GgufError::TensorNotFound("*.f32".to_string()))?
+            .f32_tensor_names();
+        for tensor_name in &tensor_names {
+            let tensor = self
+                .gguf_header
+                .as_ref()
+                .ok_or_else(|| GgufError::TensorNotFound(tensor_name.clone()))?
+                .load_f32_tensor(tensor_name)?;
+            self.weights.push(tensor);
+            self.weight_names.push(tensor_name.clone());
+        }
+        Ok(tensor_names.len())
+    }
+
     pub fn to(&mut self, target: &str) {
         self.device = match target {
             "rocm" => GpuDevice::new(Backend::Rocm, 0),
@@ -464,6 +482,14 @@ impl GgufHeader {
             .map(|chunk| f32::from_le_bytes([chunk[0], chunk[1], chunk[2], chunk[3]]))
             .collect::<Vec<_>>();
         Ok(NdArray::from_list(values, Some(&shape)))
+    }
+
+    pub fn f32_tensor_names(&self) -> Vec<String> {
+        self.tensors
+            .iter()
+            .filter(|tensor| tensor.tensor_type == 0)
+            .map(|tensor| tensor.name.clone())
+            .collect()
     }
 
     pub fn string_array_values(&self, key: &str) -> Option<&[String]> {
@@ -954,7 +980,7 @@ mod tests {
         let mut file = File::create(&path).expect("create GGUF test file");
         file.write_all(b"GGUF").expect("write magic");
         file.write_all(&3u32.to_le_bytes()).expect("write version");
-        file.write_all(&1u64.to_le_bytes())
+        file.write_all(&2u64.to_le_bytes())
             .expect("write tensor count");
         file.write_all(&0u64.to_le_bytes())
             .expect("write metadata count");
@@ -969,6 +995,16 @@ mod tests {
         file.write_all(&0u64.to_le_bytes())
             .expect("write tensor offset");
 
+        write_gguf_string(&mut file, "blk.0.attn_norm.weight");
+        file.write_all(&1u32.to_le_bytes())
+            .expect("write tensor dims");
+        file.write_all(&1u64.to_le_bytes())
+            .expect("write tensor dim 0");
+        file.write_all(&0u32.to_le_bytes())
+            .expect("write F32 tensor type");
+        file.write_all(&8u64.to_le_bytes())
+            .expect("write tensor offset");
+
         let directory_end = file.stream_position().expect("directory end");
         let padding = align_to(directory_end, 32) - directory_end;
         file.write_all(&vec![0u8; padding as usize])
@@ -977,10 +1013,20 @@ mod tests {
             .expect("write tensor value 0");
         file.write_all(&2.5f32.to_le_bytes())
             .expect("write tensor value 1");
+        file.write_all(&3.75f32.to_le_bytes())
+            .expect("write tensor value 2");
         drop(file);
 
         let mut model =
             LlamaModel::try_load_gguf(path.to_str().expect("utf8 temp path")).expect("load model");
+        let header = model.gguf_header.as_ref().expect("header present");
+        assert_eq!(
+            header.f32_tensor_names(),
+            vec![
+                "output_norm.weight".to_string(),
+                "blk.0.attn_norm.weight".to_string()
+            ]
+        );
         let weight_index = model
             .load_f32_weight("output_norm.weight")
             .expect("load f32 weight");
@@ -988,6 +1034,20 @@ mod tests {
         assert_eq!(model.weight_names, vec!["output_norm.weight".to_string()]);
         assert_eq!(model.weights[0].shape(), &[2]);
         assert_eq!(model.weights[0].to_vec(), vec![1.25, 2.5]);
+
+        let mut model =
+            LlamaModel::try_load_gguf(path.to_str().expect("utf8 temp path")).expect("load model");
+        let weight_count = model.load_all_f32_weights().expect("load all f32 weights");
+        assert_eq!(weight_count, 2);
+        assert_eq!(
+            model.weight_names,
+            vec![
+                "output_norm.weight".to_string(),
+                "blk.0.attn_norm.weight".to_string()
+            ]
+        );
+        assert_eq!(model.weights[0].to_vec(), vec![1.25, 2.5]);
+        assert_eq!(model.weights[1].to_vec(), vec![3.75]);
 
         fs::remove_file(path).expect("remove GGUF test file");
     }

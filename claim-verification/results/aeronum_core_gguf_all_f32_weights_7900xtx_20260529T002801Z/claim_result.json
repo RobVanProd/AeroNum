@@ -1,0 +1,67 @@
+{
+  "claim_id": "aeronum_core_gguf_all_f32_weights_20260529",
+  "status": "verified_current_limited",
+  "timestamp_utc": "2026-05-29T00:28:01Z",
+  "repo_commit_before_changes": "741285f00a01d451440bb32069119cb44a207b65",
+  "hardware": {
+    "primary_gpu": "Radeon RX 7900 XTX",
+    "rocm_agent": "gfx1100",
+    "secondary_gpu": "AMD Radeon Graphics",
+    "secondary_rocm_agent": "gfx1036",
+    "cpu": "AMD Ryzen 9 9950X 16-Core Processor"
+  },
+  "software": {
+    "pytorch": "2.5.1+rocm6.2",
+    "torch_hip": "6.2.41133-dd7f95766"
+  },
+  "command": "cargo run -p aeronum-core --example gguf_header_smoke -- --model /home/rob/models/mistralai_Mistral-Small-3.1-24B-Instruct-2503-Q4_K_M.gguf --device rocm --max-tokens 16 --prompt \"AeroNum GGUF all F32 weights prompt\"",
+  "model": {
+    "path": "/home/rob/models/mistralai_Mistral-Small-3.1-24B-Instruct-2503-Q4_K_M.gguf",
+    "sha256": "c5743c1bf39db0ae8a5ade5df0374b8e9e492754a199cfdad7ef393c1590f7c0",
+    "gguf_version": 3,
+    "file_size": 14333910496
+  },
+  "result_summary": {
+    "exit_code": 0,
+    "tensor_count": 363,
+    "metadata_kv_count": 45,
+    "parsed_tensor_infos": 363,
+    "parsed_metadata_entries": 45,
+    "alignment": 32,
+    "data_offset": 7884256,
+    "tensors_with_known_nbytes": 363,
+    "max_tensor_end": 14333910496,
+    "tensor_layout_within_file": true,
+    "loaded_f32_weight_count": 81,
+    "loaded_f32_total_elements": 414720,
+    "loaded_f32_total_bytes": 1658880,
+    "model_rocm_loaded_weight_count": 81,
+    "model_rocm_hip_weight_count": 81,
+    "output_norm_index": 0,
+    "output_norm_len": 5120,
+    "output_norm_checksum": 57094807.65625,
+    "output_norm_roundtrip_success": true,
+    "output_norm_roundtrip_bytes": 20480,
+    "output_norm_roundtrip_max_abs_diff": 0.0,
+    "token_count": 131072,
+    "merge_count": 269443,
+    "token_type_count": 131072,
+    "exact_piece_ids": [1, 3, 4, 2],
+    "exact_piece_token_types": [3, 3, 3, 3],
+    "output_kind": "placeholder"
+  },
+  "scope_limitations": [
+    "This verifies GGUF directory, selected metadata, tokenizer arrays/config, all F32 tensor loading, and ROCm offload of loaded F32 tensors.",
+    "This does not verify q4_K/q6_K tensor execution.",
+    "This does not verify full BPE tokenization.",
+    "This does not verify AeroNum-native GGUF token inference throughput because generation remains placeholder."
+  ],
+  "artifacts": [
+    "claim-verification/results/aeronum_core_gguf_all_f32_weights_7900xtx_20260529T002801Z/command_config.txt",
+    "claim-verification/results/aeronum_core_gguf_all_f32_weights_7900xtx_20260529T002801Z/hardware_software_metadata.txt",
+    "claim-verification/results/aeronum_core_gguf_all_f32_weights_7900xtx_20260529T002801Z/gguf_all_f32_weights.stdout.log",
+    "claim-verification/results/aeronum_core_gguf_all_f32_weights_7900xtx_20260529T002801Z/gguf_all_f32_weights.stderr.log",
+    "claim-verification/results/aeronum_core_gguf_all_f32_weights_7900xtx_20260529T002801Z/gguf_all_f32_weights.exit_code.txt",
+    "claim-verification/results/aeronum_core_gguf_all_f32_weights_7900xtx_20260529T002801Z/gguf_all_f32_weights_result.json"
+  ]
+}

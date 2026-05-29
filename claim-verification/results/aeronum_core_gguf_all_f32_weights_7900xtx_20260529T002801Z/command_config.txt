@@ -1,0 +1,9 @@
+Command:
+cargo run -p aeronum-core --example gguf_header_smoke -- --model /home/rob/models/mistralai_Mistral-Small-3.1-24B-Instruct-2503-Q4_K_M.gguf --device rocm --max-tokens 16 --prompt "AeroNum GGUF all F32 weights prompt"
+
+Purpose:
+Verify that aeronum-core parses the local GGUF directory/tokenizer metadata, loads all F32 tensors into LlamaModel, offloads the loaded model weights through the ROCm model path, and still labels generation as placeholder.
+
+Model file:
+/home/rob/models/mistralai_Mistral-Small-3.1-24B-Instruct-2503-Q4_K_M.gguf
+c5743c1bf39db0ae8a5ade5df0374b8e9e492754a199cfdad7ef393c1590f7c0  /home/rob/models/mistralai_Mistral-Small-3.1-24B-Instruct-2503-Q4_K_M.gguf

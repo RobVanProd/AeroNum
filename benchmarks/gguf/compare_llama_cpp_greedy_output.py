@@ -99,7 +99,8 @@ def main() -> int:
         timeout=args.timeout,
     )
     wall_seconds = time.perf_counter() - start
-    llama_text = llama.stdout
+    llama_stdout = llama.stdout
+    llama_text = llama_stdout.rstrip("\n")
 
     tokenize_cmd = [
         args.llama_tokenize,
@@ -143,7 +144,8 @@ def main() -> int:
         "llama_cli_command": llama_cmd,
         "llama_cli_returncode": llama.returncode,
         "llama_cli_wall_seconds": wall_seconds,
-        "llama_cli_stdout": llama.stdout,
+        "llama_cli_generated_text_normalized": llama_text,
+        "llama_cli_stdout": llama_stdout,
         "llama_cli_stderr": llama.stderr,
         "llama_tokenize_command": tokenize_cmd,
         "llama_tokenize_returncode": tokenized.returncode,

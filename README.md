@@ -235,6 +235,16 @@ Verified current results:
   RoPE validation, FFN execution, generated-token logits, GPU matmul, or
   AeroNum-native GGUF token inference throughput
   ([result JSON](claim-verification/results/aeronum_core_gguf_single_token_attention_output_7900xtx_20260529T022500Z/claim_result.json)).
+- `aeronum-core` now verifies a single-token first-layer attention-plus-FFN CPU
+  subpath. The repo-owned release command ran the single-token attention-output
+  subpath, added the residual, applied `blk.0.ffn_norm.weight`, computed all
+  32,768 rows of `blk.0.ffn_gate.weight` and `blk.0.ffn_up.weight`, applied
+  `SiLU(gate) * up`, computed all 5,120 rows of `blk.0.ffn_down.weight`, and
+  reported top FFN-output rows 3,662, 4,865, 2,575, 531, and 4,397. This is a
+  single-token first-layer CPU subpath only, not multi-token attention scores,
+  RoPE validation, full transformer execution, generated-token logits, GPU
+  matmul, or AeroNum-native GGUF token inference throughput
+  ([result JSON](claim-verification/results/aeronum_core_gguf_single_token_ffn_output_7900xtx_20260529T024000Z/claim_result.json)).
 - `benchmarks/gguf/run_llama_cpp_cli.py` ran a real local llama.cpp CLI ROCm
   GGUF inference reference on the same Mistral GGUF file. The llama.cpp build
   reported version 7074 (`22e1ce2f8`) with HIP 6.2.41133-dd7f95766, offloaded
@@ -295,10 +305,12 @@ Blocked or omitted claims:
   product, 256-row prefix logits, full output-vocabulary CPU arithmetic, final
   RMS/output-norm full output-vocabulary CPU arithmetic for one selected Q4_K
   embedding row against Q6_K `output.weight`, first-layer V-projection CPU
-  arithmetic against Q6_K `blk.0.attn_v.weight`, and a single-token first-layer
-  attention-output CPU subpath against Q4_K `blk.0.attn_output.weight` are
-  verified, but exhaustive tokenizer parity, full q4_K/q6_K tensor execution,
-  multi-token attention scores, RoPE validation, FFN execution, transformer
+  arithmetic against Q6_K `blk.0.attn_v.weight`, a single-token first-layer
+  attention-output CPU subpath against Q4_K `blk.0.attn_output.weight`, and a
+  single-token first-layer attention-plus-FFN CPU subpath through
+  `blk.0.ffn_gate.weight`, `blk.0.ffn_up.weight`, and `blk.0.ffn_down.weight`
+  are verified, but exhaustive tokenizer parity, full q4_K/q6_K tensor
+  execution, multi-token attention scores, RoPE validation, transformer
   hidden-state logits, generated-token logits, and AeroNum-native token
   inference throughput are not yet verified. The verified token-inference result
   is a llama.cpp reference through an AeroNum repo wrapper.

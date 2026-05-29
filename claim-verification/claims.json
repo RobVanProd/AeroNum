@@ -408,6 +408,29 @@
       ]
     },
     {
+      "id": "aeronum_core_gguf_single_token_ffn_output_20260529",
+      "status": "verified_current_limited",
+      "claim": "aeronum-core can run a single-token first-layer attention-plus-FFN CPU subpath from decoded GGUF tensors: run the verified single-token attention-output path for token_embd.weight row 22177, add the residual, apply blk.0.ffn_norm.weight RMS normalization, stream-decode every Q4_K blk.0.ffn_gate.weight row and every Q4_K blk.0.ffn_up.weight row, apply SiLU(gate) * up for 32768 activated values, stream-decode every Q6_K blk.0.ffn_down.weight row, compute 5120 FFN output values, and report top-k values. The repo-owned command `cargo run --release -p aeronum-core --example gguf_single_token_ffn_smoke -- --model /home/rob/models/mistralai_Mistral-Small-3.1-24B-Instruct-2503-Q4_K_M.gguf --input-row 22177 --layer 0 --top-k 5` passed against source commit 5558f05d23fa56ecd94eef99d51b3a67ec0a3942 and local model SHA-256 c5743c1bf39db0ae8a5ade5df0374b8e9e492754a199cfdad7ef393c1590f7c0. It reported attention_output_count 5120, residual_checksum 426.63440044, ffn_rms 0.005872433492, gate_projection_count 32768, up_projection_count 32768, activated_count 32768, ffn_output_count 5120, ffn_output_checksum -2007.088981815675, and top FFN-output row 3662 value 0.060105086125, row 4865 value 0.049396751307, row 2575 value 0.029416416914, row 531 value 0.025553344814, and row 4397 value 0.02487841387. This is a single-token first-layer attention-plus-FFN CPU subpath only, not multi-token attention scores, not RoPE validation, not full q4_K/q6_K transformer execution, not transformer hidden-state logits, not generated-token logits, not GPU matmul, and not AeroNum-native GGUF token inference throughput.",
+      "artifacts": [
+        "core/src/aeronn/model.rs",
+        "core/src/aeronn/mod.rs",
+        "core/src/lib.rs",
+        "core/examples/gguf_single_token_ffn_smoke.rs",
+        "claim-verification/results/aeronum_core_gguf_single_token_ffn_output_7900xtx_20260529T024000Z/claim_result.json",
+        "claim-verification/results/aeronum_core_gguf_single_token_ffn_output_7900xtx_20260529T024000Z/gguf_single_token_ffn_result.json",
+        "claim-verification/results/aeronum_core_gguf_single_token_ffn_output_7900xtx_20260529T024000Z/gguf_single_token_ffn.stdout.log",
+        "claim-verification/results/aeronum_core_gguf_single_token_ffn_output_7900xtx_20260529T024000Z/gguf_single_token_ffn.stderr.log",
+        "claim-verification/results/aeronum_core_gguf_single_token_ffn_output_7900xtx_20260529T024000Z/gguf_single_token_ffn.exit_code.txt",
+        "claim-verification/results/aeronum_core_gguf_single_token_ffn_output_7900xtx_20260529T024000Z/gguf_single_token_ffn.time.txt",
+        "claim-verification/results/aeronum_core_gguf_single_token_ffn_output_7900xtx_20260529T024000Z/cargo_test_core.stdout.log",
+        "claim-verification/results/aeronum_core_gguf_single_token_ffn_output_7900xtx_20260529T024000Z/cargo_test_core.stderr.log",
+        "claim-verification/results/aeronum_core_gguf_single_token_ffn_output_7900xtx_20260529T024000Z/cargo_test_core.exit_code.txt",
+        "claim-verification/results/aeronum_core_gguf_single_token_ffn_output_7900xtx_20260529T024000Z/command_config.txt",
+        "claim-verification/results/aeronum_core_gguf_single_token_ffn_output_7900xtx_20260529T024000Z/source_metadata.txt",
+        "claim-verification/results/aeronum_core_gguf_single_token_ffn_output_7900xtx_20260529T024000Z/hardware_software_metadata.txt"
+      ]
+    },
+    {
       "id": "aeronum_llama_cpp_cli_gguf_reference_20260528",
       "status": "verified_reference_only",
       "claim": "benchmarks/gguf/run_llama_cpp_cli.py ran a real local llama.cpp CLI ROCm GGUF inference reference on the local Mistral GGUF file. The llama.cpp build reported version 7074 (22e1ce2f8) with HIP 6.2.41133-dd7f95766, offloaded 41/41 layers to ROCm0 Radeon RX 7900 XTX, and measured 125.22 prompt eval tokens/s plus 44.58 eval tokens/s for 16 predicted tokens. This is a llama.cpp reference benchmark through an AeroNum repo wrapper, not AeroNum-native GGUF tensor execution.",
@@ -477,7 +500,7 @@
     {
       "id": "aeronum_gpt2_nccl_gguf_claims_20260528",
       "status": "blocked",
-      "claim": "AeroNum-vs-PyTorch GPT-2 training speedup, NCCL/MPI multi-GPU scaling, and AeroNum-native GGUF token-inference throughput claims are not included because no current AeroNum artifact or rerun verified them. A PyTorch/Hugging Face GPT-2 reference passed, AeroNum-owned tiny language-model, tiny transformer-forward, and tiny transformer output-projection training analogues passed but are not GPT-2, NCCL/DDP world size 1 passed, the integrated distributed_compare.py guard blocks the local two-device NCCL topology before launch, post-reboot NCCL attempts failed on the local Radeon RX 7900 XTX plus integrated AMD Radeon Graphics topology, a two-rank single-XTX attempt was rejected by RCCL as duplicate GPU usage, the AeroNum GGUF core result parses metadata, tokenizer string-array samples, the full tokenizer token array, tokenizer merges, tokenizer token-type array, exact-token-piece encode/decode for known special tokens, a byte-level BPE path with default and literal no-parse-special modes matching llama.cpp on 14 fixed prompts, tokenizer config, selected Llama hyperparameters, tensor directory records, tensor byte ranges, loads all 81 F32 tensors into LlamaModel, offloads those model weights through ROCm device 0, and verifies first-block decode, selected-row decode, a selected-row CPU dot product, 256-row CPU prefix logits, full output-vocabulary CPU arithmetic, final RMS/output-norm full output-vocabulary CPU arithmetic for one selected embedding row against Q6_K output.weight, first-layer V-projection CPU arithmetic against Q6_K blk.0.attn_v.weight, and a single-token first-layer attention-output CPU subpath against Q4_K blk.0.attn_output.weight, but still reaches only placeholder generation. Full q4_K/q6_K tensor execution, multi-token attention scores, RoPE validation, FFN execution, transformer hidden-state logits, generated-token logits, and AeroNum-native token inference are not verified, and the GGUF token-inference result is a llama.cpp reference through an AeroNum repo wrapper.",
+      "claim": "AeroNum-vs-PyTorch GPT-2 training speedup, NCCL/MPI multi-GPU scaling, and AeroNum-native GGUF token-inference throughput claims are not included because no current AeroNum artifact or rerun verified them. A PyTorch/Hugging Face GPT-2 reference passed, AeroNum-owned tiny language-model, tiny transformer-forward, and tiny transformer output-projection training analogues passed but are not GPT-2, NCCL/DDP world size 1 passed, the integrated distributed_compare.py guard blocks the local two-device NCCL topology before launch, post-reboot NCCL attempts failed on the local Radeon RX 7900 XTX plus integrated AMD Radeon Graphics topology, a two-rank single-XTX attempt was rejected by RCCL as duplicate GPU usage, the AeroNum GGUF core result parses metadata, tokenizer string-array samples, the full tokenizer token array, tokenizer merges, tokenizer token-type array, exact-token-piece encode/decode for known special tokens, a byte-level BPE path with default and literal no-parse-special modes matching llama.cpp on 14 fixed prompts, tokenizer config, selected Llama hyperparameters, tensor directory records, tensor byte ranges, loads all 81 F32 tensors into LlamaModel, offloads those model weights through ROCm device 0, and verifies first-block decode, selected-row decode, a selected-row CPU dot product, 256-row CPU prefix logits, full output-vocabulary CPU arithmetic, final RMS/output-norm full output-vocabulary CPU arithmetic for one selected embedding row against Q6_K output.weight, first-layer V-projection CPU arithmetic against Q6_K blk.0.attn_v.weight, a single-token first-layer attention-output CPU subpath against Q4_K blk.0.attn_output.weight, and a single-token first-layer attention-plus-FFN CPU subpath through blk.0.ffn_gate.weight, blk.0.ffn_up.weight, and blk.0.ffn_down.weight, but still reaches only placeholder generation. Full q4_K/q6_K transformer execution, multi-token attention scores, RoPE validation, transformer hidden-state logits, generated-token logits, and AeroNum-native token inference are not verified, and the GGUF token-inference result is a llama.cpp reference through an AeroNum repo wrapper.",
       "artifacts": [
         "claim-verification/results/aeronum_pytorch_gpt2_reference_7900xtx_20260528T224500Z/claim_result.json",
         "claim-verification/results/aeronum_tiny_lm_train_7900xtx_20260528T231229Z/claim_result.json",
@@ -519,7 +542,9 @@
         "claim-verification/results/aeronum_core_gguf_first_layer_v_projection_7900xtx_20260529T020500Z/claim_result.json",
         "claim-verification/results/aeronum_core_gguf_first_layer_v_projection_7900xtx_20260529T020500Z/gguf_first_layer_v_projection_result.json",
         "claim-verification/results/aeronum_core_gguf_single_token_attention_output_7900xtx_20260529T022500Z/claim_result.json",
-        "claim-verification/results/aeronum_core_gguf_single_token_attention_output_7900xtx_20260529T022500Z/gguf_single_token_attention_result.json"
+        "claim-verification/results/aeronum_core_gguf_single_token_attention_output_7900xtx_20260529T022500Z/gguf_single_token_attention_result.json",
+        "claim-verification/results/aeronum_core_gguf_single_token_ffn_output_7900xtx_20260529T024000Z/claim_result.json",
+        "claim-verification/results/aeronum_core_gguf_single_token_ffn_output_7900xtx_20260529T024000Z/gguf_single_token_ffn_result.json"
       ]
     }
   ]

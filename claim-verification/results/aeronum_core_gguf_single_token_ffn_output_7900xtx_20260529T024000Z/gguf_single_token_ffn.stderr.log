@@ -1,0 +1,2 @@
+    Finished `release` profile [optimized] target(s) in 0.00s
+     Running `target/release/examples/gguf_single_token_ffn_smoke --model /home/rob/models/mistralai_Mistral-Small-3.1-24B-Instruct-2503-Q4_K_M.gguf --input-row 22177 --layer 0 --top-k 5`

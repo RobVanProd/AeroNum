@@ -1,0 +1,3 @@
+source_commit=5558f05d23fa56ecd94eef99d51b3a67ec0a3942
+model_path=/home/rob/models/mistralai_Mistral-Small-3.1-24B-Instruct-2503-Q4_K_M.gguf
+model_sha256=c5743c1bf39db0ae8a5ade5df0374b8e9e492754a199cfdad7ef393c1590f7c0

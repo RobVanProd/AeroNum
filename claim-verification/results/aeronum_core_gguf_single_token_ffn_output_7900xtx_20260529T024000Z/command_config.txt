@@ -1,0 +1,5 @@
+Claim candidate: aeronum-core single-token first-layer attention-plus-FFN CPU subpath from decoded GGUF tensors.
+Scope: Decode token_embd.weight row 22177, run the verified single-token attention-output subpath for layer 0, add the attention residual, apply blk.0.ffn_norm.weight RMS normalization, compute all 32768 rows of blk.0.ffn_gate.weight and blk.0.ffn_up.weight, apply SiLU(gate) * up, compute all 5120 rows of blk.0.ffn_down.weight, and report top-k FFN output values.
+Not claimed: multi-token attention scores, RoPE validation, full q4_K/q6_K transformer execution, transformer hidden-state logits, generated-token logits, GPU matmul, or AeroNum-native GGUF token inference throughput.
+Command:
+cargo run --release -p aeronum-core --example gguf_single_token_ffn_smoke -- --model /home/rob/models/mistralai_Mistral-Small-3.1-24B-Instruct-2503-Q4_K_M.gguf --input-row 22177 --layer 0 --top-k 5

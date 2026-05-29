@@ -1,0 +1,86 @@
+{
+  "claim_id": "aeronum_core_gguf_single_token_ffn_output_20260529",
+  "status": "verified_current_limited",
+  "source_commit": "5558f05d23fa56ecd94eef99d51b3a67ec0a3942",
+  "model_path": "/home/rob/models/mistralai_Mistral-Small-3.1-24B-Instruct-2503-Q4_K_M.gguf",
+  "model_sha256": "c5743c1bf39db0ae8a5ade5df0374b8e9e492754a199cfdad7ef393c1590f7c0",
+  "hardware": {
+    "gpu": "Radeon RX 7900 XTX",
+    "rocm_agent": "gfx1100"
+  },
+  "command": "cargo run --release -p aeronum-core --example gguf_single_token_ffn_smoke -- --model /home/rob/models/mistralai_Mistral-Small-3.1-24B-Instruct-2503-Q4_K_M.gguf --input-row 22177 --layer 0 --top-k 5",
+  "exit_code": 0,
+  "cargo_test_core_exit_code": 0,
+  "scope": "single-token first-layer attention-plus-FFN CPU subpath from decoded GGUF tensors",
+  "not_claimed": [
+    "multi-token attention scores",
+    "RoPE validation",
+    "full q4_K/q6_K transformer execution",
+    "transformer hidden-state logits",
+    "generated-token logits",
+    "GPU matmul",
+    "AeroNum-native GGUF token inference throughput"
+  ],
+  "result": {
+    "input_tensor": "token_embd.weight",
+    "input_row": 22177,
+    "attn_norm_tensor": "blk.0.attn_norm.weight",
+    "value_tensor": "blk.0.attn_v.weight",
+    "attn_output_tensor": "blk.0.attn_output.weight",
+    "attention_output_count": 5120,
+    "attention_output_checksum": 1135.607899138794,
+    "residual_checksum": 426.63440044,
+    "ffn_norm_tensor": "blk.0.ffn_norm.weight",
+    "ffn_rms_epsilon": 1e-05,
+    "ffn_rms": 0.005872433492,
+    "ffn_norm_weight_checksum": 3935261.40079069,
+    "ffn_normalized_input_checksum": 22478.5036793,
+    "gate_tensor": "blk.0.ffn_gate.weight",
+    "gate_projection_count": 32768,
+    "gate_projection_checksum": -1642515.7931787744,
+    "up_tensor": "blk.0.ffn_up.weight",
+    "up_projection_count": 32768,
+    "up_projection_checksum": 351943.680002019,
+    "activated_count": 32768,
+    "activated_checksum": 9756.53697618,
+    "down_tensor": "blk.0.ffn_down.weight",
+    "ffn_output_count": 5120,
+    "ffn_output_checksum": -2007.088981815675,
+    "top_ffn_output": [
+      {
+        "row_index": 3662,
+        "value": 0.060105086125
+      },
+      {
+        "row_index": 4865,
+        "value": 0.049396751307
+      },
+      {
+        "row_index": 2575,
+        "value": 0.029416416914
+      },
+      {
+        "row_index": 531,
+        "value": 0.025553344814
+      },
+      {
+        "row_index": 4397,
+        "value": 0.02487841387
+      }
+    ],
+    "elapsed_ms_reported_by_example": 627.948407
+  },
+  "artifacts": [
+    "claim-verification/results/aeronum_core_gguf_single_token_ffn_output_7900xtx_20260529T024000Z/command_config.txt",
+    "claim-verification/results/aeronum_core_gguf_single_token_ffn_output_7900xtx_20260529T024000Z/source_metadata.txt",
+    "claim-verification/results/aeronum_core_gguf_single_token_ffn_output_7900xtx_20260529T024000Z/hardware_software_metadata.txt",
+    "claim-verification/results/aeronum_core_gguf_single_token_ffn_output_7900xtx_20260529T024000Z/gguf_single_token_ffn.stdout.log",
+    "claim-verification/results/aeronum_core_gguf_single_token_ffn_output_7900xtx_20260529T024000Z/gguf_single_token_ffn.stderr.log",
+    "claim-verification/results/aeronum_core_gguf_single_token_ffn_output_7900xtx_20260529T024000Z/gguf_single_token_ffn.exit_code.txt",
+    "claim-verification/results/aeronum_core_gguf_single_token_ffn_output_7900xtx_20260529T024000Z/gguf_single_token_ffn.time.txt",
+    "claim-verification/results/aeronum_core_gguf_single_token_ffn_output_7900xtx_20260529T024000Z/gguf_single_token_ffn_result.json",
+    "claim-verification/results/aeronum_core_gguf_single_token_ffn_output_7900xtx_20260529T024000Z/cargo_test_core.stdout.log",
+    "claim-verification/results/aeronum_core_gguf_single_token_ffn_output_7900xtx_20260529T024000Z/cargo_test_core.stderr.log",
+    "claim-verification/results/aeronum_core_gguf_single_token_ffn_output_7900xtx_20260529T024000Z/cargo_test_core.exit_code.txt"
+  ]
+}

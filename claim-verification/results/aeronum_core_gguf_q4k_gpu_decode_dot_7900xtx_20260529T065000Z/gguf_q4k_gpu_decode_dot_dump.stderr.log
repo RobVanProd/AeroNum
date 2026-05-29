@@ -1,0 +1,2 @@
+    Finished `release` profile [optimized] target(s) in 0.00s
+     Running `target/release/examples/gguf_q4k_gpu_decode_dot_dump --model /home/rob/models/mistralai_Mistral-Small-3.1-24B-Instruct-2503-Q4_K_M.gguf --lhs-row 100 --rhs-row 22177 --lhs-bin claim-verification/results/aeronum_core_gguf_q4k_gpu_decode_dot_7900xtx_20260529T065000Z/work/lhs.bin --rhs-q4k-bin claim-verification/results/aeronum_core_gguf_q4k_gpu_decode_dot_7900xtx_20260529T065000Z/work/rhs_q4k.bin`

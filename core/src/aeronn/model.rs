@@ -1,4 +1,4 @@
-use crate::gpu::{Backend, Device, GpuDevice, HipBuffer, HipRuntime};
+use crate::gpu::{Backend, Device, GpuDevice, HipBlas, HipBuffer, HipRuntime};
 use crate::NdArray;
 use std::collections::HashMap;
 use std::error::Error;
@@ -402,6 +402,7 @@ pub struct GgufRetainedKvDecodeStepSample {
     pub retained_final_rms: f64,
     pub retained_final_norm_weight_checksum: f64,
     pub retained_final_normalized_input_checksum: f64,
+    pub retained_final_normalized_input: Vec<f32>,
     pub retained_logits_checksum: f64,
     pub retained_top_logits: Vec<GgufQuantizedLogitValue>,
     pub logits_abs_max_diff: f64,
@@ -430,6 +431,26 @@ pub struct GgufRetainedKvAutoregressiveDecodeSample {
     pub max_logits_abs_diff: f64,
     pub max_logits_checksum_diff: f64,
     pub all_step_top_tokens_match: bool,
+}
+
+#[derive(Clone, Debug, PartialEq)]
+pub struct GgufGpuQuantizedLogitsSample {
+    pub output_tensor_name: String,
+    pub output_row_start: u64,
+    pub output_row_count: u64,
+    pub dimension: usize,
+    pub device_id: i32,
+    pub device_name: String,
+    pub decoded_matrix_checksum: f64,
+    pub cpu_logits: Vec<GgufQuantizedLogitValue>,
+    pub gpu_logits: Vec<GgufQuantizedLogitValue>,
+    pub cpu_top_logits: Vec<GgufQuantizedLogitValue>,
+    pub gpu_top_logits: Vec<GgufQuantizedLogitValue>,
+    pub cpu_logits_checksum: f64,
+    pub gpu_logits_checksum: f64,
+    pub logits_abs_max_diff: f64,
+    pub logits_checksum_diff: f64,
+    pub top_token_matches: bool,
 }
 
 #[derive(Clone, Debug, PartialEq)]
@@ -3465,6 +3486,7 @@ impl GgufHeader {
                 retained_final_normalized_input_checksum: checksum_f32_values(
                     &retained_final_normalized_input,
                 ),
+                retained_final_normalized_input,
                 retained_logits_checksum,
                 retained_top_logits,
                 logits_abs_max_diff,
@@ -3599,6 +3621,186 @@ impl GgufHeader {
             });
         }
         Ok(logits)
+    }
+
+    pub fn read_gpu_quantized_logits_for_values_sample(
+        &self,
+        input_values: &[f32],
+        output_tensor_name: &str,
+        output_row_start: u64,
+        output_row_count: u64,
+        top_k: usize,
+        device_id: i32,
+    ) -> Result<GgufGpuQuantizedLogitsSample, GgufError> {
+        let output_info = self
+            .tensors
+            .iter()
+            .find(|tensor| tensor.name == output_tensor_name)
+            .ok_or_else(|| GgufError::TensorNotFound(output_tensor_name.to_string()))?;
+        let (output_block_size, output_type_size) = ggml_type_layout(output_info.tensor_type)
+            .ok_or_else(|| GgufError::UnsupportedTensorType {
+                name: output_tensor_name.to_string(),
+                tensor_type: output_info.tensor_type,
+            })?;
+        if !matches!(output_info.tensor_type, 12 | 14) {
+            return Err(GgufError::UnsupportedTensorType {
+                name: output_tensor_name.to_string(),
+                tensor_type: output_info.tensor_type,
+            });
+        }
+        let output_column_count = output_info.dimensions.first().copied().unwrap_or(0);
+        let output_total_rows = output_info.dimensions.get(1).copied().unwrap_or(1);
+        let output_row_end = output_row_start
+            .checked_add(output_row_count)
+            .ok_or_else(|| GgufError::InvalidTensorRange(output_tensor_name.to_string()))?;
+        if output_column_count == 0 || output_row_count == 0 || output_row_end > output_total_rows {
+            return Err(GgufError::InvalidTensorRange(
+                output_tensor_name.to_string(),
+            ));
+        }
+        let output_column_count_usize: usize = output_column_count
+            .try_into()
+            .map_err(|_| GgufError::TensorShapeTooLarge(output_tensor_name.to_string()))?;
+        let output_row_count_usize: usize = output_row_count
+            .try_into()
+            .map_err(|_| GgufError::TensorShapeTooLarge(output_tensor_name.to_string()))?;
+        if input_values.len() != output_column_count_usize {
+            return Err(GgufError::InvalidTensorRange(format!(
+                "gpu input logits {output_tensor_name}"
+            )));
+        }
+
+        let output_block_count = output_column_count.div_ceil(output_block_size);
+        let output_row_nbytes = output_block_count
+            .checked_mul(output_type_size)
+            .ok_or_else(|| GgufError::InvalidTensorRange(output_tensor_name.to_string()))?;
+        let output_start_offset = output_row_start
+            .checked_mul(output_row_nbytes)
+            .and_then(|offset| output_info.absolute_offset.checked_add(offset))
+            .ok_or_else(|| GgufError::InvalidTensorRange(output_tensor_name.to_string()))?;
+        let output_range_nbytes = output_row_count
+            .checked_mul(output_row_nbytes)
+            .ok_or_else(|| GgufError::InvalidTensorRange(output_tensor_name.to_string()))?;
+        let output_end_offset = output_start_offset
+            .checked_add(output_range_nbytes)
+            .ok_or_else(|| GgufError::InvalidTensorRange(output_tensor_name.to_string()))?;
+        let output_tensor_nbytes = output_info
+            .nbytes
+            .ok_or_else(|| GgufError::UnknownTensorByteSize(output_tensor_name.to_string()))?;
+        let output_tensor_end = output_info
+            .absolute_offset
+            .checked_add(output_tensor_nbytes)
+            .ok_or_else(|| GgufError::InvalidTensorRange(output_tensor_name.to_string()))?;
+        if output_end_offset > output_tensor_end || output_end_offset > self.file_size {
+            return Err(GgufError::InvalidTensorRange(
+                output_tensor_name.to_string(),
+            ));
+        }
+
+        let mut decoded_matrix =
+            Vec::with_capacity(output_row_count_usize * output_column_count_usize);
+        let mut file = File::open(&self.path)?;
+        file.seek(SeekFrom::Start(output_start_offset))?;
+        let mut row_bytes = vec![0u8; output_row_nbytes as usize];
+        for _ in output_row_start..output_row_end {
+            file.read_exact(&mut row_bytes)?;
+            let mut output_values = decode_quantized_blocks(output_info.tensor_type, &row_bytes)?;
+            output_values.truncate(output_column_count_usize);
+            decoded_matrix.extend(output_values);
+        }
+
+        let cpu_logits = decoded_matrix
+            .chunks_exact(output_column_count_usize)
+            .enumerate()
+            .map(|(idx, output_values)| GgufQuantizedLogitValue {
+                row_index: output_row_start + idx as u64,
+                value: dot_f32_values(input_values, output_values),
+            })
+            .collect::<Vec<_>>();
+
+        let runtime = HipRuntime::new(device_id).map_err(|err| {
+            GgufError::InvalidTensorRange(format!("HIP runtime for GPU logits: {err}"))
+        })?;
+        let device_name = runtime.device_name().map_err(|err| {
+            GgufError::InvalidTensorRange(format!("HIP device name for GPU logits: {err}"))
+        })?;
+        let blas = HipBlas::new(&runtime).map_err(|err| {
+            GgufError::InvalidTensorRange(format!("hipBLAS for GPU logits: {err}"))
+        })?;
+        let d_input = runtime.copy_to_device(input_values).map_err(|err| {
+            GgufError::InvalidTensorRange(format!("copy GPU logits input: {err}"))
+        })?;
+        let d_matrix = runtime.copy_to_device(&decoded_matrix).map_err(|err| {
+            GgufError::InvalidTensorRange(format!("copy GPU logits matrix: {err}"))
+        })?;
+        let d_output = runtime
+            .copy_to_device(&vec![0.0f32; output_row_count_usize])
+            .map_err(|err| {
+                GgufError::InvalidTensorRange(format!("copy GPU logits output: {err}"))
+            })?;
+        blas.sgemm(
+            1,
+            output_row_count as i32,
+            output_column_count as i32,
+            &d_input,
+            &d_matrix,
+            &d_output,
+        )
+        .map_err(|err| GgufError::InvalidTensorRange(format!("hipBLAS GPU logits: {err}")))?;
+        runtime
+            .synchronize()
+            .map_err(|err| GgufError::InvalidTensorRange(format!("sync GPU logits: {err}")))?;
+        let mut gpu_values = vec![0.0f32; output_row_count_usize];
+        runtime
+            .copy_to_host(&d_output, &mut gpu_values)
+            .map_err(|err| {
+                GgufError::InvalidTensorRange(format!("copy GPU logits to host: {err}"))
+            })?;
+        runtime
+            .synchronize()
+            .map_err(|err| GgufError::InvalidTensorRange(format!("sync GPU logits host: {err}")))?;
+        let gpu_logits = gpu_values
+            .into_iter()
+            .enumerate()
+            .map(|(idx, value)| GgufQuantizedLogitValue {
+                row_index: output_row_start + idx as u64,
+                value: value as f64,
+            })
+            .collect::<Vec<_>>();
+
+        let cpu_top_logits = top_k_logits(&cpu_logits, top_k);
+        let gpu_top_logits = top_k_logits(&gpu_logits, top_k);
+        let cpu_logits_checksum = checksum_logits(&cpu_logits);
+        let gpu_logits_checksum = checksum_logits(&gpu_logits);
+        let logits_abs_max_diff = cpu_logits
+            .iter()
+            .zip(gpu_logits.iter())
+            .map(|(left, right)| (left.value - right.value).abs())
+            .fold(0.0f64, f64::max);
+        let logits_checksum_diff = (cpu_logits_checksum - gpu_logits_checksum).abs();
+        let top_token_matches = cpu_top_logits
+            .first()
+            .zip(gpu_top_logits.first())
+            .is_some_and(|(left, right)| left.row_index == right.row_index);
+
+        Ok(GgufGpuQuantizedLogitsSample {
+            output_tensor_name: output_tensor_name.to_string(),
+            output_row_start,
+            output_row_count,
+            dimension: output_column_count_usize,
+            device_id,
+            device_name,
+            decoded_matrix_checksum: checksum_f32_values(&decoded_matrix),
+            cpu_logits,
+            gpu_logits,
+            cpu_top_logits,
+            gpu_top_logits,
+            cpu_logits_checksum,
+            gpu_logits_checksum,
+            logits_abs_max_diff,
+            logits_checksum_diff,
+            top_token_matches,
+        })
     }
 
     pub fn load_f32_tensor(&self, tensor_name: &str) -> Result<NdArray, GgufError> {

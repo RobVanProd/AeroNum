@@ -498,6 +498,27 @@ impl GgufHeader {
         }
     }
 
+    pub fn f32_value(&self, key: &str) -> Option<f32> {
+        match self.metadata_value(key) {
+            Some(GgufMetadataValue::F32(value)) => Some(*value),
+            _ => None,
+        }
+    }
+
+    pub fn bool_value(&self, key: &str) -> Option<bool> {
+        match self.metadata_value(key) {
+            Some(GgufMetadataValue::Bool(value)) => Some(*value),
+            _ => None,
+        }
+    }
+
+    pub fn string_value(&self, key: &str) -> Option<&str> {
+        match self.metadata_value(key) {
+            Some(GgufMetadataValue::String(value)) => Some(value),
+            _ => None,
+        }
+    }
+
     pub fn tokenizer_index(&self) -> Option<GgufTokenizerIndex> {
         let tokens = self.string_array_values("tokenizer.ggml.tokens")?;
         let token_to_id = tokens
@@ -888,6 +909,7 @@ mod tests {
             header.metadata_value("general.quantization_version"),
             Some(&GgufMetadataValue::U32(2))
         );
+        assert_eq!(header.u32_value("general.quantization_version"), Some(2));
         assert_eq!(
             header.metadata_value("tokenizer.ggml.tokens"),
             Some(&GgufMetadataValue::Array {

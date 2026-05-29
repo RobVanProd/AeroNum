@@ -1,0 +1,123 @@
+{
+  "claim_id": "aeronum_core_gguf_tokenizer_config_20260529",
+  "command": "cargo run -p aeronum-core --example gguf_header_smoke -- --model /home/rob/models/mistralai_Mistral-Small-3.1-24B-Instruct-2503-Q4_K_M.gguf --device rocm --max-tokens 16 --prompt \"AeroNum GGUF tokenizer config prompt\"",
+  "hardware_software_metadata": "claim-verification/results/aeronum_core_gguf_tokenizer_config_7900xtx_20260529T002218Z/hardware_software_metadata.txt",
+  "raw_outputs": {
+    "exit_code": "claim-verification/results/aeronum_core_gguf_tokenizer_config_7900xtx_20260529T002218Z/gguf_tokenizer_config.exit_code.txt",
+    "stderr": "claim-verification/results/aeronum_core_gguf_tokenizer_config_7900xtx_20260529T002218Z/gguf_tokenizer_config.stderr.log",
+    "stdout": "claim-verification/results/aeronum_core_gguf_tokenizer_config_7900xtx_20260529T002218Z/gguf_tokenizer_config.stdout.log"
+  },
+  "repo_commit_at_rerun": "ec6b8d49911c68fcd8c7ef880cd96e3fc31dbbf0",
+  "repo_state_note": "The rerun included modified GGUF tokenizer config and Llama metadata reporting code that is committed with this artifact.",
+  "result_json": "claim-verification/results/aeronum_core_gguf_tokenizer_config_7900xtx_20260529T002218Z/gguf_tokenizer_config_result.json",
+  "status": "verified_current_limited",
+  "summary": {
+    "benchmark": "aeronum_core_gguf_directory_smoke",
+    "gguf_version": 3,
+    "loaded_f32_tensor": {
+      "checksum": 57094807.65625,
+      "f32_samples": [
+        4.21875,
+        4.46875,
+        4.34375,
+        4.3125,
+        4.21875,
+        4.28125,
+        4.3125,
+        4.34375
+      ],
+      "len": 5120,
+      "model_weight_index": 0,
+      "name": "output_norm.weight",
+      "shape": [
+        5120
+      ]
+    },
+    "model_path": "/home/rob/models/mistralai_Mistral-Small-3.1-24B-Instruct-2503-Q4_K_M.gguf",
+    "model_rocm_offload": {
+      "hip_weight_count": 1,
+      "loaded_weight_count": 1,
+      "weight_names": [
+        "output_norm.weight"
+      ]
+    },
+    "output_kind": "placeholder",
+    "tokenizer_config": {
+      "add_bos_token": true,
+      "add_eos_token": false,
+      "add_space_prefix": false,
+      "chat_template_checksum": 156939758,
+      "chat_template_has_available_tools": false,
+      "chat_template_has_inst": true,
+      "chat_template_len": 2002,
+      "llama_attention_head_count": 32,
+      "llama_attention_head_count_kv": 8,
+      "llama_block_count": 40,
+      "llama_context_length": 131072,
+      "llama_embedding_length": 5120,
+      "llama_feed_forward_length": 32768,
+      "llama_rms_epsilon": 1e-05,
+      "llama_rope_freq_base": 1000000000.0,
+      "padding_token_id": 11,
+      "pre": "tekken"
+    },
+    "tokenizer_model": "gpt2",
+    "tokenizer_vocab": {
+      "bos_token_id": 1,
+      "eos_token_id": 2,
+      "exact_piece_encode_decode": {
+        "decoded": [
+          "<s>",
+          "[INST]",
+          "[/INST]",
+          "</s>"
+        ],
+        "ids": [
+          1,
+          3,
+          4,
+          2
+        ],
+        "pieces": [
+          "<s>",
+          "[INST]",
+          "[/INST]",
+          "</s>"
+        ],
+        "token_types": [
+          3,
+          3,
+          3,
+          3
+        ]
+      },
+      "exact_token_id_checks": [
+        {
+          "id": 0,
+          "token": "<unk>"
+        },
+        {
+          "id": 1,
+          "token": "<s>"
+        },
+        {
+          "id": 2,
+          "token": "</s>"
+        },
+        {
+          "id": 3,
+          "token": "[INST]"
+        },
+        {
+          "id": 4,
+          "token": "[/INST]"
+        }
+      ],
+      "merge_count": 269443,
+      "token_count": 131072,
+      "token_index_count": 131072,
+      "token_type_count": 131072,
+      "unknown_token_id": 0
+    }
+  }
+}

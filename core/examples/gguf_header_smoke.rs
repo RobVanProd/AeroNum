@@ -85,6 +85,15 @@ fn checksum_f32(values: &[f32]) -> f64 {
         .sum::<f64>()
 }
 
+fn checksum_bytes(value: &str) -> u64 {
+    value
+        .as_bytes()
+        .iter()
+        .enumerate()
+        .map(|(idx, byte)| (idx as u64 + 1) * (*byte as u64))
+        .sum()
+}
+
 fn main() {
     let model_path = parse_arg("--model", "");
     if model_path.is_empty() {
@@ -314,6 +323,35 @@ fn main() {
         json_string_array(&exact_piece_decoded),
         json_i32_array(&token_type_checks)
     );
+    let chat_template = header.string_value("tokenizer.chat_template").unwrap_or("");
+    let tokenizer_config_json = format!(
+        "{{\"pre\":\"{}\",\"padding_token_id\":{},\"add_bos_token\":{},\"add_eos_token\":{},\"add_space_prefix\":{},\"chat_template_len\":{},\"chat_template_checksum\":{},\"chat_template_has_inst\":{},\"chat_template_has_available_tools\":{},\"llama_context_length\":{},\"llama_embedding_length\":{},\"llama_block_count\":{},\"llama_feed_forward_length\":{},\"llama_attention_head_count\":{},\"llama_attention_head_count_kv\":{},\"llama_rope_freq_base\":{:.6},\"llama_rms_epsilon\":{:.8}}}",
+        json_escape(header.string_value("tokenizer.ggml.pre").unwrap_or("")),
+        header.u32_value("tokenizer.ggml.padding_token_id").unwrap_or(0),
+        header
+            .bool_value("tokenizer.ggml.add_bos_token")
+            .unwrap_or(false),
+        header
+            .bool_value("tokenizer.ggml.add_eos_token")
+            .unwrap_or(false),
+        header
+            .bool_value("tokenizer.ggml.add_space_prefix")
+            .unwrap_or(false),
+        chat_template.len(),
+        checksum_bytes(chat_template),
+        chat_template.contains("[INST]"),
+        chat_template.contains("AVAILABLE_TOOLS"),
+        header.u32_value("llama.context_length").unwrap_or(0),
+        header.u32_value("llama.embedding_length").unwrap_or(0),
+        header.u32_value("llama.block_count").unwrap_or(0),
+        header.u32_value("llama.feed_forward_length").unwrap_or(0),
+        header.u32_value("llama.attention.head_count").unwrap_or(0),
+        header.u32_value("llama.attention.head_count_kv").unwrap_or(0),
+        header.f32_value("llama.rope.freq_base").unwrap_or(0.0),
+        header
+            .f32_value("llama.attention.layer_norm_rms_epsilon")
+            .unwrap_or(0.0)
+    );
     model.to(&device);
     let model_rocm_offload_json = format!(
         "{{\"loaded_weight_count\":{},\"hip_weight_count\":{},\"weight_names\":{}}}",
@@ -325,7 +363,7 @@ fn main() {
     let elapsed_ms = start.elapsed().as_secs_f64() * 1000.0;
 
     println!(
-        "{{\"benchmark\":\"aeronum_core_gguf_directory_smoke\",\"model_path\":\"{}\",\"gguf_version\":{},\"tensor_count\":{},\"metadata_kv_count\":{},\"parsed_tensor_infos\":{},\"parsed_metadata_entries\":{},\"alignment\":{},\"data_offset\":{},\"file_size\":{},\"tensors_with_known_nbytes\":{},\"max_tensor_end\":{},\"tensor_layout_within_file\":{},\"tensor_byte_sample\":{},\"loaded_f32_tensor\":{},\"rocm_tensor_roundtrip\":{},\"model_rocm_offload\":{},\"tokenizer_vocab\":{},\"architecture\":\"{}\",\"quantization_version\":\"{}\",\"tokenizer_model\":\"{}\",\"tokenizer_token_count\":{},\"sample_tokenizer_tokens\":{},\"sample_metadata_keys\":{},\"sample_tensor_names\":{},\"sample_tensor_layouts\":[{}],\"device\":\"{}\",\"max_tokens\":{},\"elapsed_ms\":{:.6},\"output_kind\":\"placeholder\",\"output\":\"{}\"}}",
+        "{{\"benchmark\":\"aeronum_core_gguf_directory_smoke\",\"model_path\":\"{}\",\"gguf_version\":{},\"tensor_count\":{},\"metadata_kv_count\":{},\"parsed_tensor_infos\":{},\"parsed_metadata_entries\":{},\"alignment\":{},\"data_offset\":{},\"file_size\":{},\"tensors_with_known_nbytes\":{},\"max_tensor_end\":{},\"tensor_layout_within_file\":{},\"tensor_byte_sample\":{},\"loaded_f32_tensor\":{},\"rocm_tensor_roundtrip\":{},\"model_rocm_offload\":{},\"tokenizer_vocab\":{},\"tokenizer_config\":{},\"architecture\":\"{}\",\"quantization_version\":\"{}\",\"tokenizer_model\":\"{}\",\"tokenizer_token_count\":{},\"sample_tokenizer_tokens\":{},\"sample_metadata_keys\":{},\"sample_tensor_names\":{},\"sample_tensor_layouts\":[{}],\"device\":\"{}\",\"max_tokens\":{},\"elapsed_ms\":{:.6},\"output_kind\":\"placeholder\",\"output\":\"{}\"}}",
         json_escape(&model_path),
         header.version,
         header.tensor_count,
@@ -343,6 +381,7 @@ fn main() {
         rocm_roundtrip_json,
         model_rocm_offload_json,
         tokenizer_vocab_json,
+        tokenizer_config_json,
         json_escape(&architecture),
         json_escape(&quantization_version),
         json_escape(&tokenizer_model),

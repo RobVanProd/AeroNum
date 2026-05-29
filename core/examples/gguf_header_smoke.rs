@@ -59,6 +59,15 @@ fn json_token_id_checks(values: &[(String, Option<u32>)]) -> String {
     format!("[{items}]")
 }
 
+fn json_u32_array(values: &[u32]) -> String {
+    let items = values
+        .iter()
+        .map(|value| value.to_string())
+        .collect::<Vec<_>>()
+        .join(",");
+    format!("[{items}]")
+}
+
 fn checksum_f32(values: &[f32]) -> f64 {
     values
         .iter()
@@ -256,15 +265,30 @@ fn main() {
             )
         })
         .collect::<Vec<_>>();
+    let exact_piece_inputs = ["<s>", "[INST]", "[/INST]", "</s>"];
+    let exact_piece_ids = tokenizer_index
+        .encode_exact_pieces(exact_piece_inputs)
+        .expect("encode exact tokenizer pieces");
+    let exact_piece_decoded = tokenizer_index
+        .decode_ids(&exact_piece_ids)
+        .expect("decode exact tokenizer pieces");
     let tokenizer_vocab_json = format!(
-        "{{\"token_count\":{},\"token_index_count\":{},\"merge_count\":{},\"bos_token_id\":{},\"eos_token_id\":{},\"unknown_token_id\":{},\"exact_token_id_checks\":{}}}",
+        "{{\"token_count\":{},\"token_index_count\":{},\"merge_count\":{},\"bos_token_id\":{},\"eos_token_id\":{},\"unknown_token_id\":{},\"exact_token_id_checks\":{},\"exact_piece_encode_decode\":{{\"pieces\":{},\"ids\":{},\"decoded\":{}}}}}",
         tokenizer_token_count,
         tokenizer_index.token_count,
         tokenizer_merge_count,
         header.u32_value("tokenizer.ggml.bos_token_id").unwrap_or(0),
         header.u32_value("tokenizer.ggml.eos_token_id").unwrap_or(0),
         header.u32_value("tokenizer.ggml.unknown_token_id").unwrap_or(0),
-        json_token_id_checks(&tokenizer_id_checks)
+        json_token_id_checks(&tokenizer_id_checks),
+        json_string_array(
+            &exact_piece_inputs
+                .iter()
+                .map(|piece| (*piece).to_string())
+                .collect::<Vec<_>>()
+        ),
+        json_u32_array(&exact_piece_ids),
+        json_string_array(&exact_piece_decoded)
     );
     model.to(&device);
     let model_rocm_offload_json = format!(

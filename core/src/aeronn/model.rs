@@ -92,6 +92,34 @@ pub struct GgufTensorByteSample {
 pub struct GgufTokenizerIndex {
     pub token_count: usize,
     pub token_to_id: HashMap<String, u32>,
+    pub id_to_token: Vec<String>,
+}
+
+impl GgufTokenizerIndex {
+    pub fn token_id(&self, token: &str) -> Option<u32> {
+        self.token_to_id.get(token).copied()
+    }
+
+    pub fn encode_exact_pieces<'a>(
+        &self,
+        pieces: impl IntoIterator<Item = &'a str>,
+    ) -> Option<Vec<u32>> {
+        pieces
+            .into_iter()
+            .map(|piece| self.token_id(piece))
+            .collect()
+    }
+
+    pub fn decode_ids(&self, ids: &[u32]) -> Option<Vec<String>> {
+        ids.iter()
+            .map(|id| {
+                usize::try_from(*id)
+                    .ok()
+                    .and_then(|idx| self.id_to_token.get(idx))
+                    .cloned()
+            })
+            .collect()
+    }
 }
 
 #[derive(Debug)]
@@ -467,6 +495,7 @@ impl GgufHeader {
         Some(GgufTokenizerIndex {
             token_count: tokens.len(),
             token_to_id,
+            id_to_token: tokens.to_vec(),
         })
     }
 }
@@ -831,6 +860,14 @@ mod tests {
         assert_eq!(tokenizer_index.token_count, 2);
         assert_eq!(tokenizer_index.token_to_id.get("<s>"), Some(&0));
         assert_eq!(tokenizer_index.token_to_id.get("</s>"), Some(&1));
+        assert_eq!(
+            tokenizer_index.encode_exact_pieces(["<s>", "</s>"]),
+            Some(vec![0, 1])
+        );
+        assert_eq!(
+            tokenizer_index.decode_ids(&[0, 1]),
+            Some(vec!["<s>".to_string(), "</s>".to_string()])
+        );
         assert_eq!(header.tensors[0].name, "token_embd.weight");
         assert_eq!(header.tensors[0].dimensions, vec![32000, 4096]);
         assert_eq!(header.tensors[0].tensor_type, 15);

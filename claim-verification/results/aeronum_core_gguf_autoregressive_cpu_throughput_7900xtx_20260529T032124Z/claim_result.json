@@ -1,0 +1,57 @@
+{
+  "claim_id": "aeronum_core_gguf_autoregressive_cpu_throughput_20260529",
+  "status": "verified_current_limited",
+  "source_commit": "1d7c8d8e93fdc43729f91ea7049e116feec56072",
+  "model_path": "/home/rob/models/mistralai_Mistral-Small-3.1-24B-Instruct-2503-Q4_K_M.gguf",
+  "model_sha256": "c5743c1bf39db0ae8a5ade5df0374b8e9e492754a199cfdad7ef393c1590f7c0",
+  "command": "cargo run --release -p aeronum-core --example gguf_prompt_autoregressive_decode_smoke -- --model /home/rob/models/mistralai_Mistral-Small-3.1-24B-Instruct-2503-Q4_K_M.gguf --prompt <s>[INST]Hello[/INST] --add-bos false --parse-special true --layer-start 0 --layers 40 --top-k 5 --max-new-tokens 2",
+  "exit_code": 0,
+  "cargo_test_core_exit_code": 0,
+  "elapsed_ms_reported": 210917.201341,
+  "wall_time_seconds": 211.151,
+  "prompt": "<s>[INST]Hello[/INST]",
+  "prompt_token_ids": [
+    1,
+    3,
+    22177,
+    4
+  ],
+  "max_new_tokens": 2,
+  "generated_token_count": 2,
+  "generated_tokens_per_second": 0.009482393979,
+  "generated_token_ids": [
+    22177,
+    1033
+  ],
+  "generated_text": "Hello!",
+  "step_elapsed_ms": [
+    93724.338493,
+    117001.722348
+  ],
+  "step_greedy_token_ids": [
+    22177,
+    1033
+  ],
+  "limitations": [
+    "CPU autoregressive greedy token-piece selection for one fixed prompt only",
+    "recomputes the full context for each generated token without KV cache",
+    "generated_piece_sequence is tokenizer piece concatenation, not full detokenization parity",
+    "not sampled decoding",
+    "not GPU matmul",
+    "not AeroNum-native GGUF token inference throughput"
+  ],
+  "artifact_files": [
+    "claim-verification/results/aeronum_core_gguf_autoregressive_cpu_throughput_7900xtx_20260529T032124Z/claim_result.json",
+    "claim-verification/results/aeronum_core_gguf_autoregressive_cpu_throughput_7900xtx_20260529T032124Z/gguf_autoregressive_cpu_throughput_result.json",
+    "claim-verification/results/aeronum_core_gguf_autoregressive_cpu_throughput_7900xtx_20260529T032124Z/gguf_autoregressive_cpu_throughput.stdout.log",
+    "claim-verification/results/aeronum_core_gguf_autoregressive_cpu_throughput_7900xtx_20260529T032124Z/gguf_autoregressive_cpu_throughput.stderr.log",
+    "claim-verification/results/aeronum_core_gguf_autoregressive_cpu_throughput_7900xtx_20260529T032124Z/gguf_autoregressive_cpu_throughput.exit_code.txt",
+    "claim-verification/results/aeronum_core_gguf_autoregressive_cpu_throughput_7900xtx_20260529T032124Z/gguf_autoregressive_cpu_throughput.time.txt",
+    "claim-verification/results/aeronum_core_gguf_autoregressive_cpu_throughput_7900xtx_20260529T032124Z/cargo_test_core.stdout.log",
+    "claim-verification/results/aeronum_core_gguf_autoregressive_cpu_throughput_7900xtx_20260529T032124Z/cargo_test_core.stderr.log",
+    "claim-verification/results/aeronum_core_gguf_autoregressive_cpu_throughput_7900xtx_20260529T032124Z/cargo_test_core.exit_code.txt",
+    "claim-verification/results/aeronum_core_gguf_autoregressive_cpu_throughput_7900xtx_20260529T032124Z/command_config.txt",
+    "claim-verification/results/aeronum_core_gguf_autoregressive_cpu_throughput_7900xtx_20260529T032124Z/source_metadata.txt",
+    "claim-verification/results/aeronum_core_gguf_autoregressive_cpu_throughput_7900xtx_20260529T032124Z/hardware_software_metadata.txt"
+  ]
+}

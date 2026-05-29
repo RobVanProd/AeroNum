@@ -244,6 +244,18 @@ Verified current results:
   GPU autoregressive decoding, and not optimized AeroNum-native GGUF token
   inference throughput
   ([result JSON](claim-verification/results/aeronum_core_gguf_q4q6_gpu_decode_dot_7900xtx_20260529T071000Z/claim_result.json)).
+- `benchmarks/gguf/q4q6_decode_dot_hip.cpp` now also verifies the same
+  selected-row Q4_K and Q6_K GPU decode-plus-dot path with the final reduction
+  performed on GPU. The HIP verifier ran with `--gpu-final-reduction true`,
+  GPU-decoded 20 Q4_K blocks and 20 Q6_K blocks, computed per-block dot
+  partials, reduced those partials with a second GPU kernel, and copied back a
+  single scalar `-0.000096131087`. The CPU reference dot was
+  `-0.000096131074`, for absolute difference `0.000000000013`. This verifies
+  one selected Q4_K row and one selected Q6_K row GPU decode-plus-dot plus GPU
+  final reduction only, and it is not full q4_K/q6_K GPU tensor execution, not
+  transformer layer execution on GPU, not GPU autoregressive decoding, and not
+  optimized AeroNum-native GGUF token inference throughput
+  ([result JSON](claim-verification/results/aeronum_core_gguf_q4q6_gpu_decode_dot_gpu_reduce_7900xtx_20260529T072500Z/claim_result.json)).
 - `aeronum-core` now verifies a full-output-vocabulary GPU final-head logits
   subpath for one retained-KV GGUF decode step. The repo-owned release command
   uses the retained CPU transformer state for the first generated token from
@@ -644,7 +656,8 @@ Blocked or omitted claims:
   product, a limited decoded-row hipBLAS GPU dot product, one selected Q6_K row
   GPU decode-plus-dot subpath, one selected Q4_K row GPU decode-plus-dot
   subpath, one selected combined Q4_K and Q6_K GPU decode-plus-dot subpath,
-  256-row prefix
+  one selected combined Q4_K and Q6_K GPU decode-plus-dot subpath with GPU
+  final reduction, 256-row prefix
   logits, full-output-vocabulary GPU final-head logits for the first and
   second retained-KV decode steps with CPU-side quantized weight decode, full output-vocabulary CPU arithmetic, final
   RMS/output-norm full output-vocabulary CPU arithmetic for one selected Q4_K

@@ -9,7 +9,7 @@ pub use aeronn::{
     GgufError, GgufHeader, GgufMetadataValue, GgufQuantizedBlockSample, GgufQuantizedLogitValue,
     GgufQuantizedNormalizedLogitsSample, GgufQuantizedPrefixLogitsSample,
     GgufQuantizedRowDotSample, GgufQuantizedRowSample, GgufSingleTokenAttentionOutputSample,
-    GgufTensorByteSample, GgufValueType, LlamaModel,
+    GgufSingleTokenFfnOutputSample, GgufTensorByteSample, GgufValueType, LlamaModel,
 };
 pub use gpu::{Backend, Device, GpuDevice, GpuError, HipBlas, HipBuffer, HipRuntime};
 #[derive(Clone, Debug, PartialEq)]

@@ -178,6 +178,29 @@ pub struct GgufSingleTokenAttentionOutputSample {
     pub attention_output_checksum: f64,
 }
 
+#[derive(Clone, Debug, PartialEq)]
+pub struct GgufSingleTokenFfnOutputSample {
+    pub attention: GgufSingleTokenAttentionOutputSample,
+    pub ffn_norm_tensor_name: String,
+    pub gate_tensor_name: String,
+    pub up_tensor_name: String,
+    pub down_tensor_name: String,
+    pub residual_checksum: f64,
+    pub ffn_rms_epsilon: f32,
+    pub ffn_rms: f64,
+    pub ffn_norm_weight_checksum: f64,
+    pub ffn_normalized_input_checksum: f64,
+    pub gate_projection_count: usize,
+    pub gate_projection_checksum: f64,
+    pub up_projection_count: usize,
+    pub up_projection_checksum: f64,
+    pub activated_count: usize,
+    pub activated_checksum: f64,
+    pub ffn_output: Vec<GgufQuantizedLogitValue>,
+    pub top_ffn_output: Vec<GgufQuantizedLogitValue>,
+    pub ffn_output_checksum: f64,
+}
+
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct GgufTokenizerIndex {
     pub token_count: usize,
@@ -915,27 +938,12 @@ impl GgufHeader {
     ) -> Result<GgufQuantizedNormalizedLogitsSample, GgufError> {
         let input = self.read_quantized_row_sample(input_tensor_name, input_row_index)?;
         let norm_weight = self.load_f32_tensor(norm_tensor_name)?.to_vec();
-        if norm_weight.len() != input.decoded_values.len() {
-            return Err(GgufError::InvalidTensorRange(format!(
-                "{input_tensor_name}:{input_row_index} norm {norm_tensor_name}"
-            )));
-        }
-        let rms_epsilon = self
-            .f32_value("llama.attention.layer_norm_rms_epsilon")
-            .unwrap_or(0.00001);
-        let mean_square = input
-            .decoded_values
-            .iter()
-            .map(|value| (*value as f64) * (*value as f64))
-            .sum::<f64>()
-            / input.decoded_values.len() as f64;
-        let rms = (mean_square + rms_epsilon as f64).sqrt();
-        let normalized_input = input
-            .decoded_values
-            .iter()
-            .zip(norm_weight.iter())
-            .map(|(value, weight)| ((*value as f64) / rms * (*weight as f64)) as f32)
-            .collect::<Vec<_>>();
+        let (normalized_input, rms, rms_epsilon) =
+            rms_normalize_values(&input.decoded_values, &norm_weight, self).map_err(|_| {
+                GgufError::InvalidTensorRange(format!(
+                    "{input_tensor_name}:{input_row_index} norm {norm_tensor_name}"
+                ))
+            })?;
         let norm_weight_checksum = checksum_f32_values(&norm_weight);
         let normalized_input_checksum = checksum_f32_values(&normalized_input);
         let logits = self.read_quantized_logits_for_values(
@@ -1014,6 +1022,105 @@ impl GgufHeader {
             attention_output,
             top_attention_output,
             attention_output_checksum,
+        })
+    }
+
+    pub fn read_single_token_ffn_output_sample(
+        &self,
+        input_tensor_name: &str,
+        input_row_index: u64,
+        attn_norm_tensor_name: &str,
+        value_tensor_name: &str,
+        attn_output_tensor_name: &str,
+        ffn_norm_tensor_name: &str,
+        gate_tensor_name: &str,
+        up_tensor_name: &str,
+        down_tensor_name: &str,
+        top_k: usize,
+    ) -> Result<GgufSingleTokenFfnOutputSample, GgufError> {
+        let attention = self.read_single_token_attention_output_sample(
+            input_tensor_name,
+            input_row_index,
+            attn_norm_tensor_name,
+            value_tensor_name,
+            attn_output_tensor_name,
+            top_k,
+        )?;
+        let input_values = &attention.value_projection.input.decoded_values;
+        if input_values.len() != attention.attention_output.len() {
+            return Err(GgufError::InvalidTensorRange(
+                "single-token attention residual".to_string(),
+            ));
+        }
+        let residual = input_values
+            .iter()
+            .zip(attention.attention_output.iter())
+            .map(|(input, output)| *input + output.value as f32)
+            .collect::<Vec<_>>();
+        let residual_checksum = checksum_f32_values(&residual);
+        let norm_weight = self.load_f32_tensor(ffn_norm_tensor_name)?.to_vec();
+        let (ffn_normalized_input, ffn_rms, ffn_rms_epsilon) =
+            rms_normalize_values(&residual, &norm_weight, self)?;
+        let ffn_norm_weight_checksum = checksum_f32_values(&norm_weight);
+        let ffn_normalized_input_checksum = checksum_f32_values(&ffn_normalized_input);
+
+        let gate_row_count = self.tensor_row_count(gate_tensor_name)?;
+        let up_row_count = self.tensor_row_count(up_tensor_name)?;
+        if gate_row_count != up_row_count {
+            return Err(GgufError::InvalidTensorRange(
+                "single-token FFN gate/up row count".to_string(),
+            ));
+        }
+        let gate_projection = self.read_quantized_logits_for_values(
+            &ffn_normalized_input,
+            gate_tensor_name,
+            0,
+            gate_row_count,
+        )?;
+        let up_projection = self.read_quantized_logits_for_values(
+            &ffn_normalized_input,
+            up_tensor_name,
+            0,
+            up_row_count,
+        )?;
+        let gate_projection_values = gate_projection
+            .iter()
+            .map(|logit| logit.value as f32)
+            .collect::<Vec<_>>();
+        let up_projection_values = up_projection
+            .iter()
+            .map(|logit| logit.value as f32)
+            .collect::<Vec<_>>();
+        let activated = gate_projection_values
+            .iter()
+            .zip(up_projection_values.iter())
+            .map(|(gate, up)| silu(*gate) * *up)
+            .collect::<Vec<_>>();
+        let down_row_count = self.tensor_row_count(down_tensor_name)?;
+        let ffn_output =
+            self.read_quantized_logits_for_values(&activated, down_tensor_name, 0, down_row_count)?;
+        let top_ffn_output = top_k_logits(&ffn_output, top_k);
+        let ffn_output_checksum = checksum_logits(&ffn_output);
+        Ok(GgufSingleTokenFfnOutputSample {
+            attention,
+            ffn_norm_tensor_name: ffn_norm_tensor_name.to_string(),
+            gate_tensor_name: gate_tensor_name.to_string(),
+            up_tensor_name: up_tensor_name.to_string(),
+            down_tensor_name: down_tensor_name.to_string(),
+            residual_checksum,
+            ffn_rms_epsilon,
+            ffn_rms,
+            ffn_norm_weight_checksum,
+            ffn_normalized_input_checksum,
+            gate_projection_count: gate_projection.len(),
+            gate_projection_checksum: checksum_logits(&gate_projection),
+            up_projection_count: up_projection.len(),
+            up_projection_checksum: checksum_logits(&up_projection),
+            activated_count: activated.len(),
+            activated_checksum: checksum_f32_values(&activated),
+            ffn_output,
+            top_ffn_output,
+            ffn_output_checksum,
         })
     }
 
@@ -1743,6 +1850,37 @@ fn dot_f32_values(left: &[f32], right: &[f32]) -> f64 {
         .sum()
 }
 
+fn rms_normalize_values(
+    values: &[f32],
+    weights: &[f32],
+    header: &GgufHeader,
+) -> Result<(Vec<f32>, f64, f32), GgufError> {
+    if values.len() != weights.len() || values.is_empty() {
+        return Err(GgufError::InvalidTensorRange(
+            "RMS normalization".to_string(),
+        ));
+    }
+    let rms_epsilon = header
+        .f32_value("llama.attention.layer_norm_rms_epsilon")
+        .unwrap_or(0.00001);
+    let mean_square = values
+        .iter()
+        .map(|value| (*value as f64) * (*value as f64))
+        .sum::<f64>()
+        / values.len() as f64;
+    let rms = (mean_square + rms_epsilon as f64).sqrt();
+    let normalized = values
+        .iter()
+        .zip(weights.iter())
+        .map(|(value, weight)| ((*value as f64) / rms * (*weight as f64)) as f32)
+        .collect::<Vec<_>>();
+    Ok((normalized, rms, rms_epsilon))
+}
+
+fn silu(value: f32) -> f32 {
+    value / (1.0 + (-value).exp())
+}
+
 fn repeat_values(values: &[f32], repeat_factor: u64) -> Result<Vec<f32>, GgufError> {
     let repeat_factor: usize = repeat_factor
         .try_into()
@@ -2220,6 +2358,13 @@ mod tests {
             repeated,
             vec![1.0, 1.0, 1.0, -2.0, -2.0, -2.0, 3.5, 3.5, 3.5]
         );
+    }
+
+    #[test]
+    fn computes_silu_activation() {
+        assert_eq!(silu(0.0), 0.0);
+        let value = silu(2.0);
+        assert!((value - 1.761594).abs() < 0.000001);
     }
 
     #[test]

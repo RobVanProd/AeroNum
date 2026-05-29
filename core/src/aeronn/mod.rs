@@ -4,5 +4,5 @@ pub use model::{
     GgufError, GgufHeader, GgufMetadataValue, GgufQuantizedBlockSample, GgufQuantizedLogitValue,
     GgufQuantizedNormalizedLogitsSample, GgufQuantizedPrefixLogitsSample,
     GgufQuantizedRowDotSample, GgufQuantizedRowSample, GgufSingleTokenAttentionOutputSample,
-    GgufTensorByteSample, GgufValueType, LlamaModel,
+    GgufSingleTokenFfnOutputSample, GgufTensorByteSample, GgufValueType, LlamaModel,
 };

@@ -235,6 +235,18 @@ Verified current results:
   RoPE validation, FFN execution, generated-token logits, GPU matmul, or
   AeroNum-native GGUF token inference throughput
   ([result JSON](claim-verification/results/aeronum_core_gguf_single_token_attention_output_7900xtx_20260529T022500Z/claim_result.json)).
+- `aeronum-core` now verifies a first-layer multi-token attention CPU subpath
+  from decoded GGUF tensors. The repo-owned release command decoded
+  `token_embd.weight` rows 1, 22177, and 1044, applied `blk.0.attn_norm.weight`,
+  computed Q/K/V projections from `blk.0.attn_q.weight`, `blk.0.attn_k.weight`,
+  and `blk.0.attn_v.weight`, applied internal RoPE arithmetic with
+  `llama.rope.freq_base` 1,000,000,000, formed 192 causal attention scores, and
+  computed the final-token `blk.0.attn_output.weight` projection. This is a
+  first-layer CPU attention subpath only; the RoPE arithmetic is not external
+  parity, and this is not FFN execution, full transformer execution,
+  generated-token logits, GPU matmul, or AeroNum-native GGUF token inference
+  throughput
+  ([result JSON](claim-verification/results/aeronum_core_gguf_multi_token_attention_7900xtx_20260529T034500Z/claim_result.json)).
 - `aeronum-core` now verifies a single-token first-layer attention-plus-FFN CPU
   subpath. The repo-owned release command ran the single-token attention-output
   subpath, added the residual, applied `blk.0.ffn_norm.weight`, computed all
@@ -316,14 +328,17 @@ Blocked or omitted claims:
   embedding row against Q6_K `output.weight`, first-layer V-projection CPU
   arithmetic against Q6_K `blk.0.attn_v.weight`, a single-token first-layer
   attention-output CPU subpath against Q4_K `blk.0.attn_output.weight`, and a
+  first-layer multi-token attention CPU subpath with Q/K/V projections, internal
+  RoPE arithmetic, 192 causal attention scores, and final-token attention-output
+  projection, plus a
   single-token first-layer attention-plus-FFN CPU subpath through
   `blk.0.ffn_gate.weight`, `blk.0.ffn_up.weight`, and `blk.0.ffn_down.weight`,
   plus full-vocabulary final-head CPU logits from that single-token layer-0
   hidden state are verified, but exhaustive tokenizer parity, full q4_K/q6_K
-  transformer execution, multi-token attention scores, RoPE validation,
-  generated-token logits, and AeroNum-native token inference throughput are not
-  yet verified. The verified token-inference result is a llama.cpp reference
-  through an AeroNum repo wrapper.
+  transformer execution, external RoPE parity, generated-token logits, and
+  AeroNum-native token inference throughput are not yet verified. The verified
+  token-inference result is a llama.cpp reference through an AeroNum repo
+  wrapper.
 
 Historical benchmark CSVs remain in the repo, but README claims above only use
 fresh local reruns and captured artifacts.

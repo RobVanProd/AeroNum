@@ -1,5 +1,6 @@
 use aeronum_core::{
-    GgufAttentionScoreSample, GgufHeader, GgufMultiTokenAttentionSample, GgufQuantizedLogitValue,
+    GgufAttentionScoreSample, GgufHeader, GgufMultiTokenAttentionSample, GgufProjectionValueSample,
+    GgufQuantizedLogitValue,
 };
 use std::time::Instant;
 
@@ -86,6 +87,26 @@ fn json_score_array(values: &[GgufAttentionScoreSample]) -> String {
     format!("[{items}]")
 }
 
+fn json_projection_sample_array(values: &[GgufProjectionValueSample]) -> String {
+    let items = values
+        .iter()
+        .map(|value| {
+            format!(
+                concat!(
+                    "{{",
+                    "\"token_position\":{},",
+                    "\"value_index\":{},",
+                    "\"value\":{:.12}",
+                    "}}"
+                ),
+                value.token_position, value.value_index, value.value
+            )
+        })
+        .collect::<Vec<_>>()
+        .join(",");
+    format!("[{items}]")
+}
+
 fn sample_json(sample: &GgufMultiTokenAttentionSample) -> String {
     let first_attention_output = sample
         .attention_output
@@ -117,6 +138,10 @@ fn sample_json(sample: &GgufMultiTokenAttentionSample) -> String {
             "\"value_projection_checksum\":{:.8},",
             "\"rope_query_checksum\":{:.8},",
             "\"rope_key_checksum\":{:.8},",
+            "\"query_projection_samples\":{},",
+            "\"key_projection_samples\":{},",
+            "\"rope_query_samples\":{},",
+            "\"rope_key_samples\":{},",
             "\"attention_score_count\":{},",
             "\"attention_score_checksum\":{:.12},",
             "\"top_attention_scores\":{},",
@@ -149,6 +174,10 @@ fn sample_json(sample: &GgufMultiTokenAttentionSample) -> String {
         sample.value_projection_checksum,
         sample.rope_query_checksum,
         sample.rope_key_checksum,
+        json_projection_sample_array(&sample.query_projection_samples),
+        json_projection_sample_array(&sample.key_projection_samples),
+        json_projection_sample_array(&sample.rope_query_samples),
+        json_projection_sample_array(&sample.rope_key_samples),
         sample.attention_score_count,
         sample.attention_score_checksum,
         json_score_array(&sample.top_attention_scores),

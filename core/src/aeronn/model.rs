@@ -228,6 +228,13 @@ pub struct GgufAttentionScoreSample {
 }
 
 #[derive(Clone, Debug, PartialEq)]
+pub struct GgufProjectionValueSample {
+    pub token_position: usize,
+    pub value_index: usize,
+    pub value: f64,
+}
+
+#[derive(Clone, Debug, PartialEq)]
 pub struct GgufMultiTokenAttentionSample {
     pub input_tensor_name: String,
     pub input_rows: Vec<u64>,
@@ -250,6 +257,10 @@ pub struct GgufMultiTokenAttentionSample {
     pub value_projection_checksum: f64,
     pub rope_query_checksum: f64,
     pub rope_key_checksum: f64,
+    pub query_projection_samples: Vec<GgufProjectionValueSample>,
+    pub key_projection_samples: Vec<GgufProjectionValueSample>,
+    pub rope_query_samples: Vec<GgufProjectionValueSample>,
+    pub rope_key_samples: Vec<GgufProjectionValueSample>,
     pub attention_score_count: usize,
     pub attention_score_checksum: f64,
     pub top_attention_scores: Vec<GgufAttentionScoreSample>,
@@ -1516,6 +1527,10 @@ impl GgufHeader {
             value_projection_checksum: checksum_nested_f32_values(&values),
             rope_query_checksum: checksum_nested_f32_values(&rope_queries),
             rope_key_checksum: checksum_nested_f32_values(&rope_keys),
+            query_projection_samples: projection_value_samples(&queries, 16),
+            key_projection_samples: projection_value_samples(&keys, 16),
+            rope_query_samples: projection_value_samples(&rope_queries, 16),
+            rope_key_samples: projection_value_samples(&rope_keys, 16),
             attention_score_count: all_scores.len(),
             attention_score_checksum: checksum_attention_scores(&all_scores),
             top_attention_scores,
@@ -2766,6 +2781,25 @@ fn attention_head_dot(
         &query[query_offset..query_offset + head_dimension],
         &key[key_offset..key_offset + head_dimension],
     )
+}
+
+fn projection_value_samples(
+    values: &[Vec<f32>],
+    per_token_count: usize,
+) -> Vec<GgufProjectionValueSample> {
+    values
+        .iter()
+        .enumerate()
+        .flat_map(|(token_position, token_values)| {
+            token_values.iter().take(per_token_count).enumerate().map(
+                move |(value_index, value)| GgufProjectionValueSample {
+                    token_position,
+                    value_index,
+                    value: *value as f64,
+                },
+            )
+        })
+        .collect()
 }
 
 fn apply_rope_to_projection(

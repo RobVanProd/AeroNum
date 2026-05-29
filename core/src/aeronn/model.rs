@@ -1,5 +1,6 @@
 use crate::gpu::{Backend, Device, GpuDevice, HipBuffer, HipRuntime};
 use crate::NdArray;
+use std::collections::HashMap;
 use std::error::Error;
 use std::fmt;
 use std::fs::File;
@@ -41,6 +42,7 @@ pub enum GgufMetadataValue {
         element_type: GgufValueType,
         len: u64,
         string_samples: Vec<String>,
+        string_values: Vec<String>,
     },
     U64(u64),
     I64(i64),
@@ -84,6 +86,12 @@ pub struct GgufTensorByteSample {
     pub byte_checksum: u64,
     pub first_bytes_hex: Vec<String>,
     pub f32_samples: Vec<f32>,
+}
+
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct GgufTokenizerIndex {
+    pub token_count: usize,
+    pub token_to_id: HashMap<String, u32>,
 }
 
 #[derive(Debug)]
@@ -427,6 +435,40 @@ impl GgufHeader {
             .collect::<Vec<_>>();
         Ok(NdArray::from_list(values, Some(&shape)))
     }
+
+    pub fn string_array_values(&self, key: &str) -> Option<&[String]> {
+        match self.metadata_value(key) {
+            Some(GgufMetadataValue::Array {
+                element_type: GgufValueType::String,
+                string_values,
+                ..
+            }) => Some(string_values),
+            _ => None,
+        }
+    }
+
+    pub fn u32_value(&self, key: &str) -> Option<u32> {
+        match self.metadata_value(key) {
+            Some(GgufMetadataValue::U8(value)) => Some(*value as u32),
+            Some(GgufMetadataValue::U16(value)) => Some(*value as u32),
+            Some(GgufMetadataValue::U32(value)) => Some(*value),
+            Some(GgufMetadataValue::U64(value)) => u32::try_from(*value).ok(),
+            _ => None,
+        }
+    }
+
+    pub fn tokenizer_index(&self) -> Option<GgufTokenizerIndex> {
+        let tokens = self.string_array_values("tokenizer.ggml.tokens")?;
+        let token_to_id = tokens
+            .iter()
+            .enumerate()
+            .filter_map(|(idx, token)| u32::try_from(idx).ok().map(|id| (token.clone(), id)))
+            .collect::<HashMap<_, _>>();
+        Some(GgufTokenizerIndex {
+            token_count: tokens.len(),
+            token_to_id,
+        })
+    }
 }
 
 impl GgufMetadataEntry {
@@ -459,12 +501,14 @@ impl GgufMetadataValue {
                 }
                 let len = read_u64_le(reader)?;
                 let mut string_samples = Vec::new();
+                let mut string_values = Vec::new();
                 for _ in 0..len {
                     if element_type == GgufValueType::String {
                         let value = read_gguf_string(reader, "array string value")?;
                         if string_samples.len() < 8 {
-                            string_samples.push(value);
+                            string_samples.push(value.clone());
                         }
+                        string_values.push(value);
                     } else {
                         skip_value(reader, element_type)?;
                     }
@@ -473,6 +517,7 @@ impl GgufMetadataValue {
                     element_type,
                     len,
                     string_samples,
+                    string_values,
                 }
             }
             GgufValueType::U64 => Self::U64(read_u64_le(reader)?),
@@ -496,6 +541,7 @@ impl GgufMetadataValue {
                 element_type,
                 len,
                 string_samples,
+                ..
             } => {
                 if string_samples.is_empty() {
                     format!("array<{element_type:?}>[{len}]")
@@ -777,9 +823,14 @@ mod tests {
             Some(&GgufMetadataValue::Array {
                 element_type: GgufValueType::String,
                 len: 2,
-                string_samples: vec!["<s>".to_string(), "</s>".to_string()]
+                string_samples: vec!["<s>".to_string(), "</s>".to_string()],
+                string_values: vec!["<s>".to_string(), "</s>".to_string()]
             })
         );
+        let tokenizer_index = header.tokenizer_index().expect("tokenizer index");
+        assert_eq!(tokenizer_index.token_count, 2);
+        assert_eq!(tokenizer_index.token_to_id.get("<s>"), Some(&0));
+        assert_eq!(tokenizer_index.token_to_id.get("</s>"), Some(&1));
         assert_eq!(header.tensors[0].name, "token_embd.weight");
         assert_eq!(header.tensors[0].dimensions, vec![32000, 4096]);
         assert_eq!(header.tensors[0].tensor_type, 15);

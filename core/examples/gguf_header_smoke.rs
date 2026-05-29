@@ -47,6 +47,18 @@ fn json_f32_array(values: &[f32]) -> String {
     format!("[{items}]")
 }
 
+fn json_token_id_checks(values: &[(String, Option<u32>)]) -> String {
+    let items = values
+        .iter()
+        .map(|(token, id)| match id {
+            Some(id) => format!("{{\"token\":\"{}\",\"id\":{}}}", json_escape(token), id),
+            None => format!("{{\"token\":\"{}\",\"id\":null}}", json_escape(token)),
+        })
+        .collect::<Vec<_>>()
+        .join(",");
+    format!("[{items}]")
+}
+
 fn checksum_f32(values: &[f32]) -> f64 {
     values
         .iter()
@@ -230,6 +242,30 @@ fn main() {
             }) => (*len, string_samples.clone()),
             _ => (0, Vec::new()),
         };
+    let tokenizer_index = header.tokenizer_index().expect("tokenizer index");
+    let tokenizer_merge_count = header
+        .string_array_values("tokenizer.ggml.merges")
+        .map(|values| values.len())
+        .unwrap_or(0);
+    let tokenizer_id_checks = ["<unk>", "<s>", "</s>", "[INST]", "[/INST]"]
+        .iter()
+        .map(|token| {
+            (
+                (*token).to_string(),
+                tokenizer_index.token_to_id.get(*token).copied(),
+            )
+        })
+        .collect::<Vec<_>>();
+    let tokenizer_vocab_json = format!(
+        "{{\"token_count\":{},\"token_index_count\":{},\"merge_count\":{},\"bos_token_id\":{},\"eos_token_id\":{},\"unknown_token_id\":{},\"exact_token_id_checks\":{}}}",
+        tokenizer_token_count,
+        tokenizer_index.token_count,
+        tokenizer_merge_count,
+        header.u32_value("tokenizer.ggml.bos_token_id").unwrap_or(0),
+        header.u32_value("tokenizer.ggml.eos_token_id").unwrap_or(0),
+        header.u32_value("tokenizer.ggml.unknown_token_id").unwrap_or(0),
+        json_token_id_checks(&tokenizer_id_checks)
+    );
     model.to(&device);
     let model_rocm_offload_json = format!(
         "{{\"loaded_weight_count\":{},\"hip_weight_count\":{},\"weight_names\":{}}}",
@@ -241,7 +277,7 @@ fn main() {
     let elapsed_ms = start.elapsed().as_secs_f64() * 1000.0;
 
     println!(
-        "{{\"benchmark\":\"aeronum_core_gguf_directory_smoke\",\"model_path\":\"{}\",\"gguf_version\":{},\"tensor_count\":{},\"metadata_kv_count\":{},\"parsed_tensor_infos\":{},\"parsed_metadata_entries\":{},\"alignment\":{},\"data_offset\":{},\"file_size\":{},\"tensors_with_known_nbytes\":{},\"max_tensor_end\":{},\"tensor_layout_within_file\":{},\"tensor_byte_sample\":{},\"loaded_f32_tensor\":{},\"rocm_tensor_roundtrip\":{},\"model_rocm_offload\":{},\"architecture\":\"{}\",\"quantization_version\":\"{}\",\"tokenizer_model\":\"{}\",\"tokenizer_token_count\":{},\"sample_tokenizer_tokens\":{},\"sample_metadata_keys\":{},\"sample_tensor_names\":{},\"sample_tensor_layouts\":[{}],\"device\":\"{}\",\"max_tokens\":{},\"elapsed_ms\":{:.6},\"output_kind\":\"placeholder\",\"output\":\"{}\"}}",
+        "{{\"benchmark\":\"aeronum_core_gguf_directory_smoke\",\"model_path\":\"{}\",\"gguf_version\":{},\"tensor_count\":{},\"metadata_kv_count\":{},\"parsed_tensor_infos\":{},\"parsed_metadata_entries\":{},\"alignment\":{},\"data_offset\":{},\"file_size\":{},\"tensors_with_known_nbytes\":{},\"max_tensor_end\":{},\"tensor_layout_within_file\":{},\"tensor_byte_sample\":{},\"loaded_f32_tensor\":{},\"rocm_tensor_roundtrip\":{},\"model_rocm_offload\":{},\"tokenizer_vocab\":{},\"architecture\":\"{}\",\"quantization_version\":\"{}\",\"tokenizer_model\":\"{}\",\"tokenizer_token_count\":{},\"sample_tokenizer_tokens\":{},\"sample_metadata_keys\":{},\"sample_tensor_names\":{},\"sample_tensor_layouts\":[{}],\"device\":\"{}\",\"max_tokens\":{},\"elapsed_ms\":{:.6},\"output_kind\":\"placeholder\",\"output\":\"{}\"}}",
         json_escape(&model_path),
         header.version,
         header.tensor_count,
@@ -258,6 +294,7 @@ fn main() {
         output_norm_tensor_json,
         rocm_roundtrip_json,
         model_rocm_offload_json,
+        tokenizer_vocab_json,
         json_escape(&architecture),
         json_escape(&quantization_version),
         json_escape(&tokenizer_model),

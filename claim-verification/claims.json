@@ -281,6 +281,27 @@
       ]
     },
     {
+      "id": "aeronum_core_gguf_quantized_row_dot_20260529",
+      "status": "verified_current_limited",
+      "claim": "aeronum-core can decode selected GGUF Q4_K and Q6_K rows from the local Mistral GGUF file and compute a CPU dot product between token_embd.weight row 22177 and output.weight row 100 over 5120 decoded values. The repo-owned command `cargo run -p aeronum-core --example gguf_quantized_block_smoke -- --model /home/rob/models/mistralai_Mistral-Small-3.1-24B-Instruct-2503-Q4_K_M.gguf --q4-row 22177 --q6-row 100` passed against source commit 0b81e0a46cd836a9f25d9b49cf0ce73b4ee5f4dd and local model SHA-256 c5743c1bf39db0ae8a5ade5df0374b8e9e492754a199cfdad7ef393c1590f7c0. It reported a 5120-dimensional dot product of -0.000096131074 with abs_sum 0.024979591749, lhs decoded checksum -708.97353995, and rhs decoded checksum -411.11805451. This is a selected-row-dot arithmetic smoke only, not full q4_K/q6_K tensor execution, not full logits, not GPU matmul, and not AeroNum-native GGUF token inference throughput.",
+      "artifacts": [
+        "core/src/aeronn/model.rs",
+        "core/src/aeronn/mod.rs",
+        "core/src/lib.rs",
+        "core/examples/gguf_quantized_block_smoke.rs",
+        "claim-verification/results/aeronum_core_gguf_quantized_row_dot_7900xtx_20260529T012052Z/claim_result.json",
+        "claim-verification/results/aeronum_core_gguf_quantized_row_dot_7900xtx_20260529T012052Z/gguf_quantized_row_dot_result.json",
+        "claim-verification/results/aeronum_core_gguf_quantized_row_dot_7900xtx_20260529T012052Z/gguf_quantized_row_dot.stdout.log",
+        "claim-verification/results/aeronum_core_gguf_quantized_row_dot_7900xtx_20260529T012052Z/gguf_quantized_row_dot.stderr.log",
+        "claim-verification/results/aeronum_core_gguf_quantized_row_dot_7900xtx_20260529T012052Z/gguf_quantized_row_dot.exit_code.txt",
+        "claim-verification/results/aeronum_core_gguf_quantized_row_dot_7900xtx_20260529T012052Z/cargo_test_core.stdout.log",
+        "claim-verification/results/aeronum_core_gguf_quantized_row_dot_7900xtx_20260529T012052Z/cargo_test_core.stderr.log",
+        "claim-verification/results/aeronum_core_gguf_quantized_row_dot_7900xtx_20260529T012052Z/cargo_test_core.exit_code.txt",
+        "claim-verification/results/aeronum_core_gguf_quantized_row_dot_7900xtx_20260529T012052Z/command_config.txt",
+        "claim-verification/results/aeronum_core_gguf_quantized_row_dot_7900xtx_20260529T012052Z/hardware_software_metadata.txt"
+      ]
+    },
+    {
       "id": "aeronum_llama_cpp_cli_gguf_reference_20260528",
       "status": "verified_reference_only",
       "claim": "benchmarks/gguf/run_llama_cpp_cli.py ran a real local llama.cpp CLI ROCm GGUF inference reference on the local Mistral GGUF file. The llama.cpp build reported version 7074 (22e1ce2f8) with HIP 6.2.41133-dd7f95766, offloaded 41/41 layers to ROCm0 Radeon RX 7900 XTX, and measured 125.22 prompt eval tokens/s plus 44.58 eval tokens/s for 16 predicted tokens. This is a llama.cpp reference benchmark through an AeroNum repo wrapper, not AeroNum-native GGUF tensor execution.",
@@ -350,7 +371,7 @@
     {
       "id": "aeronum_gpt2_nccl_gguf_claims_20260528",
       "status": "blocked",
-      "claim": "AeroNum-vs-PyTorch GPT-2 training speedup, NCCL/MPI multi-GPU scaling, and AeroNum-native GGUF token-inference throughput claims are not included because no current AeroNum artifact or rerun verified them. A PyTorch/Hugging Face GPT-2 reference passed, AeroNum-owned tiny language-model, tiny transformer-forward, and tiny transformer output-projection training analogues passed but are not GPT-2, NCCL/DDP world size 1 passed, the integrated distributed_compare.py guard blocks the local two-device NCCL topology before launch, post-reboot NCCL attempts failed on the local Radeon RX 7900 XTX plus integrated AMD Radeon Graphics topology, a two-rank single-XTX attempt was rejected by RCCL as duplicate GPU usage, the AeroNum GGUF core result parses metadata, tokenizer string-array samples, the full tokenizer token array, tokenizer merges, tokenizer token-type array, exact-token-piece encode/decode for known special tokens, a byte-level BPE path with default and literal no-parse-special modes matching llama.cpp on 14 fixed prompts, tokenizer config, selected Llama hyperparameters, tensor directory records, tensor byte ranges, loads all 81 F32 tensors into LlamaModel, offloads those model weights through ROCm device 0, and verifies first-block plus selected-row CPU decode for one Q4_K tensor and one Q6_K tensor, but still reaches only placeholder generation. Full q4_K/q6_K tensor execution is not verified, and the GGUF token-inference result is a llama.cpp reference through an AeroNum repo wrapper.",
+      "claim": "AeroNum-vs-PyTorch GPT-2 training speedup, NCCL/MPI multi-GPU scaling, and AeroNum-native GGUF token-inference throughput claims are not included because no current AeroNum artifact or rerun verified them. A PyTorch/Hugging Face GPT-2 reference passed, AeroNum-owned tiny language-model, tiny transformer-forward, and tiny transformer output-projection training analogues passed but are not GPT-2, NCCL/DDP world size 1 passed, the integrated distributed_compare.py guard blocks the local two-device NCCL topology before launch, post-reboot NCCL attempts failed on the local Radeon RX 7900 XTX plus integrated AMD Radeon Graphics topology, a two-rank single-XTX attempt was rejected by RCCL as duplicate GPU usage, the AeroNum GGUF core result parses metadata, tokenizer string-array samples, the full tokenizer token array, tokenizer merges, tokenizer token-type array, exact-token-piece encode/decode for known special tokens, a byte-level BPE path with default and literal no-parse-special modes matching llama.cpp on 14 fixed prompts, tokenizer config, selected Llama hyperparameters, tensor directory records, tensor byte ranges, loads all 81 F32 tensors into LlamaModel, offloads those model weights through ROCm device 0, and verifies first-block decode, selected-row decode, and a selected-row CPU dot product for one Q4_K tensor and one Q6_K tensor, but still reaches only placeholder generation. Full q4_K/q6_K tensor execution, full logits, and AeroNum-native token inference are not verified, and the GGUF token-inference result is a llama.cpp reference through an AeroNum repo wrapper.",
       "artifacts": [
         "claim-verification/results/aeronum_pytorch_gpt2_reference_7900xtx_20260528T224500Z/claim_result.json",
         "claim-verification/results/aeronum_tiny_lm_train_7900xtx_20260528T231229Z/claim_result.json",
@@ -380,7 +401,9 @@
         "claim-verification/results/aeronum_core_gguf_quantized_block_decode_7900xtx_20260529T010756Z/claim_result.json",
         "claim-verification/results/aeronum_core_gguf_quantized_block_decode_7900xtx_20260529T010756Z/gguf_quantized_block_smoke_result.json",
         "claim-verification/results/aeronum_core_gguf_quantized_row_decode_7900xtx_20260529T011641Z/claim_result.json",
-        "claim-verification/results/aeronum_core_gguf_quantized_row_decode_7900xtx_20260529T011641Z/gguf_quantized_row_smoke_result.json"
+        "claim-verification/results/aeronum_core_gguf_quantized_row_decode_7900xtx_20260529T011641Z/gguf_quantized_row_smoke_result.json",
+        "claim-verification/results/aeronum_core_gguf_quantized_row_dot_7900xtx_20260529T012052Z/claim_result.json",
+        "claim-verification/results/aeronum_core_gguf_quantized_row_dot_7900xtx_20260529T012052Z/gguf_quantized_row_dot_result.json"
       ]
     }
   ]

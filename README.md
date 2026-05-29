@@ -180,6 +180,13 @@ Verified current results:
   decode only, not full q4_K/q6_K tensor execution, GPU matmul, or
   AeroNum-native GGUF token inference throughput
   ([result JSON](claim-verification/results/aeronum_core_gguf_quantized_row_decode_7900xtx_20260529T011641Z/claim_result.json)).
+- `aeronum-core` now computes a CPU dot product between selected decoded
+  quantized rows. The same row-smoke command decoded Q4_K
+  `token_embd.weight` row 22177 and Q6_K `output.weight` row 100, then
+  computed their 5,120-value dot product as `-0.000096131074`. This is a
+  selected-row arithmetic smoke only, not full logits, full q4_K/q6_K tensor
+  execution, GPU matmul, or AeroNum-native GGUF token inference throughput
+  ([result JSON](claim-verification/results/aeronum_core_gguf_quantized_row_dot_7900xtx_20260529T012052Z/claim_result.json)).
 - `benchmarks/gguf/run_llama_cpp_cli.py` ran a real local llama.cpp CLI ROCm
   GGUF inference reference on the same Mistral GGUF file. The llama.cpp build
   reported version 7074 (`22e1ce2f8`) with HIP 6.2.41133-dd7f95766, offloaded
@@ -236,11 +243,12 @@ Blocked or omitted claims:
   config, selected Llama hyperparameters, tensor directory
   records, tensor byte ranges, loads all 81 F32 tensors into `LlamaModel`,
   offloads those model weights through ROCm device 0, then reaches placeholder
-  generation. First-block and selected-row CPU decode for one Q4_K tensor and
-  one Q6_K tensor is verified, but exhaustive tokenizer parity, full
-  q4_K/q6_K tensor execution, and AeroNum-native token inference throughput are
-  not yet verified. The verified token-inference result is a llama.cpp
-  reference through an AeroNum repo wrapper.
+  generation. First-block decode, selected-row decode, and a selected-row CPU
+  dot product for one Q4_K tensor and one Q6_K tensor are verified, but
+  exhaustive tokenizer parity, full q4_K/q6_K tensor execution, full logits,
+  and AeroNum-native token inference throughput are not yet verified. The
+  verified token-inference result is a llama.cpp reference through an AeroNum
+  repo wrapper.
 
 Historical benchmark CSVs remain in the repo, but README claims above only use
 fresh local reruns and captured artifacts.

@@ -318,6 +318,25 @@ Verified current results:
   tensor execution, not GPU autoregressive decoding, and not optimized
   AeroNum-native GGUF token inference throughput
   ([result JSON](claim-verification/results/aeronum_core_gguf_gpu_second_step_final_head_logits_7900xtx_20260529T062000Z/claim_result.json)).
+- `benchmarks/gguf/q6k_decode_dot_hip.cpp` now verifies full-output-vocabulary
+  final-head logits for the second retained decode step while GPU-decoding the
+  Q6_K `output.weight` rows. The repo-owned dump command used the retained CPU
+  runtime state for prompt `<s>[INST]Hello[/INST]`, generated token IDs 22177
+  and 1033 (`Hello!`), wrote the 5,120-value retained final normalized input
+  vector, wrote 131,072 CPU reference logits, and recorded the Q6_K
+  `output.weight` model byte range at offset 7,884,256 for 550,502,400 bytes.
+  The HIP verifier compiled with `hipcc` for `gfx1100`, read that Q6_K range
+  from the local GGUF file, copied it and the retained input vector to ROCm
+  device 0 (`Radeon RX 7900 XTX`), GPU-decoded each Q6_K row, reduced each
+  row's dot partials with a second GPU kernel, and compared all 131,072 GPU
+  logits to the CPU references. The CPU top token was ID 1033 (`!`) with value
+  `30.194520660236`; the first CPU reference logit was `-4.754972100336`, the
+  first GPU logit was `-4.754971981049`, and the maximum absolute difference
+  across all logits was `0.000001617267`. This verifies the final-head Q6_K
+  decode-and-dot subpath on GPU for one retained generated step only; the
+  transformer layers still run on CPU, and this is not GPU autoregressive
+  decoding or optimized AeroNum-native GGUF token inference throughput
+  ([result JSON](claim-verification/results/aeronum_core_gguf_retained_final_head_q6k_gpu_decode_full_vocab_7900xtx_20260529T100000Z/claim_result.json)).
 - `aeronum-core` now computes CPU prefix logits over decoded quantized rows.
   The repo-owned command
   `cargo run -p aeronum-core --example gguf_quantized_block_smoke -- --model /home/rob/models/mistralai_Mistral-Small-3.1-24B-Instruct-2503-Q4_K_M.gguf --q4-row 22177 --q6-row 100 --logit-start 0 --logit-rows 256 --top-k 5`
@@ -693,7 +712,9 @@ Blocked or omitted claims:
   final reduction, a 256-row GPU Q4_K/Q6_K prefix-logits subpath, a
   full-output-vocabulary GPU Q4_K/Q6_K arithmetic subpath, 256-row prefix
   logits, full-output-vocabulary GPU final-head logits for the first and
-  second retained-KV decode steps with CPU-side quantized weight decode, full output-vocabulary CPU arithmetic, final
+  second retained-KV decode steps with CPU-side quantized weight decode, a
+  retained-step full-output-vocabulary GPU Q6_K final-head decode-and-dot
+  subpath, full output-vocabulary CPU arithmetic, final
   RMS/output-norm full output-vocabulary CPU arithmetic for one selected Q4_K
   embedding row against Q6_K `output.weight`, first-layer V-projection CPU
   arithmetic against Q6_K `blk.0.attn_v.weight`, a single-token first-layer

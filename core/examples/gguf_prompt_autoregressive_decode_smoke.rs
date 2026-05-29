@@ -232,6 +232,11 @@ fn main() {
         .decode_byte_bpe_text(&generated_token_ids)
         .expect("decode generated token text");
     let elapsed_ms = start.elapsed().as_secs_f64() * 1000.0;
+    let generated_tokens_per_second = if elapsed_ms > 0.0 {
+        generated_token_ids.len() as f64 / (elapsed_ms / 1000.0)
+    } else {
+        0.0
+    };
 
     println!(
         concat!(
@@ -249,6 +254,8 @@ fn main() {
             "\"add_bos\":{},",
             "\"parse_special\":{},",
             "\"max_new_tokens\":{},",
+            "\"generated_token_count\":{},",
+            "\"generated_tokens_per_second\":{:.12},",
             "\"generated_token_ids\":{},",
             "\"generated_token_pieces\":{},",
             "\"generated_piece_sequence\":\"{}\",",
@@ -278,6 +285,8 @@ fn main() {
         add_bos,
         parse_special,
         max_new_tokens,
+        generated_token_ids.len(),
+        generated_tokens_per_second,
         json_u32_array(&generated_token_ids),
         json_string_array(&generated_token_pieces),
         json_escape(&generated_token_pieces.join("")),

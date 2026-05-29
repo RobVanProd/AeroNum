@@ -161,6 +161,17 @@ Verified current results:
   tokenizer parity check, not exhaustive tokenizer parity or GGUF token
   inference throughput
   ([result JSON](claim-verification/results/aeronum_core_gguf_tokenizer_parse_modes_7900xtx_20260529T010000Z/claim_result.json)).
+- `aeronum-core` now reads and CPU-decodes the first quantized GGUF block for
+  one Q4_K tensor and one Q6_K tensor from the same local Mistral GGUF file.
+  The repo-owned command
+  `cargo run -p aeronum-core --example gguf_quantized_block_smoke -- --model /home/rob/models/mistralai_Mistral-Small-3.1-24B-Instruct-2503-Q4_K_M.gguf`
+  validated `token_embd.weight` as Q4_K with block size 256, type size 144,
+  tensor byte size 377,487,360, and 256 decoded values; it also validated
+  `output.weight` as Q6_K with block size 256, type size 210, tensor byte size
+  550,502,400, and 256 decoded values. This is first-block CPU decode only,
+  not full q4_K/q6_K tensor execution, GPU matmul, or AeroNum-native GGUF
+  token inference throughput
+  ([result JSON](claim-verification/results/aeronum_core_gguf_quantized_block_decode_7900xtx_20260529T010756Z/claim_result.json)).
 - `benchmarks/gguf/run_llama_cpp_cli.py` ran a real local llama.cpp CLI ROCm
   GGUF inference reference on the same Mistral GGUF file. The llama.cpp build
   reported version 7074 (`22e1ce2f8`) with HIP 6.2.41133-dd7f95766, offloaded
@@ -217,10 +228,11 @@ Blocked or omitted claims:
   config, selected Llama hyperparameters, tensor directory
   records, tensor byte ranges, loads all 81 F32 tensors into `LlamaModel`,
   offloads those model weights through ROCm device 0, then reaches placeholder
-  generation. Exhaustive tokenizer parity, q4_K/q6_K tensor execution, and
-  AeroNum-native token inference throughput are not yet verified. The verified
-  token-inference result is a llama.cpp reference through an AeroNum repo
-  wrapper.
+  generation. First-block CPU decode for one Q4_K tensor and one Q6_K tensor
+  is verified, but exhaustive tokenizer parity, full q4_K/q6_K tensor
+  execution, and AeroNum-native token inference throughput are not yet
+  verified. The verified token-inference result is a llama.cpp reference
+  through an AeroNum repo wrapper.
 
 Historical benchmark CSVs remain in the repo, but README claims above only use
 fresh local reruns and captured artifacts.

@@ -1,0 +1,295 @@
+date_utc=2026-05-29T01:08:49+00:00
+hostname=ubuntu
+repo=/home/rob/.openclaw.old/workspace/repos/AeroNum
+branch=main
+head_commit=f46b30eca8efb9d5e18f1648e7b8ff15c5d8d9c4
+
+[lspci]
+04:00.0 VGA compatible controller: Advanced Micro Devices, Inc. [AMD/ATI] Navi 31 [Radeon RX 7900 XT/7900 XTX/7900 GRE/7900M] (rev c8)
+7c:00.0 VGA compatible controller: Advanced Micro Devices, Inc. [AMD/ATI] Granite Ridge [Radeon Graphics] (rev c1)
+
+[rocminfo]
+[37mROCk module is loaded[0m
+=====================    
+HSA System Attributes    
+=====================    
+Runtime Version:         1.14
+Runtime Ext Version:     1.6
+System Timestamp Freq.:  1000.000000MHz
+Sig. Max Wait Duration:  18446744073709551615 (0xFFFFFFFFFFFFFFFF) (timestamp count)
+Machine Model:           LARGE                              
+System Endianness:       LITTLE                             
+Mwaitx:                  DISABLED
+DMAbuf Support:          YES
+
+==========               
+HSA Agents               
+==========               
+*******                  
+Agent 1                  
+*******                  
+  Name:                    AMD Ryzen 9 9950X 16-Core Processor
+  Uuid:                    CPU-XX                             
+  Marketing Name:          AMD Ryzen 9 9950X 16-Core Processor
+  Vendor Name:             CPU                                
+  Feature:                 None specified                     
+  Profile:                 FULL_PROFILE                       
+  Float Round Mode:        NEAR                               
+  Max Queue Number:        0(0x0)                             
+  Queue Min Size:          0(0x0)                             
+  Queue Max Size:          0(0x0)                             
+  Queue Type:              MULTI                              
+  Node:                    0                                  
+  Device Type:             CPU                                
+  Cache Info:              
+    L1:                      49152(0xc000) KB                   
+  Chip ID:                 0(0x0)                             
+  ASIC Revision:           0(0x0)                             
+  Cacheline Size:          64(0x40)                           
+  Max Clock Freq. (MHz):   5752                               
+  BDFID:                   0                                  
+  Internal Node ID:        0                                  
+  Compute Unit:            32                                 
+  SIMDs per CU:            0                                  
+  Shader Engines:          0                                  
+  Shader Arrs. per Eng.:   0                                  
+  WatchPts on Addr. Ranges:1                                  
+  Memory Properties:       
+  Features:                None
+  Pool Info:               
+    Pool 1                   
+      Segment:                 GLOBAL; FLAGS: FINE GRAINED        
+      Size:                    129458572(0x7b7618c) KB            
+      Allocatable:             TRUE                               
+      Alloc Granule:           4KB                                
+      Alloc Recommended Granule:4KB                                
+      Alloc Alignment:         4KB                                
+      Accessible by all:       TRUE                               
+    Pool 2                   
+      Segment:                 GLOBAL; FLAGS: KERNARG, FINE GRAINED
+      Size:                    129458572(0x7b7618c) KB            
+      Allocatable:             TRUE                               
+      Alloc Granule:           4KB                                
+      Alloc Recommended Granule:4KB                                
+      Alloc Alignment:         4KB                                
+      Accessible by all:       TRUE                               
+    Pool 3                   
+      Segment:                 GLOBAL; FLAGS: COARSE GRAINED      
+      Size:                    129458572(0x7b7618c) KB            
+      Allocatable:             TRUE                               
+      Alloc Granule:           4KB                                
+      Alloc Recommended Granule:4KB                                
+      Alloc Alignment:         4KB                                
+      Accessible by all:       TRUE                               
+  ISA Info:                
+*******                  
+Agent 2                  
+*******                  
+  Name:                    gfx1100                            
+  Uuid:                    GPU-cf2fe125aafed7ba               
+  Marketing Name:          Radeon RX 7900 XTX                 
+  Vendor Name:             AMD                                
+  Feature:                 KERNEL_DISPATCH                    
+  Profile:                 BASE_PROFILE                       
+  Float Round Mode:        NEAR                               
+  Max Queue Number:        128(0x80)                          
+  Queue Min Size:          64(0x40)                           
+  Queue Max Size:          131072(0x20000)                    
+  Queue Type:              MULTI                              
+  Node:                    1                                  
+  Device Type:             GPU                                
+  Cache Info:              
+    L1:                      32(0x20) KB                        
+    L2:                      6144(0x1800) KB                    
+    L3:                      98304(0x18000) KB                  
+  Chip ID:                 29772(0x744c)                      
+  ASIC Revision:           0(0x0)                             
+  Cacheline Size:          64(0x40)                           
+  Max Clock Freq. (MHz):   2482                               
+  BDFID:                   1024                               
+  Internal Node ID:        1                                  
+  Compute Unit:            96                                 
+  SIMDs per CU:            2                                  
+  Shader Engines:          6                                  
+  Shader Arrs. per Eng.:   2                                  
+  WatchPts on Addr. Ranges:4                                  
+  Coherent Host Access:    FALSE                              
+  Memory Properties:       
+  Features:                KERNEL_DISPATCH 
+  Fast F16 Operation:      TRUE                               
+  Wavefront Size:          32(0x20)                           
+  Workgroup Max Size:      1024(0x400)                        
+  Workgroup Max Size per Dimension:
+    x                        1024(0x400)                        
+    y                        1024(0x400)                        
+    z                        1024(0x400)                        
+  Max Waves Per CU:        32(0x20)                           
+  Max Work-item Per CU:    1024(0x400)                        
+  Grid Max Size:           4294967295(0xffffffff)             
+  Grid Max Size per Dimension:
+    x                        4294967295(0xffffffff)             
+    y                        4294967295(0xffffffff)             
+    z                        4294967295(0xffffffff)             
+  Max fbarriers/Workgrp:   32                                 
+  Packet Processor uCode:: 510                                
+  SDMA engine uCode::      19                                 
+  IOMMU Support::          None                               
+  Pool Info:               
+    Pool 1                   
+      Segment:                 GLOBAL; FLAGS: COARSE GRAINED      
+      Size:                    25149440(0x17fc000) KB             
+      Allocatable:             TRUE                               
+      Alloc Granule:           4KB                                
+      Alloc Recommended Granule:2048KB                             
+      Alloc Alignment:         4KB                                
+      Accessible by all:       FALSE                              
+    Pool 2                   
+      Segment:                 GLOBAL; FLAGS: EXTENDED FINE GRAINED
+      Size:                    25149440(0x17fc000) KB             
+      Allocatable:             TRUE                               
+      Alloc Granule:           4KB                                
+      Alloc Recommended Granule:2048KB                             
+      Alloc Alignment:         4KB                                
+      Accessible by all:       FALSE                              
+    Pool 3                   
+      Segment:                 GROUP                              
+      Size:                    64(0x40) KB                        
+      Allocatable:             FALSE                              
+      Alloc Granule:           0KB                                
+      Alloc Recommended Granule:0KB                                
+      Alloc Alignment:         0KB                                
+      Accessible by all:       FALSE                              
+  ISA Info:                
+    ISA 1                    
+      Name:                    amdgcn-amd-amdhsa--gfx1100         
+      Machine Models:          HSA_MACHINE_MODEL_LARGE            
+      Profiles:                HSA_PROFILE_BASE                   
+      Default Rounding Mode:   NEAR                               
+      Default Rounding Mode:   NEAR                               
+      Fast f16:                TRUE                               
+      Workgroup Max Size:      1024(0x400)                        
+      Workgroup Max Size per Dimension:
+        x                        1024(0x400)                        
+        y                        1024(0x400)                        
+        z                        1024(0x400)                        
+      Grid Max Size:           4294967295(0xffffffff)             
+      Grid Max Size per Dimension:
+        x                        4294967295(0xffffffff)             
+        y                        4294967295(0xffffffff)             
+        z                        4294967295(0xffffffff)             
+      FBarrier Max Size:       32                                 
+*******                  
+Agent 3                  
+*******                  
+  Name:                    gfx1036                            
+  Uuid:                    GPU-XX                             
+  Marketing Name:          AMD Radeon Graphics                
+  Vendor Name:             AMD                                
+  Feature:                 KERNEL_DISPATCH                    
+  Profile:                 BASE_PROFILE                       
+  Float Round Mode:        NEAR                               
+  Max Queue Number:        128(0x80)                          
+  Queue Min Size:          64(0x40)                           
+  Queue Max Size:          131072(0x20000)                    
+  Queue Type:              MULTI                              
+  Node:                    2                                  
+  Device Type:             GPU                                
+  Cache Info:              
+    L1:                      16(0x10) KB                        
+    L2:                      256(0x100) KB                      
+  Chip ID:                 5056(0x13c0)                       
+  ASIC Revision:           1(0x1)                             
+  Cacheline Size:          64(0x40)                           
+  Max Clock Freq. (MHz):   2200                               
+  BDFID:                   31744                              
+  Internal Node ID:        2                                  
+  Compute Unit:            2                                  
+  SIMDs per CU:            2                                  
+  Shader Engines:          1                                  
+  Shader Arrs. per Eng.:   1                                  
+  WatchPts on Addr. Ranges:4                                  
+  Coherent Host Access:    FALSE                              
+  Memory Properties:       APU
+  Features:                KERNEL_DISPATCH 
+  Fast F16 Operation:      TRUE                               
+  Wavefront Size:          32(0x20)                           
+  Workgroup Max Size:      1024(0x400)                        
+  Workgroup Max Size per Dimension:
+    x                        1024(0x400)                        
+    y                        1024(0x400)                        
+    z                        1024(0x400)                        
+  Max Waves Per CU:        32(0x20)                           
+  Max Work-item Per CU:    1024(0x400)                        
+  Grid Max Size:           4294967295(0xffffffff)             
+  Grid Max Size per Dimension:
+    x                        4294967295(0xffffffff)             
+    y                        4294967295(0xffffffff)             
+    z                        4294967295(0xffffffff)             
+  Max fbarriers/Workgrp:   32                                 
+  Packet Processor uCode:: 18                                 
+  SDMA engine uCode::      1                                  
+  IOMMU Support::          None                               
+  Pool Info:               
+    Pool 1                   
+      Segment:                 GLOBAL; FLAGS: COARSE GRAINED      
+      Size:                    64729284(0x3dbb0c4) KB             
+      Allocatable:             TRUE                               
+      Alloc Granule:           4KB                                
+      Alloc Recommended Granule:2048KB                             
+      Alloc Alignment:         4KB                                
+      Accessible by all:       FALSE                              
+    Pool 2                   
+      Segment:                 GLOBAL; FLAGS: EXTENDED FINE GRAINED
+      Size:                    64729284(0x3dbb0c4) KB             
+      Allocatable:             TRUE                               
+      Alloc Granule:           4KB                                
+      Alloc Recommended Granule:2048KB                             
+      Alloc Alignment:         4KB                                
+      Accessible by all:       FALSE                              
+    Pool 3                   
+      Segment:                 GROUP                              
+      Size:                    64(0x40) KB                        
+      Allocatable:             FALSE                              
+      Alloc Granule:           0KB                                
+      Alloc Recommended Granule:0KB                                
+      Alloc Alignment:         0KB                                
+      Accessible by all:       FALSE                              
+  ISA Info:                
+    ISA 1                    
+      Name:                    amdgcn-amd-amdhsa--gfx1036         
+      Machine Models:          HSA_MACHINE_MODEL_LARGE            
+      Profiles:                HSA_PROFILE_BASE                   
+      Default Rounding Mode:   NEAR                               
+      Default Rounding Mode:   NEAR                               
+      Fast f16:                TRUE                               
+      Workgroup Max Size:      1024(0x400)                        
+      Workgroup Max Size per Dimension:
+        x                        1024(0x400)                        
+        y                        1024(0x400)                        
+        z                        1024(0x400)                        
+      Grid Max Size:           4294967295(0xffffffff)             
+      Grid Max Size per Dimension:
+        x                        4294967295(0xffffffff)             
+        y                        4294967295(0xffffffff)             
+        z                        4294967295(0xffffffff)             
+      FBarrier Max Size:       32                                 
+*** Done ***             
+
+[rocm-smi]
+
+
+=========================================== ROCm System Management Interface ===========================================
+===================================================== Concise Info =====================================================
+Device  Node  IDs              Temp    Power   Partitions          SCLK   MCLK     Fan  Perf  PwrCap       VRAM%  GPU%  
+[3m              (DID,     GUID)  (Edge)  (Avg)   (Mem, Compute, ID)                                                       [0m
+========================================================================================================================
+0       1     0x744c,   49057  22.0°C  11.0W   N/A, N/A, 0         16Mhz  96Mhz    0%   auto  327.0W       0%     0%    
+1       2     0x13c0,   18715  44.0°C  0.013W  N/A, N/A, 0         None   1800Mhz  0%   auto  Unsupported  19%    0%    
+========================================================================================================================
+================================================= End of ROCm SMI Log ==================================================
+
+[python]
+Python 3.10.12
+
+[pytorch]
+{"cuda_available": true, "device_count": 2, "devices": ["Radeon RX 7900 XTX", "AMD Radeon Graphics"], "hip_version": "6.2.41133-dd7f95766", "torch_version": "2.5.1+rocm6.2"}

@@ -90,6 +90,20 @@ pub struct GgufTensorByteSample {
     pub f32_samples: Vec<f32>,
 }
 
+#[derive(Clone, Debug, PartialEq)]
+pub struct GgufQuantizedBlockSample {
+    pub name: String,
+    pub tensor_type: u32,
+    pub tensor_type_name: String,
+    pub absolute_offset: u64,
+    pub tensor_nbytes: u64,
+    pub block_size: u64,
+    pub type_size: u64,
+    pub block_byte_checksum: u64,
+    pub decoded_values: Vec<f32>,
+    pub decoded_checksum: f64,
+}
+
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct GgufTokenizerIndex {
     pub token_count: usize,
@@ -540,6 +554,67 @@ impl GgufHeader {
             byte_checksum,
             first_bytes_hex,
             f32_samples,
+        })
+    }
+
+    pub fn read_quantized_block_sample(
+        &self,
+        tensor_name: &str,
+    ) -> Result<GgufQuantizedBlockSample, GgufError> {
+        let tensor = self
+            .tensors
+            .iter()
+            .find(|tensor| tensor.name == tensor_name)
+            .ok_or_else(|| GgufError::TensorNotFound(tensor_name.to_string()))?;
+        let (block_size, type_size) = ggml_type_layout(tensor.tensor_type).ok_or_else(|| {
+            GgufError::UnsupportedTensorType {
+                name: tensor_name.to_string(),
+                tensor_type: tensor.tensor_type,
+            }
+        })?;
+        if !matches!(tensor.tensor_type, 12 | 14) {
+            return Err(GgufError::UnsupportedTensorType {
+                name: tensor_name.to_string(),
+                tensor_type: tensor.tensor_type,
+            });
+        }
+        let tensor_nbytes = tensor
+            .nbytes
+            .ok_or_else(|| GgufError::UnknownTensorByteSize(tensor_name.to_string()))?;
+        let tensor_end = tensor
+            .absolute_offset
+            .checked_add(tensor_nbytes)
+            .ok_or_else(|| GgufError::InvalidTensorRange(tensor_name.to_string()))?;
+        if tensor_end > self.file_size || tensor_nbytes < type_size {
+            return Err(GgufError::InvalidTensorRange(tensor_name.to_string()));
+        }
+
+        let mut file = File::open(&self.path)?;
+        file.seek(SeekFrom::Start(tensor.absolute_offset))?;
+        let mut bytes = vec![0u8; type_size as usize];
+        file.read_exact(&mut bytes)?;
+        let block_byte_checksum = bytes
+            .iter()
+            .enumerate()
+            .map(|(idx, byte)| (idx as u64 + 1) * (*byte as u64))
+            .sum();
+        let decoded_values = match tensor.tensor_type {
+            12 => dequantize_q4_k_block(&bytes)?,
+            14 => dequantize_q6_k_block(&bytes)?,
+            _ => unreachable!("unsupported tensor type checked above"),
+        };
+        let decoded_checksum = checksum_f32_values(&decoded_values);
+        Ok(GgufQuantizedBlockSample {
+            name: tensor.name.clone(),
+            tensor_type: tensor.tensor_type,
+            tensor_type_name: ggml_type_name(tensor.tensor_type).to_string(),
+            absolute_offset: tensor.absolute_offset,
+            tensor_nbytes,
+            block_size,
+            type_size,
+            block_byte_checksum,
+            decoded_values,
+            decoded_checksum,
         })
     }
 
@@ -1010,6 +1085,134 @@ fn ggml_type_layout(tensor_type: u32) -> Option<(u64, u64)> {
     }
 }
 
+fn ggml_type_name(tensor_type: u32) -> &'static str {
+    match tensor_type {
+        0 => "F32",
+        1 => "F16",
+        2 => "Q4_0",
+        3 => "Q4_1",
+        6 => "Q5_0",
+        7 => "Q5_1",
+        8 => "Q8_0",
+        9 => "Q8_1",
+        10 => "Q2_K",
+        11 => "Q3_K",
+        12 => "Q4_K",
+        13 => "Q5_K",
+        14 => "Q6_K",
+        15 => "Q8_K",
+        16 => "I8",
+        17 => "I16",
+        18 => "I32",
+        _ => "UNKNOWN",
+    }
+}
+
+fn dequantize_q4_k_block(bytes: &[u8]) -> Result<Vec<f32>, GgufError> {
+    if bytes.len() != 144 {
+        return Err(GgufError::InvalidTensorRange("Q4_K block".to_string()));
+    }
+    let d = f16_to_f32(u16::from_le_bytes([bytes[0], bytes[1]]));
+    let dmin = f16_to_f32(u16::from_le_bytes([bytes[2], bytes[3]]));
+    let scales = &bytes[4..16];
+    let qs = &bytes[16..144];
+    let mut values = Vec::with_capacity(256);
+    let mut q_offset = 0usize;
+    let mut scale_idx = 0usize;
+    for _ in (0..256).step_by(64) {
+        let (sc1, min1) = q4_k_scale_min(scale_idx, scales);
+        let (sc2, min2) = q4_k_scale_min(scale_idx + 1, scales);
+        let d1 = d * sc1 as f32;
+        let m1 = dmin * min1 as f32;
+        let d2 = d * sc2 as f32;
+        let m2 = dmin * min2 as f32;
+        for byte in &qs[q_offset..q_offset + 32] {
+            values.push(d1 * (byte & 0x0f) as f32 - m1);
+        }
+        for byte in &qs[q_offset..q_offset + 32] {
+            values.push(d2 * (byte >> 4) as f32 - m2);
+        }
+        q_offset += 32;
+        scale_idx += 2;
+    }
+    Ok(values)
+}
+
+fn q4_k_scale_min(index: usize, scales: &[u8]) -> (u8, u8) {
+    if index < 4 {
+        (scales[index] & 63, scales[index + 4] & 63)
+    } else {
+        (
+            (scales[index + 4] & 0x0f) | ((scales[index - 4] >> 6) << 4),
+            (scales[index + 4] >> 4) | ((scales[index] >> 6) << 4),
+        )
+    }
+}
+
+fn dequantize_q6_k_block(bytes: &[u8]) -> Result<Vec<f32>, GgufError> {
+    if bytes.len() != 210 {
+        return Err(GgufError::InvalidTensorRange("Q6_K block".to_string()));
+    }
+    let ql = &bytes[0..128];
+    let qh = &bytes[128..192];
+    let scales = &bytes[192..208];
+    let d = f16_to_f32(u16::from_le_bytes([bytes[208], bytes[209]]));
+    let mut values = vec![0.0f32; 256];
+    for n in (0..256).step_by(128) {
+        let ql_base = n / 2;
+        let qh_base = n / 4;
+        let scale_base = n / 16;
+        for l in 0..32usize {
+            let scale_pair = l / 16;
+            let qh_byte = qh[qh_base + l];
+            let q1 = ((ql[ql_base + l] & 0x0f) | (((qh_byte >> 0) & 3) << 4)) as i8 - 32;
+            let q2 = ((ql[ql_base + l + 32] & 0x0f) | (((qh_byte >> 2) & 3) << 4)) as i8 - 32;
+            let q3 = ((ql[ql_base + l] >> 4) | (((qh_byte >> 4) & 3) << 4)) as i8 - 32;
+            let q4 = ((ql[ql_base + l + 32] >> 4) | (((qh_byte >> 6) & 3) << 4)) as i8 - 32;
+            values[n + l] = d * scales[scale_base + scale_pair] as i8 as f32 * q1 as f32;
+            values[n + l + 32] = d * scales[scale_base + scale_pair + 2] as i8 as f32 * q2 as f32;
+            values[n + l + 64] = d * scales[scale_base + scale_pair + 4] as i8 as f32 * q3 as f32;
+            values[n + l + 96] = d * scales[scale_base + scale_pair + 6] as i8 as f32 * q4 as f32;
+        }
+    }
+    Ok(values)
+}
+
+fn f16_to_f32(bits: u16) -> f32 {
+    let sign = ((bits & 0x8000) as u32) << 16;
+    let exp = ((bits >> 10) & 0x1f) as i32;
+    let frac = (bits & 0x03ff) as u32;
+    let f32_bits = if exp == 0 {
+        if frac == 0 {
+            sign
+        } else {
+            let mut mant = frac;
+            let mut exponent = -14i32;
+            while mant & 0x0400 == 0 {
+                mant <<= 1;
+                exponent -= 1;
+            }
+            mant &= 0x03ff;
+            let exp32 = (exponent + 127) as u32;
+            sign | (exp32 << 23) | (mant << 13)
+        }
+    } else if exp == 0x1f {
+        sign | 0x7f80_0000 | (frac << 13)
+    } else {
+        let exp32 = (exp - 15 + 127) as u32;
+        sign | (exp32 << 23) | (frac << 13)
+    };
+    f32::from_bits(f32_bits)
+}
+
+fn checksum_f32_values(values: &[f32]) -> f64 {
+    values
+        .iter()
+        .enumerate()
+        .map(|(idx, value)| (idx as f64 + 1.0) * (*value as f64))
+        .sum()
+}
+
 fn skip_value(reader: &mut impl Read, value_type: GgufValueType) -> Result<(), GgufError> {
     match value_type {
         GgufValueType::U8 | GgufValueType::I8 | GgufValueType::Bool => {
@@ -1369,6 +1572,49 @@ mod tests {
         assert_eq!(model.weights[1].to_vec(), vec![3.75]);
 
         fs::remove_file(path).expect("remove GGUF test file");
+    }
+
+    #[test]
+    fn decodes_f16_values_for_quantized_blocks() {
+        assert_eq!(f16_to_f32(0x0000), 0.0);
+        assert_eq!(f16_to_f32(0x3c00), 1.0);
+        assert_eq!(f16_to_f32(0xc000), -2.0);
+        assert_eq!(f16_to_f32(0x7c00), f32::INFINITY);
+        assert_eq!(f16_to_f32(0xfc00), f32::NEG_INFINITY);
+    }
+
+    #[test]
+    fn decodes_synthetic_q4_k_block() {
+        let mut bytes = vec![0u8; 144];
+        bytes[0..2].copy_from_slice(&0x3c00u16.to_le_bytes());
+        bytes[2..4].copy_from_slice(&0x3800u16.to_le_bytes());
+        bytes[4..16].fill(1);
+        bytes[16..144].fill(0x21);
+
+        let values = dequantize_q4_k_block(&bytes).expect("decode Q4_K");
+
+        assert_eq!(values.len(), 256);
+        assert_eq!(values[0], 0.5);
+        assert_eq!(values[32], 1.5);
+        assert_eq!(checksum_f32_values(&values), 47264.0);
+    }
+
+    #[test]
+    fn decodes_synthetic_q6_k_block() {
+        let mut bytes = vec![0u8; 210];
+        bytes[0..128].fill(0x21);
+        bytes[128..192].fill(0);
+        bytes[192..208].fill(1);
+        bytes[208..210].copy_from_slice(&0x3c00u16.to_le_bytes());
+
+        let values = dequantize_q6_k_block(&bytes).expect("decode Q6_K");
+
+        assert_eq!(values.len(), 256);
+        assert_eq!(values[0], -31.0);
+        assert_eq!(values[32], -31.0);
+        assert_eq!(values[64], -30.0);
+        assert_eq!(values[96], -30.0);
+        assert_eq!(checksum_f32_values(&values), -999_232.0);
     }
 
     #[test]

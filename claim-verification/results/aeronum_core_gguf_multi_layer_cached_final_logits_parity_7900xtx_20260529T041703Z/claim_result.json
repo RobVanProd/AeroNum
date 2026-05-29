@@ -1,0 +1,110 @@
+{
+  "schema_version": 1,
+  "claim_id": "aeronum_core_gguf_multi_layer_cached_final_logits_parity_20260529",
+  "status": "verified_current_limited",
+  "verified_on": "2026-05-29",
+  "source_commit": "8e464d08ad24e2c77765c0d22391bd72b1c02eec",
+  "benchmark": "gguf_multi_layer_cached_final_logits_parity_smoke",
+  "command": "cargo run --release -p aeronum-core --example gguf_multi_layer_cached_final_logits_parity_smoke -- --model /home/rob/models/mistralai_Mistral-Small-3.1-24B-Instruct-2503-Q4_K_M.gguf --cached-rows 1,3,22177 --query-row 4 --layer-start 0 --layers 40 --top-k 5",
+  "exit_code": 0,
+  "cargo_test_core_exit_code": 0,
+  "model_path": "/home/rob/models/mistralai_Mistral-Small-3.1-24B-Instruct-2503-Q4_K_M.gguf",
+  "model_sha256": "c5743c1bf39db0ae8a5ade5df0374b8e9e492754a199cfdad7ef393c1590f7c0",
+  "hardware": {
+    "gpu_0": "Radeon RX 7900 XTX / gfx1100 / PCI device 1002:744c",
+    "gpu_1": "AMD Radeon Graphics / gfx1036 / PCI device 1002:13c0"
+  },
+  "cached_input_rows": [
+    1,
+    3,
+    22177
+  ],
+  "query_input_row": 4,
+  "full_input_rows": [
+    1,
+    3,
+    22177,
+    4
+  ],
+  "layer_start": 0,
+  "layer_count": 40,
+  "cache_token_count": 3,
+  "total_token_count": 4,
+  "head_count": 32,
+  "kv_head_count": 8,
+  "head_dimension": 128,
+  "logit_count": 131072,
+  "full_logits_checksum": 8962826250.316875,
+  "cached_logits_checksum": 8962826250.316875,
+  "logits_abs_max_diff": 0.0,
+  "logits_checksum_diff": 0.0,
+  "top_token_matches": true,
+  "full_top_logits": [
+    {
+      "row_index": 22177,
+      "value": 30.702155899895
+    },
+    {
+      "row_index": 37133,
+      "value": 25.080459681418
+    },
+    {
+      "row_index": 45383,
+      "value": 22.986648752664
+    },
+    {
+      "row_index": 46634,
+      "value": 18.484649678113
+    },
+    {
+      "row_index": 29706,
+      "value": 17.988335139899
+    }
+  ],
+  "cached_top_logits": [
+    {
+      "row_index": 22177,
+      "value": 30.702155899895
+    },
+    {
+      "row_index": 37133,
+      "value": 25.080459681418
+    },
+    {
+      "row_index": 45383,
+      "value": 22.986648752664
+    },
+    {
+      "row_index": 46634,
+      "value": 18.484649678113
+    },
+    {
+      "row_index": 29706,
+      "value": 17.988335139899
+    }
+  ],
+  "elapsed_ms": 186468.628247,
+  "wall_time_seconds": 186.500633181,
+  "validation": "cached_final_logits_match_full_context",
+  "limitations": [
+    "CPU cached final-token transformer parity for one fixed row sequence only",
+    "computes cached prior-token K/V per layer and propagates one query row",
+    "not autoregressive generated-token decoding",
+    "not llama.cpp KV-cache parity",
+    "not GPU matmul",
+    "not AeroNum-native GGUF token inference throughput"
+  ],
+  "raw_artifacts": [
+    "claim-verification/results/aeronum_core_gguf_multi_layer_cached_final_logits_parity_7900xtx_20260529T041703Z/gguf_multi_layer_cached_final_logits_parity.stdout.log",
+    "claim-verification/results/aeronum_core_gguf_multi_layer_cached_final_logits_parity_7900xtx_20260529T041703Z/gguf_multi_layer_cached_final_logits_parity.stderr.log",
+    "claim-verification/results/aeronum_core_gguf_multi_layer_cached_final_logits_parity_7900xtx_20260529T041703Z/gguf_multi_layer_cached_final_logits_parity.exit_code.txt",
+    "claim-verification/results/aeronum_core_gguf_multi_layer_cached_final_logits_parity_7900xtx_20260529T041703Z/gguf_multi_layer_cached_final_logits_parity_result.json",
+    "claim-verification/results/aeronum_core_gguf_multi_layer_cached_final_logits_parity_7900xtx_20260529T041703Z/command.txt",
+    "claim-verification/results/aeronum_core_gguf_multi_layer_cached_final_logits_parity_7900xtx_20260529T041703Z/source_metadata.txt",
+    "claim-verification/results/aeronum_core_gguf_multi_layer_cached_final_logits_parity_7900xtx_20260529T041703Z/hardware_software_metadata.txt",
+    "claim-verification/results/aeronum_core_gguf_multi_layer_cached_final_logits_parity_7900xtx_20260529T041703Z/wall_time.json",
+    "claim-verification/results/aeronum_core_gguf_multi_layer_cached_final_logits_parity_7900xtx_20260529T041703Z/cargo_test_core.stdout.log",
+    "claim-verification/results/aeronum_core_gguf_multi_layer_cached_final_logits_parity_7900xtx_20260529T041703Z/cargo_test_core.stderr.log",
+    "claim-verification/results/aeronum_core_gguf_multi_layer_cached_final_logits_parity_7900xtx_20260529T041703Z/cargo_test_core.exit_code.txt"
+  ]
+}

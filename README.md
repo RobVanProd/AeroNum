@@ -336,6 +336,18 @@ Verified current results:
   logits, not GPU matmul, and not AeroNum-native GGUF token inference
   throughput
   ([result JSON](claim-verification/results/aeronum_core_gguf_cached_attention_parity_7900xtx_20260529T040858Z/claim_result.json)).
+- `aeronum-core` now verifies full 40-layer cached final-token CPU logits for
+  one fixed GGUF row sequence. The repo-owned release command cached
+  prior-token K/V projections per layer for rows 1, 3, and 22177, propagated
+  query row 4 through all 40 CPU layers, and compared the resulting final
+  logits to the existing full-context path over rows 1, 3, 22177, and 4. The
+  run reported full and cached logits checksum `8962826250.316875`, max logit
+  diff `0.000000000000`, checksum diff `0.000000000000`, and matching top
+  token row 22177 with value `30.702155899895`. This is cached final-token
+  transformer parity for one fixed row sequence only, not autoregressive
+  generated-token decoding, not llama.cpp KV-cache parity, not GPU matmul, and
+  not AeroNum-native GGUF token inference throughput
+  ([result JSON](claim-verification/results/aeronum_core_gguf_multi_layer_cached_final_logits_parity_7900xtx_20260529T041703Z/claim_result.json)).
 - `aeronum-core` now decodes that two-token generated piece sequence to
   generated text `Hello!`, and `benchmarks/gguf/compare_generated_text_tokenization.py`
   verified that llama.cpp tokenizes `Hello!` with `--no-bos` back to token IDs
@@ -497,7 +509,8 @@ Blocked or omitted claims:
   one-step greedy next-token piece selection for that prompt, plus a two-token
   CPU greedy autoregressive token-piece decode loop for that prompt, plus
   one-layer final-token CPU KV-cache attention parity for rows 1, 3, 22177,
-  and 4, plus
+  and 4, plus full 40-layer cached final-token CPU logits parity for the same
+  fixed row sequence, plus
   generated-text decoding for that output with llama.cpp re-tokenization
   parity, plus deterministic greedy generated-output parity against llama.cpp
   CLI for that output, plus one-token sampled generated-output parity against
@@ -508,9 +521,10 @@ Blocked or omitted claims:
   plus full-vocabulary final-head CPU logits from that single-token layer-0
   hidden state are verified, but exhaustive tokenizer parity, llama.cpp
   internal-trace RoPE parity, llama.cpp sampler-internals parity, llama.cpp
-  detokenization-trace parity, full transformer KV-cache decoding, full GPU
-  GGUF tensor/layer execution, GPU autoregressive decoding, and optimized
-  AeroNum-native token inference throughput are not yet verified. The
+  detokenization-trace parity, autoregressive generated-token KV-cache
+  decoding, llama.cpp KV-cache parity, full GPU GGUF tensor/layer execution,
+  GPU autoregressive decoding, and optimized AeroNum-native token inference
+  throughput are not yet verified. The
   verified
   token-inference result is a llama.cpp reference through an AeroNum repo
   wrapper.

@@ -1,4 +1,4 @@
-use aeronum_core::{GgufMetadataValue, LlamaModel};
+use aeronum_core::{GgufMetadataValue, HipRuntime, LlamaModel};
 use std::time::Instant;
 
 fn parse_arg(name: &str, default: &str) -> String {
@@ -45,6 +45,14 @@ fn json_f32_array(values: &[f32]) -> String {
         .collect::<Vec<_>>()
         .join(",");
     format!("[{items}]")
+}
+
+fn checksum_f32(values: &[f32]) -> f64 {
+    values
+        .iter()
+        .enumerate()
+        .map(|(idx, value)| (idx as f64 + 1.0) * (*value as f64))
+        .sum::<f64>()
 }
 
 fn main() {
@@ -125,11 +133,7 @@ fn main() {
         .load_f32_tensor("output_norm.weight")
         .expect("load output_norm.weight F32 tensor");
     let output_norm_values = output_norm.to_vec();
-    let output_norm_checksum = output_norm_values
-        .iter()
-        .enumerate()
-        .map(|(idx, value)| (idx as f64 + 1.0) * (*value as f64))
-        .sum::<f64>();
+    let output_norm_checksum = checksum_f32(&output_norm_values);
     let output_norm_samples = output_norm_values
         .iter()
         .take(8)
@@ -147,6 +151,61 @@ fn main() {
         output_norm_checksum,
         json_f32_array(&output_norm_samples)
     );
+    let rocm_roundtrip_json = match HipRuntime::new(0) {
+        Ok(runtime) => {
+            let device_name = runtime.device_name().unwrap_or_default();
+            match output_norm.to_hip_buffer(&runtime) {
+                Ok(buffer) => {
+                    let mut roundtrip_values = vec![0.0f32; output_norm_values.len()];
+                    match runtime.copy_to_host(&buffer, &mut roundtrip_values) {
+                        Ok(()) => {
+                            let roundtrip_checksum = checksum_f32(&roundtrip_values);
+                            let max_abs_diff = output_norm_values
+                                .iter()
+                                .zip(roundtrip_values.iter())
+                                .map(|(left, right)| (left - right).abs())
+                                .fold(0.0f32, f32::max);
+                            let roundtrip_samples = roundtrip_values
+                                .iter()
+                                .take(8)
+                                .copied()
+                                .collect::<Vec<_>>();
+                            format!(
+                                "{{\"attempted\":true,\"success\":true,\"device_id\":{},\"device_name\":\"{}\",\"tensor_name\":\"output_norm.weight\",\"elements\":{},\"bytes\":{},\"roundtrip_checksum\":{:.8},\"max_abs_diff\":{:.8},\"f32_samples\":{}}}",
+                                runtime.device_id(),
+                                json_escape(&device_name),
+                                output_norm.len(),
+                                buffer.size_bytes(),
+                                roundtrip_checksum,
+                                max_abs_diff,
+                                json_f32_array(&roundtrip_samples)
+                            )
+                        }
+                        Err(err) => format!(
+                            "{{\"attempted\":true,\"success\":false,\"device_id\":{},\"device_name\":\"{}\",\"tensor_name\":\"output_norm.weight\",\"elements\":{},\"bytes\":{},\"error\":\"{}\"}}",
+                            runtime.device_id(),
+                            json_escape(&device_name),
+                            output_norm.len(),
+                            buffer.size_bytes(),
+                            json_escape(&err.to_string())
+                        ),
+                    }
+                }
+                Err(err) => format!(
+                    "{{\"attempted\":true,\"success\":false,\"device_id\":{},\"device_name\":\"{}\",\"tensor_name\":\"output_norm.weight\",\"elements\":{},\"bytes\":0,\"error\":\"{}\"}}",
+                    runtime.device_id(),
+                    json_escape(&device_name),
+                    output_norm.len(),
+                    json_escape(&err.to_string())
+                ),
+            }
+        }
+        Err(err) => format!(
+            "{{\"attempted\":true,\"success\":false,\"device_id\":0,\"device_name\":\"\",\"tensor_name\":\"output_norm.weight\",\"elements\":{},\"bytes\":0,\"error\":\"{}\"}}",
+            output_norm.len(),
+            json_escape(&err.to_string())
+        ),
+    };
     let architecture = header
         .metadata_value("general.architecture")
         .map(|value| value.summary())
@@ -173,7 +232,7 @@ fn main() {
     let elapsed_ms = start.elapsed().as_secs_f64() * 1000.0;
 
     println!(
-        "{{\"benchmark\":\"aeronum_core_gguf_directory_smoke\",\"model_path\":\"{}\",\"gguf_version\":{},\"tensor_count\":{},\"metadata_kv_count\":{},\"parsed_tensor_infos\":{},\"parsed_metadata_entries\":{},\"alignment\":{},\"data_offset\":{},\"file_size\":{},\"tensors_with_known_nbytes\":{},\"max_tensor_end\":{},\"tensor_layout_within_file\":{},\"tensor_byte_sample\":{},\"loaded_f32_tensor\":{},\"architecture\":\"{}\",\"quantization_version\":\"{}\",\"tokenizer_model\":\"{}\",\"tokenizer_token_count\":{},\"sample_tokenizer_tokens\":{},\"sample_metadata_keys\":{},\"sample_tensor_names\":{},\"sample_tensor_layouts\":[{}],\"device\":\"{}\",\"max_tokens\":{},\"elapsed_ms\":{:.6},\"output_kind\":\"placeholder\",\"output\":\"{}\"}}",
+        "{{\"benchmark\":\"aeronum_core_gguf_directory_smoke\",\"model_path\":\"{}\",\"gguf_version\":{},\"tensor_count\":{},\"metadata_kv_count\":{},\"parsed_tensor_infos\":{},\"parsed_metadata_entries\":{},\"alignment\":{},\"data_offset\":{},\"file_size\":{},\"tensors_with_known_nbytes\":{},\"max_tensor_end\":{},\"tensor_layout_within_file\":{},\"tensor_byte_sample\":{},\"loaded_f32_tensor\":{},\"rocm_tensor_roundtrip\":{},\"architecture\":\"{}\",\"quantization_version\":\"{}\",\"tokenizer_model\":\"{}\",\"tokenizer_token_count\":{},\"sample_tokenizer_tokens\":{},\"sample_metadata_keys\":{},\"sample_tensor_names\":{},\"sample_tensor_layouts\":[{}],\"device\":\"{}\",\"max_tokens\":{},\"elapsed_ms\":{:.6},\"output_kind\":\"placeholder\",\"output\":\"{}\"}}",
         json_escape(&model_path),
         header.version,
         header.tensor_count,
@@ -188,6 +247,7 @@ fn main() {
         tensor_layout_within_file,
         tensor_byte_sample_json,
         output_norm_tensor_json,
+        rocm_roundtrip_json,
         json_escape(&architecture),
         json_escape(&quantization_version),
         json_escape(&tokenizer_model),

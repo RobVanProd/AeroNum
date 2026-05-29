@@ -1,0 +1,178 @@
+{
+  "alignment": 32,
+  "architecture": "llama",
+  "benchmark": "aeronum_core_gguf_directory_smoke",
+  "data_offset": 7884256,
+  "device": "rocm",
+  "elapsed_ms": 304.991352,
+  "file_size": 14333910496,
+  "gguf_version": 3,
+  "loaded_f32_tensor": {
+    "checksum": 57094807.65625,
+    "f32_samples": [
+      4.21875,
+      4.46875,
+      4.34375,
+      4.3125,
+      4.21875,
+      4.28125,
+      4.3125,
+      4.34375
+    ],
+    "len": 5120,
+    "name": "output_norm.weight",
+    "shape": [
+      5120
+    ]
+  },
+  "max_tensor_end": 14333910496,
+  "max_tokens": 16,
+  "metadata_kv_count": 45,
+  "model_path": "/home/rob/models/mistralai_Mistral-Small-3.1-24B-Instruct-2503-Q4_K_M.gguf",
+  "output": "(ROCm output placeholder)",
+  "output_kind": "placeholder",
+  "parsed_metadata_entries": 45,
+  "parsed_tensor_infos": 363,
+  "quantization_version": "2",
+  "rocm_tensor_roundtrip": {
+    "attempted": true,
+    "bytes": 20480,
+    "device_id": 0,
+    "device_name": "Radeon RX 7900 XTX",
+    "elements": 5120,
+    "f32_samples": [
+      4.21875,
+      4.46875,
+      4.34375,
+      4.3125,
+      4.21875,
+      4.28125,
+      4.3125,
+      4.34375
+    ],
+    "max_abs_diff": 0.0,
+    "roundtrip_checksum": 57094807.65625,
+    "success": true,
+    "tensor_name": "output_norm.weight"
+  },
+  "sample_metadata_keys": [
+    "general.architecture",
+    "general.type",
+    "general.name",
+    "general.version",
+    "general.finetune",
+    "general.basename",
+    "general.size_label",
+    "general.license",
+    "general.base_model.count",
+    "general.base_model.0.name",
+    "general.base_model.0.version",
+    "general.base_model.0.organization"
+  ],
+  "sample_tensor_layouts": [
+    {
+      "absolute_offset": 7884256,
+      "dimensions": [
+        5120,
+        131072
+      ],
+      "name": "output.weight",
+      "nbytes": 550502400,
+      "relative_offset": 0,
+      "type": 14
+    },
+    {
+      "absolute_offset": 558386656,
+      "dimensions": [
+        5120
+      ],
+      "name": "output_norm.weight",
+      "nbytes": 20480,
+      "relative_offset": 550502400,
+      "type": 0
+    },
+    {
+      "absolute_offset": 558407136,
+      "dimensions": [
+        5120,
+        131072
+      ],
+      "name": "token_embd.weight",
+      "nbytes": 377487360,
+      "relative_offset": 550522880,
+      "type": 12
+    },
+    {
+      "absolute_offset": 935894496,
+      "dimensions": [
+        5120,
+        1024
+      ],
+      "name": "blk.0.attn_k.weight",
+      "nbytes": 2949120,
+      "relative_offset": 928010240,
+      "type": 12
+    }
+  ],
+  "sample_tensor_names": [
+    "output.weight",
+    "output_norm.weight",
+    "token_embd.weight",
+    "blk.0.attn_k.weight",
+    "blk.0.attn_norm.weight",
+    "blk.0.attn_output.weight",
+    "blk.0.attn_q.weight",
+    "blk.0.attn_v.weight"
+  ],
+  "sample_tokenizer_tokens": [
+    "<unk>",
+    "<s>",
+    "</s>",
+    "[INST]",
+    "[/INST]",
+    "[AVAILABLE_TOOLS]",
+    "[/AVAILABLE_TOOLS]",
+    "[TOOL_RESULTS]"
+  ],
+  "tensor_byte_sample": {
+    "absolute_offset": 558386656,
+    "byte_checksum": 105461,
+    "bytes_read": 64,
+    "f32_samples": [
+      4.21875,
+      4.46875,
+      4.34375,
+      4.3125,
+      4.21875,
+      4.28125,
+      4.3125,
+      4.34375
+    ],
+    "first_bytes_hex": [
+      "00",
+      "00",
+      "87",
+      "40",
+      "00",
+      "00",
+      "8f",
+      "40",
+      "00",
+      "00",
+      "8b",
+      "40",
+      "00",
+      "00",
+      "8a",
+      "40"
+    ],
+    "name": "output_norm.weight",
+    "tensor_nbytes": 20480,
+    "type": 0
+  },
+  "tensor_count": 363,
+  "tensor_layout_within_file": true,
+  "tensors_with_known_nbytes": 363,
+  "tokenizer_model": "gpt2",
+  "tokenizer_token_count": 131072
+}

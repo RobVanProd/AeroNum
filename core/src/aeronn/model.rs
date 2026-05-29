@@ -104,6 +104,24 @@ pub struct GgufQuantizedBlockSample {
     pub decoded_checksum: f64,
 }
 
+#[derive(Clone, Debug, PartialEq)]
+pub struct GgufQuantizedRowSample {
+    pub name: String,
+    pub tensor_type: u32,
+    pub tensor_type_name: String,
+    pub row_index: u64,
+    pub row_count: u64,
+    pub column_count: u64,
+    pub absolute_offset: u64,
+    pub row_nbytes: u64,
+    pub block_count: u64,
+    pub block_size: u64,
+    pub type_size: u64,
+    pub row_byte_checksum: u64,
+    pub decoded_values: Vec<f32>,
+    pub decoded_checksum: f64,
+}
+
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct GgufTokenizerIndex {
     pub token_count: usize,
@@ -613,6 +631,85 @@ impl GgufHeader {
             block_size,
             type_size,
             block_byte_checksum,
+            decoded_values,
+            decoded_checksum,
+        })
+    }
+
+    pub fn read_quantized_row_sample(
+        &self,
+        tensor_name: &str,
+        row_index: u64,
+    ) -> Result<GgufQuantizedRowSample, GgufError> {
+        let tensor = self
+            .tensors
+            .iter()
+            .find(|tensor| tensor.name == tensor_name)
+            .ok_or_else(|| GgufError::TensorNotFound(tensor_name.to_string()))?;
+        let (block_size, type_size) = ggml_type_layout(tensor.tensor_type).ok_or_else(|| {
+            GgufError::UnsupportedTensorType {
+                name: tensor_name.to_string(),
+                tensor_type: tensor.tensor_type,
+            }
+        })?;
+        if !matches!(tensor.tensor_type, 12 | 14) {
+            return Err(GgufError::UnsupportedTensorType {
+                name: tensor_name.to_string(),
+                tensor_type: tensor.tensor_type,
+            });
+        }
+        let column_count = tensor.dimensions.first().copied().unwrap_or(0);
+        let row_count = tensor.dimensions.get(1).copied().unwrap_or(1);
+        if column_count == 0 || row_index >= row_count {
+            return Err(GgufError::InvalidTensorRange(tensor_name.to_string()));
+        }
+        let block_count = column_count.div_ceil(block_size);
+        let row_nbytes = block_count
+            .checked_mul(type_size)
+            .ok_or_else(|| GgufError::InvalidTensorRange(tensor_name.to_string()))?;
+        let row_offset = row_index
+            .checked_mul(row_nbytes)
+            .and_then(|offset| tensor.absolute_offset.checked_add(offset))
+            .ok_or_else(|| GgufError::InvalidTensorRange(tensor_name.to_string()))?;
+        let tensor_nbytes = tensor
+            .nbytes
+            .ok_or_else(|| GgufError::UnknownTensorByteSize(tensor_name.to_string()))?;
+        let row_end = row_offset
+            .checked_add(row_nbytes)
+            .ok_or_else(|| GgufError::InvalidTensorRange(tensor_name.to_string()))?;
+        let tensor_end = tensor
+            .absolute_offset
+            .checked_add(tensor_nbytes)
+            .ok_or_else(|| GgufError::InvalidTensorRange(tensor_name.to_string()))?;
+        if row_end > tensor_end || row_end > self.file_size {
+            return Err(GgufError::InvalidTensorRange(tensor_name.to_string()));
+        }
+
+        let mut file = File::open(&self.path)?;
+        file.seek(SeekFrom::Start(row_offset))?;
+        let mut bytes = vec![0u8; row_nbytes as usize];
+        file.read_exact(&mut bytes)?;
+        let row_byte_checksum = bytes
+            .iter()
+            .enumerate()
+            .map(|(idx, byte)| (idx as u64 + 1) * (*byte as u64))
+            .sum();
+        let mut decoded_values = decode_quantized_blocks(tensor.tensor_type, &bytes)?;
+        decoded_values.truncate(column_count as usize);
+        let decoded_checksum = checksum_f32_values(&decoded_values);
+        Ok(GgufQuantizedRowSample {
+            name: tensor.name.clone(),
+            tensor_type: tensor.tensor_type,
+            tensor_type_name: ggml_type_name(tensor.tensor_type).to_string(),
+            row_index,
+            row_count,
+            column_count,
+            absolute_offset: row_offset,
+            row_nbytes,
+            block_count,
+            block_size,
+            type_size,
+            row_byte_checksum,
             decoded_values,
             decoded_checksum,
         })
@@ -1138,6 +1235,33 @@ fn dequantize_q4_k_block(bytes: &[u8]) -> Result<Vec<f32>, GgufError> {
     Ok(values)
 }
 
+fn decode_quantized_blocks(tensor_type: u32, bytes: &[u8]) -> Result<Vec<f32>, GgufError> {
+    let (_, type_size) =
+        ggml_type_layout(tensor_type).ok_or_else(|| GgufError::UnsupportedTensorType {
+            name: "quantized block sequence".to_string(),
+            tensor_type,
+        })?;
+    if bytes.len() % type_size as usize != 0 {
+        return Err(GgufError::InvalidTensorRange(
+            "quantized block sequence".to_string(),
+        ));
+    }
+    let mut values = Vec::new();
+    for block in bytes.chunks_exact(type_size as usize) {
+        match tensor_type {
+            12 => values.extend(dequantize_q4_k_block(block)?),
+            14 => values.extend(dequantize_q6_k_block(block)?),
+            _ => {
+                return Err(GgufError::UnsupportedTensorType {
+                    name: "quantized block sequence".to_string(),
+                    tensor_type,
+                });
+            }
+        }
+    }
+    Ok(values)
+}
+
 fn q4_k_scale_min(index: usize, scales: &[u8]) -> (u8, u8) {
     if index < 4 {
         (scales[index] & 63, scales[index + 4] & 63)
@@ -1615,6 +1739,23 @@ mod tests {
         assert_eq!(values[64], -30.0);
         assert_eq!(values[96], -30.0);
         assert_eq!(checksum_f32_values(&values), -999_232.0);
+    }
+
+    #[test]
+    fn decodes_multiple_quantized_blocks_for_row_access() {
+        let mut block = vec![0u8; 144];
+        block[0..2].copy_from_slice(&0x3c00u16.to_le_bytes());
+        block[2..4].copy_from_slice(&0x3800u16.to_le_bytes());
+        block[4..16].fill(1);
+        block[16..144].fill(0x21);
+        let mut bytes = block.clone();
+        bytes.extend(block);
+
+        let values = decode_quantized_blocks(12, &bytes).expect("decode two Q4_K blocks");
+
+        assert_eq!(values.len(), 512);
+        assert_eq!(values[0], 0.5);
+        assert_eq!(values[256], 0.5);
     }
 
     #[test]

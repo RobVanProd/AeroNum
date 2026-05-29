@@ -270,6 +270,15 @@ Verified current results:
   transformer execution, generated-token logits, GPU matmul, or AeroNum-native
   GGUF token inference throughput
   ([result JSON](claim-verification/results/aeronum_core_gguf_multi_layer_final_logits_7900xtx_20260529T050000Z/claim_result.json)).
+- `aeronum-core` now runs the same CPU final-token transformer subpath through
+  all 40 GGUF layers for the fixed three-token row sequence. The repo-owned
+  release command executed layers 0 through 39, recorded 40 layer summaries,
+  applied `output_norm.weight` to the final token, stream-decoded all 131,072
+  rows of `output.weight`, and reported top logit rows 1,362, 2,036, 12,787,
+  1,623, and 1,321. This verifies full 40-layer CPU arithmetic for that fixed
+  final-token subpath only; it is not external RoPE parity, generated-token
+  logits, GPU matmul, or AeroNum-native GGUF token inference throughput
+  ([result JSON](claim-verification/results/aeronum_core_gguf_full_40_layer_final_logits_7900xtx_20260529T060000Z/claim_result.json)).
 - `aeronum-core` now verifies a single-token first-layer attention-plus-FFN CPU
   subpath. The repo-owned release command ran the single-token attention-output
   subpath, added the residual, applied `blk.0.ffn_norm.weight`, computed all
@@ -354,13 +363,15 @@ Blocked or omitted claims:
   first-layer multi-token attention CPU subpath with Q/K/V projections, internal
   RoPE arithmetic, 192 causal attention scores, and final-token attention-output
   projection, plus a final-token first-layer FFN and final-head logits CPU
-  subpath, a bounded two-layer final-token transformer CPU subpath, and a
+  subpath, a bounded two-layer final-token transformer CPU subpath, a full
+  40-layer final-token transformer CPU subpath for the fixed three-token row
+  sequence, and a
   single-token first-layer attention-plus-FFN CPU subpath through
   `blk.0.ffn_gate.weight`, `blk.0.ffn_up.weight`, and `blk.0.ffn_down.weight`,
   plus full-vocabulary final-head CPU logits from that single-token layer-0
-  hidden state are verified, but exhaustive tokenizer parity, full 40-layer
-  q4_K/q6_K transformer execution, external RoPE parity, generated-token logits, and
-  AeroNum-native token inference throughput are not yet verified. The verified
+  hidden state are verified, but exhaustive tokenizer parity, external RoPE
+  parity, generated-token logits, and AeroNum-native token inference throughput
+  are not yet verified. The verified
   token-inference result is a llama.cpp reference through an AeroNum repo
   wrapper.
 

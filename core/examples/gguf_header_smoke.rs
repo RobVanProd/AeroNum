@@ -68,6 +68,15 @@ fn json_u32_array(values: &[u32]) -> String {
     format!("[{items}]")
 }
 
+fn json_i32_array(values: &[i32]) -> String {
+    let items = values
+        .iter()
+        .map(|value| value.to_string())
+        .collect::<Vec<_>>()
+        .join(",");
+    format!("[{items}]")
+}
+
 fn checksum_f32(values: &[f32]) -> f64 {
     values
         .iter()
@@ -272,11 +281,25 @@ fn main() {
     let exact_piece_decoded = tokenizer_index
         .decode_ids(&exact_piece_ids)
         .expect("decode exact tokenizer pieces");
+    let token_type_values = header
+        .i32_array_values("tokenizer.ggml.token_type")
+        .expect("tokenizer token_type array");
+    let token_type_checks = exact_piece_ids
+        .iter()
+        .map(|id| {
+            usize::try_from(*id)
+                .ok()
+                .and_then(|idx| token_type_values.get(idx))
+                .copied()
+                .unwrap_or(i32::MIN)
+        })
+        .collect::<Vec<_>>();
     let tokenizer_vocab_json = format!(
-        "{{\"token_count\":{},\"token_index_count\":{},\"merge_count\":{},\"bos_token_id\":{},\"eos_token_id\":{},\"unknown_token_id\":{},\"exact_token_id_checks\":{},\"exact_piece_encode_decode\":{{\"pieces\":{},\"ids\":{},\"decoded\":{}}}}}",
+        "{{\"token_count\":{},\"token_index_count\":{},\"merge_count\":{},\"token_type_count\":{},\"bos_token_id\":{},\"eos_token_id\":{},\"unknown_token_id\":{},\"exact_token_id_checks\":{},\"exact_piece_encode_decode\":{{\"pieces\":{},\"ids\":{},\"decoded\":{},\"token_types\":{}}}}}",
         tokenizer_token_count,
         tokenizer_index.token_count,
         tokenizer_merge_count,
+        token_type_values.len(),
         header.u32_value("tokenizer.ggml.bos_token_id").unwrap_or(0),
         header.u32_value("tokenizer.ggml.eos_token_id").unwrap_or(0),
         header.u32_value("tokenizer.ggml.unknown_token_id").unwrap_or(0),
@@ -288,7 +311,8 @@ fn main() {
                 .collect::<Vec<_>>()
         ),
         json_u32_array(&exact_piece_ids),
-        json_string_array(&exact_piece_decoded)
+        json_string_array(&exact_piece_decoded),
+        json_i32_array(&token_type_checks)
     );
     model.to(&device);
     let model_rocm_offload_json = format!(

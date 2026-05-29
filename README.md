@@ -137,10 +137,12 @@ Verified current results:
   tokens, 269,443 merges, BOS token id 1, EOS token id 2, unknown token id 0,
   exact-token ids for `<unk>`, `<s>`, `</s>`, `[INST]`, and `[/INST]`, and
   exact-piece encode/decode for `["<s>","[INST]","[/INST]","</s>"]` as
-  `[1,3,4,2]`. This is a metadata/directory/layout/exact-token-piece/F32
-  model-weight offload smoke result with placeholder generation, not full BPE
-  tokenization and not real GGUF token inference throughput
-  ([result JSON](claim-verification/results/aeronum_core_gguf_exact_token_pieces_7900xtx_20260529T001408Z/claim_result.json)).
+  `[1,3,4,2]`. It also parsed 131,072 `tokenizer.ggml.token_type` entries
+  and reported token types `[3,3,3,3]` for those exact pieces. This is a
+  metadata/directory/layout/tokenizer-array/F32 model-weight offload smoke
+  result with placeholder generation, not full BPE tokenization and not real
+  GGUF token inference throughput
+  ([result JSON](claim-verification/results/aeronum_core_gguf_token_types_7900xtx_20260529T001822Z/claim_result.json)).
 - `benchmarks/gguf/run_llama_cpp_cli.py` ran a real local llama.cpp CLI ROCm
   GGUF inference reference on the same Mistral GGUF file. The llama.cpp build
   reported version 7074 (`22e1ce2f8`) with HIP 6.2.41133-dd7f95766, offloaded
@@ -191,12 +193,12 @@ Blocked or omitted claims:
 - AeroNum-native GGUF token-inference throughput claims are omitted. The
   verified current AeroNum core result parses local GGUF metadata, tokenizer
   string-array samples, the full tokenizer token array, tokenizer merges,
-  exact-token-piece encode/decode for known special tokens, tensor directory
-  records, tensor byte ranges, loads a complete small F32 tensor into
-  `LlamaModel`, offloads that model weight through ROCm device 0, then reaches
-  placeholder generation. Full BPE tokenization is not yet verified. The
-  verified token-inference result is a llama.cpp reference through an AeroNum
-  repo wrapper.
+  tokenizer token-type array, exact-token-piece encode/decode for known
+  special tokens, tensor directory records, tensor byte ranges, loads a
+  complete small F32 tensor into `LlamaModel`, offloads that model weight
+  through ROCm device 0, then reaches placeholder generation. Full BPE
+  tokenization is not yet verified. The verified token-inference result is a
+  llama.cpp reference through an AeroNum repo wrapper.
 
 Historical benchmark CSVs remain in the repo, but README claims above only use
 fresh local reruns and captured artifacts.

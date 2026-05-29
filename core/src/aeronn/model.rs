@@ -43,6 +43,8 @@ pub enum GgufMetadataValue {
         len: u64,
         string_samples: Vec<String>,
         string_values: Vec<String>,
+        i32_samples: Vec<i32>,
+        i32_values: Vec<i32>,
     },
     U64(u64),
     I64(i64),
@@ -475,6 +477,17 @@ impl GgufHeader {
         }
     }
 
+    pub fn i32_array_values(&self, key: &str) -> Option<&[i32]> {
+        match self.metadata_value(key) {
+            Some(GgufMetadataValue::Array {
+                element_type: GgufValueType::I32,
+                i32_values,
+                ..
+            }) => Some(i32_values),
+            _ => None,
+        }
+    }
+
     pub fn u32_value(&self, key: &str) -> Option<u32> {
         match self.metadata_value(key) {
             Some(GgufMetadataValue::U8(value)) => Some(*value as u32),
@@ -531,6 +544,8 @@ impl GgufMetadataValue {
                 let len = read_u64_le(reader)?;
                 let mut string_samples = Vec::new();
                 let mut string_values = Vec::new();
+                let mut i32_samples = Vec::new();
+                let mut i32_values = Vec::new();
                 for _ in 0..len {
                     if element_type == GgufValueType::String {
                         let value = read_gguf_string(reader, "array string value")?;
@@ -538,6 +553,12 @@ impl GgufMetadataValue {
                             string_samples.push(value.clone());
                         }
                         string_values.push(value);
+                    } else if element_type == GgufValueType::I32 {
+                        let value = read_i32_le(reader)?;
+                        if i32_samples.len() < 8 {
+                            i32_samples.push(value);
+                        }
+                        i32_values.push(value);
                     } else {
                         skip_value(reader, element_type)?;
                     }
@@ -547,6 +568,8 @@ impl GgufMetadataValue {
                     len,
                     string_samples,
                     string_values,
+                    i32_samples,
+                    i32_values,
                 }
             }
             GgufValueType::U64 => Self::U64(read_u64_le(reader)?),
@@ -570,15 +593,21 @@ impl GgufMetadataValue {
                 element_type,
                 len,
                 string_samples,
+                i32_samples,
                 ..
             } => {
-                if string_samples.is_empty() {
-                    format!("array<{element_type:?}>[{len}]")
-                } else {
+                if !string_samples.is_empty() {
                     format!(
                         "array<{element_type:?}>[{len}] sample_count={}",
                         string_samples.len()
                     )
+                } else if !i32_samples.is_empty() {
+                    format!(
+                        "array<{element_type:?}>[{len}] sample_count={}",
+                        i32_samples.len()
+                    )
+                } else {
+                    format!("array<{element_type:?}>[{len}]")
                 }
             }
             Self::U64(value) => value.to_string(),
@@ -797,7 +826,7 @@ mod tests {
         file.write_all(&3u32.to_le_bytes()).expect("write version");
         file.write_all(&1u64.to_le_bytes())
             .expect("write tensor count");
-        file.write_all(&3u64.to_le_bytes())
+        file.write_all(&4u64.to_le_bytes())
             .expect("write metadata count");
 
         write_gguf_string(&mut file, "general.architecture");
@@ -820,6 +849,18 @@ mod tests {
         write_gguf_string(&mut file, "<s>");
         write_gguf_string(&mut file, "</s>");
 
+        write_gguf_string(&mut file, "tokenizer.ggml.token_type");
+        file.write_all(&9u32.to_le_bytes())
+            .expect("write array type");
+        file.write_all(&5u32.to_le_bytes())
+            .expect("write array i32 element type");
+        file.write_all(&2u64.to_le_bytes())
+            .expect("write array len");
+        file.write_all(&3i32.to_le_bytes())
+            .expect("write token type 0");
+        file.write_all(&4i32.to_le_bytes())
+            .expect("write token type 1");
+
         write_gguf_string(&mut file, "token_embd.weight");
         file.write_all(&2u32.to_le_bytes())
             .expect("write tensor dims");
@@ -836,8 +877,8 @@ mod tests {
         let header = GgufHeader::read(path.to_str().expect("utf8 temp path")).expect("read header");
         assert_eq!(header.version, 3);
         assert_eq!(header.tensor_count, 1);
-        assert_eq!(header.metadata_kv_count, 3);
-        assert_eq!(header.metadata.len(), 3);
+        assert_eq!(header.metadata_kv_count, 4);
+        assert_eq!(header.metadata.len(), 4);
         assert_eq!(header.tensors.len(), 1);
         assert_eq!(
             header.metadata_value("general.architecture"),
@@ -853,8 +894,14 @@ mod tests {
                 element_type: GgufValueType::String,
                 len: 2,
                 string_samples: vec!["<s>".to_string(), "</s>".to_string()],
-                string_values: vec!["<s>".to_string(), "</s>".to_string()]
+                string_values: vec!["<s>".to_string(), "</s>".to_string()],
+                i32_samples: Vec::new(),
+                i32_values: Vec::new()
             })
+        );
+        assert_eq!(
+            header.i32_array_values("tokenizer.ggml.token_type"),
+            Some(&[3, 4][..])
         );
         let tokenizer_index = header.tokenizer_index().expect("tokenizer index");
         assert_eq!(tokenizer_index.token_count, 2);

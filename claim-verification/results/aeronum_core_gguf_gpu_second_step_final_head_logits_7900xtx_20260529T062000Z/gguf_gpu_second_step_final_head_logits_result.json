@@ -1,0 +1,116 @@
+{
+  "benchmark": "gguf_gpu_final_head_logits_smoke",
+  "elapsed_ms": 125918.347086,
+  "file_size": 14333910496,
+  "generated_text": "Hello!",
+  "generated_token_ids": [
+    22177,
+    1033
+  ],
+  "generated_token_pieces": [
+    "Hello",
+    "!"
+  ],
+  "gguf_version": 3,
+  "gpu_logits": {
+    "cpu_logits_checksum": -12572921663.746782,
+    "cpu_top_logits": [
+      {
+        "piece": "!",
+        "token_id": 1033,
+        "value": 30.194520660236
+      },
+      {
+        "piece": "!\u010a\u010a",
+        "token_id": 5338,
+        "value": 16.133496891497
+      },
+      {
+        "piece": ",",
+        "token_id": 1044,
+        "value": 15.718870704124
+      },
+      {
+        "piece": "\u0120there",
+        "token_id": 2156,
+        "value": 15.36322797206
+      },
+      {
+        "piece": "!,",
+        "token_id": 45949,
+        "value": 15.316588928011
+      }
+    ],
+    "decoded_matrix_checksum": -2647913818076.204,
+    "device_id": 0,
+    "device_name": "Radeon RX 7900 XTX",
+    "dimension": 5120,
+    "gpu_logits_checksum": -12572921586.482885,
+    "gpu_top_logits": [
+      {
+        "piece": "!",
+        "token_id": 1033,
+        "value": 30.194486618042
+      },
+      {
+        "piece": "!\u010a\u010a",
+        "token_id": 5338,
+        "value": 16.133501052856
+      },
+      {
+        "piece": ",",
+        "token_id": 1044,
+        "value": 15.718878746033
+      },
+      {
+        "piece": "\u0120there",
+        "token_id": 2156,
+        "value": 15.363222122192
+      },
+      {
+        "piece": "!,",
+        "token_id": 45949,
+        "value": 15.316572189331
+      }
+    ],
+    "logits_abs_max_diff": 4.0915356e-05,
+    "logits_checksum_diff": 77.263896942139,
+    "output_row_count": 131072,
+    "output_row_start": 0,
+    "output_tensor_name": "output.weight",
+    "top_token_matches": true
+  },
+  "limitations": [
+    "uses retained CPU transformer state as the final-head input",
+    "retained runtime mode does not run full-context comparison inside the retained decode loop",
+    "decodes GGUF quantized output.weight rows on CPU before GPU execution",
+    "runs hipBLAS SGEMM for a configured output-vocabulary row range only",
+    "not full q4_K/q6_K tensor execution on GPU",
+    "not transformer layer execution on GPU",
+    "not GPU autoregressive decoding",
+    "not optimized AeroNum-native GGUF token inference throughput"
+  ],
+  "metadata_count": 45,
+  "model_path": "/home/rob/models/mistralai_Mistral-Small-3.1-24B-Instruct-2503-Q4_K_M.gguf",
+  "prompt": "<s>[INST]Hello[/INST]",
+  "prompt_token_ids": [
+    1,
+    3,
+    22177,
+    4
+  ],
+  "prompt_token_pieces": [
+    "<s>",
+    "[INST]",
+    "Hello",
+    "[/INST]"
+  ],
+  "retained_full_context_verification": false,
+  "retained_runtime": true,
+  "retained_step_index": 1,
+  "retained_step_logits_checksum_diff": 0.0,
+  "retained_step_max_logits_abs_diff": 0.0,
+  "retained_step_top_token_matches": true,
+  "tensor_count": 363,
+  "validation": "gpu_final_head_logits_match_cpu"
+}

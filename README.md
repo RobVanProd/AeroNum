@@ -214,6 +214,20 @@ Verified current results:
   GPU autoregressive decoding, and not optimized AeroNum-native GGUF token
   inference throughput
   ([result JSON](claim-verification/results/aeronum_core_gguf_gpu_full_final_head_logits_7900xtx_20260529T052908Z/claim_result.json)).
+- `aeronum-core` also verifies the full-output-vocabulary GPU final-head logits
+  subpath for the second retained-KV decode step of the same fixed prompt. The
+  repo-owned release command used retained CPU runtime state with
+  `full_context_verification: false`, generated token IDs 22177 and 1033
+  (`Hello!`), CPU-decoded all 131,072 Q6_K `output.weight` rows, copied the
+  decoded 131,072 by 5,120 matrix and input vector to ROCm device 0
+  (`Radeon RX 7900 XTX`), and ran hipBLAS SGEMM for retained step index 1. The
+  CPU and GPU top token were both ID 1033 with piece `!`; max logit diff was
+  `0.000040915356`, and the top-5 token IDs matched. This is a final-head
+  logits GPU subpath only; GGUF quantized `output.weight` decode remains
+  CPU-side, transformer layers run on CPU, and this is not full q4_K/q6_K GPU
+  tensor execution, not GPU autoregressive decoding, and not optimized
+  AeroNum-native GGUF token inference throughput
+  ([result JSON](claim-verification/results/aeronum_core_gguf_gpu_second_step_final_head_logits_7900xtx_20260529T062000Z/claim_result.json)).
 - `aeronum-core` now computes CPU prefix logits over decoded quantized rows.
   The repo-owned command
   `cargo run -p aeronum-core --example gguf_quantized_block_smoke -- --model /home/rob/models/mistralai_Mistral-Small-3.1-24B-Instruct-2503-Q4_K_M.gguf --q4-row 22177 --q6-row 100 --logit-start 0 --logit-rows 256 --top-k 5`
@@ -583,8 +597,8 @@ Blocked or omitted claims:
   and offloads those model weights through ROCm device 0. First-block decode,
   selected-row decode, a selected-row CPU dot
   product, a limited decoded-row hipBLAS GPU dot product, 256-row prefix
-  logits, full-output-vocabulary GPU final-head logits for one retained-KV
-  decode step with CPU-side quantized weight decode, full output-vocabulary CPU arithmetic, final
+  logits, full-output-vocabulary GPU final-head logits for the first and
+  second retained-KV decode steps with CPU-side quantized weight decode, full output-vocabulary CPU arithmetic, final
   RMS/output-norm full output-vocabulary CPU arithmetic for one selected Q4_K
   embedding row against Q6_K `output.weight`, first-layer V-projection CPU
   arithmetic against Q6_K `blk.0.attn_v.weight`, a single-token first-layer

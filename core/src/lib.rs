@@ -6,13 +6,13 @@ pub mod aeronn;
 pub mod gpu;
 
 pub use aeronn::{
-    GgufAttentionScoreSample, GgufError, GgufHeader, GgufLayerExecutionSummary, GgufMetadataValue,
-    GgufMultiLayerFinalLogitsSample, GgufMultiTokenAttentionSample,
-    GgufMultiTokenLayerLogitsSample, GgufProjectionValueSample, GgufQuantizedBlockSample,
-    GgufQuantizedLogitValue, GgufQuantizedNormalizedLogitsSample, GgufQuantizedPrefixLogitsSample,
-    GgufQuantizedRowDotSample, GgufQuantizedRowSample, GgufSingleTokenAttentionOutputSample,
-    GgufSingleTokenFfnOutputSample, GgufSingleTokenLayerLogitsSample, GgufTensorByteSample,
-    GgufValueType, LlamaModel,
+    GgufAttentionScoreSample, GgufCachedAttentionParitySample, GgufError, GgufHeader,
+    GgufLayerExecutionSummary, GgufMetadataValue, GgufMultiLayerFinalLogitsSample,
+    GgufMultiTokenAttentionSample, GgufMultiTokenLayerLogitsSample, GgufProjectionValueSample,
+    GgufQuantizedBlockSample, GgufQuantizedLogitValue, GgufQuantizedNormalizedLogitsSample,
+    GgufQuantizedPrefixLogitsSample, GgufQuantizedRowDotSample, GgufQuantizedRowSample,
+    GgufSingleTokenAttentionOutputSample, GgufSingleTokenFfnOutputSample,
+    GgufSingleTokenLayerLogitsSample, GgufTensorByteSample, GgufValueType, LlamaModel,
 };
 pub use gpu::{Backend, Device, GpuDevice, GpuError, HipBlas, HipBuffer, HipRuntime};
 #[derive(Clone, Debug, PartialEq)]

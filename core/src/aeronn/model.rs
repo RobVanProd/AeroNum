@@ -272,6 +272,28 @@ pub struct GgufMultiTokenAttentionSample {
 }
 
 #[derive(Clone, Debug, PartialEq)]
+pub struct GgufCachedAttentionParitySample {
+    pub full_attention: GgufMultiTokenAttentionSample,
+    pub cached_input_rows: Vec<u64>,
+    pub query_input_row: u64,
+    pub cache_token_count: usize,
+    pub total_token_count: usize,
+    pub cached_key_checksum: f64,
+    pub cached_value_checksum: f64,
+    pub query_projection_checksum: f64,
+    pub query_key_checksum: f64,
+    pub query_value_checksum: f64,
+    pub rope_query_checksum: f64,
+    pub rope_key_cache_checksum: f64,
+    pub final_attention_score_count: usize,
+    pub final_attention_score_checksum: f64,
+    pub cached_last_attention_input_checksum: f64,
+    pub cached_attention_output_checksum: f64,
+    pub attention_output_abs_max_diff: f64,
+    pub attention_output_checksum_diff: f64,
+}
+
+#[derive(Clone, Debug, PartialEq)]
 pub struct GgufMultiTokenLayerLogitsSample {
     pub attention: GgufMultiTokenAttentionSample,
     pub last_input_row: u64,
@@ -1548,6 +1570,212 @@ impl GgufHeader {
             attention_output_checksum: checksum_logits(&attention_output),
             attention_output,
             top_attention_output,
+        })
+    }
+
+    pub fn read_cached_attention_parity_sample(
+        &self,
+        input_tensor_name: &str,
+        cached_input_rows: &[u64],
+        query_input_row: u64,
+        norm_tensor_name: &str,
+        query_tensor_name: &str,
+        key_tensor_name: &str,
+        value_tensor_name: &str,
+        output_tensor_name: &str,
+        top_k: usize,
+    ) -> Result<GgufCachedAttentionParitySample, GgufError> {
+        let mut full_rows = cached_input_rows.to_vec();
+        full_rows.push(query_input_row);
+        let full_attention = self.read_multi_token_attention_sample(
+            input_tensor_name,
+            &full_rows,
+            norm_tensor_name,
+            query_tensor_name,
+            key_tensor_name,
+            value_tensor_name,
+            output_tensor_name,
+            top_k,
+        )?;
+
+        let head_count = full_attention.head_count;
+        let kv_head_count = full_attention.kv_head_count;
+        let head_dimension = full_attention.head_dimension;
+        let value_repeat_factor = full_attention.value_repeat_factor;
+        let query_row_count = self.tensor_row_count(query_tensor_name)? as usize;
+        let key_row_count = self.tensor_row_count(key_tensor_name)? as usize;
+        let value_row_count = self.tensor_row_count(value_tensor_name)? as usize;
+        let norm_weight = self.load_f32_tensor(norm_tensor_name)?.to_vec();
+        let rope_freq_base = full_attention.rope_freq_base;
+
+        let mut cached_keys = Vec::with_capacity(cached_input_rows.len());
+        let mut cached_values = Vec::with_capacity(cached_input_rows.len());
+        for input_row_index in cached_input_rows {
+            let input = self.read_quantized_row_sample(input_tensor_name, *input_row_index)?;
+            let (normalized_input, _, _) =
+                rms_normalize_values(&input.decoded_values, &norm_weight, self)?;
+            let mut key = self
+                .read_quantized_logits_for_values(
+                    &normalized_input,
+                    key_tensor_name,
+                    0,
+                    key_row_count as u64,
+                )?
+                .into_iter()
+                .map(|logit| logit.value as f32)
+                .collect::<Vec<_>>();
+            apply_rope_to_projection(
+                &mut key,
+                kv_head_count,
+                head_dimension,
+                cached_keys.len(),
+                rope_freq_base,
+            )?;
+            let value = self
+                .read_quantized_logits_for_values(
+                    &normalized_input,
+                    value_tensor_name,
+                    0,
+                    value_row_count as u64,
+                )?
+                .into_iter()
+                .map(|logit| logit.value as f32)
+                .collect::<Vec<_>>();
+            cached_keys.push(key);
+            cached_values.push(value);
+        }
+
+        let query_input = self.read_quantized_row_sample(input_tensor_name, query_input_row)?;
+        let (query_normalized_input, _, _) =
+            rms_normalize_values(&query_input.decoded_values, &norm_weight, self)?;
+        let mut query_projection = self
+            .read_quantized_logits_for_values(
+                &query_normalized_input,
+                query_tensor_name,
+                0,
+                query_row_count as u64,
+            )?
+            .into_iter()
+            .map(|logit| logit.value as f32)
+            .collect::<Vec<_>>();
+        let query_key = self
+            .read_quantized_logits_for_values(
+                &query_normalized_input,
+                key_tensor_name,
+                0,
+                key_row_count as u64,
+            )?
+            .into_iter()
+            .map(|logit| logit.value as f32)
+            .collect::<Vec<_>>();
+        let query_value = self
+            .read_quantized_logits_for_values(
+                &query_normalized_input,
+                value_tensor_name,
+                0,
+                value_row_count as u64,
+            )?
+            .into_iter()
+            .map(|logit| logit.value as f32)
+            .collect::<Vec<_>>();
+        let query_projection_checksum = checksum_f32_values(&query_projection);
+        let query_key_checksum = checksum_f32_values(&query_key);
+        let query_value_checksum = checksum_f32_values(&query_value);
+
+        let query_position = cached_input_rows.len();
+        apply_rope_to_projection(
+            &mut query_projection,
+            head_count,
+            head_dimension,
+            query_position,
+            rope_freq_base,
+        )?;
+        let mut query_key_rope = query_key.clone();
+        apply_rope_to_projection(
+            &mut query_key_rope,
+            kv_head_count,
+            head_dimension,
+            query_position,
+            rope_freq_base,
+        )?;
+        cached_keys.push(query_key_rope);
+        cached_values.push(query_value);
+
+        let scale = (head_dimension as f64).sqrt();
+        let mut final_scores = Vec::with_capacity(head_count * cached_keys.len());
+        let mut last_attention_input = vec![0.0f32; query_row_count];
+        for head_index in 0..head_count {
+            let kv_head_index = head_index / value_repeat_factor;
+            let raw_scores = (0..cached_keys.len())
+                .map(|key_position| {
+                    let score = attention_head_dot(
+                        &query_projection,
+                        head_index,
+                        &cached_keys[key_position],
+                        kv_head_index,
+                        head_dimension,
+                    ) / scale;
+                    final_scores.push(GgufAttentionScoreSample {
+                        query_position,
+                        key_position,
+                        head_index,
+                        kv_head_index,
+                        value: score,
+                    });
+                    score
+                })
+                .collect::<Vec<_>>();
+            let weights = softmax_f64(&raw_scores);
+            for dim in 0..head_dimension {
+                let weighted_value = weights
+                    .iter()
+                    .enumerate()
+                    .map(|(key_position, weight)| {
+                        *weight
+                            * cached_values[key_position][kv_head_index * head_dimension + dim]
+                                as f64
+                    })
+                    .sum::<f64>();
+                last_attention_input[head_index * head_dimension + dim] = weighted_value as f32;
+            }
+        }
+
+        let output_row_count = self.tensor_row_count(output_tensor_name)?;
+        let cached_attention_output = self.read_quantized_logits_for_values(
+            &last_attention_input,
+            output_tensor_name,
+            0,
+            output_row_count,
+        )?;
+        let cached_attention_output_checksum = checksum_logits(&cached_attention_output);
+        let attention_output_abs_max_diff = full_attention
+            .attention_output
+            .iter()
+            .zip(cached_attention_output.iter())
+            .map(|(left, right)| (left.value - right.value).abs())
+            .fold(0.0f64, f64::max);
+        let attention_output_checksum_diff =
+            (full_attention.attention_output_checksum - cached_attention_output_checksum).abs();
+
+        Ok(GgufCachedAttentionParitySample {
+            full_attention,
+            cached_input_rows: cached_input_rows.to_vec(),
+            query_input_row,
+            cache_token_count: cached_input_rows.len(),
+            total_token_count: cached_keys.len(),
+            cached_key_checksum: checksum_nested_f32_values(&cached_keys),
+            cached_value_checksum: checksum_nested_f32_values(&cached_values),
+            query_projection_checksum,
+            query_key_checksum,
+            query_value_checksum,
+            rope_query_checksum: checksum_f32_values(&query_projection),
+            rope_key_cache_checksum: checksum_nested_f32_values(&cached_keys),
+            final_attention_score_count: final_scores.len(),
+            final_attention_score_checksum: checksum_attention_scores(&final_scores),
+            cached_last_attention_input_checksum: checksum_f32_values(&last_attention_input),
+            cached_attention_output_checksum,
+            attention_output_abs_max_diff,
+            attention_output_checksum_diff,
         })
     }
 

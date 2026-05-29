@@ -132,9 +132,10 @@ impl GgufTokenizerIndex {
             ids.push(self.bos_token_id?);
         }
 
-        let piece = byte_level_chars(text).into_iter().collect::<String>();
-        for token in self.byte_bpe_piece(&piece) {
-            ids.push(self.token_id(&token).or(self.unknown_token_id)?);
+        for piece in byte_level_pieces(text) {
+            for token in self.byte_bpe_piece(&piece) {
+                ids.push(self.token_id(&token).or(self.unknown_token_id)?);
+            }
         }
 
         Some(ids)
@@ -623,11 +624,98 @@ impl GgufHeader {
     }
 }
 
-fn byte_level_chars(text: &str) -> Vec<char> {
-    text.as_bytes()
-        .iter()
-        .map(|byte| byte_level_char(*byte))
+fn byte_level_pieces(text: &str) -> Vec<String> {
+    pretokenize(text)
+        .into_iter()
+        .map(|piece| {
+            piece
+                .as_bytes()
+                .iter()
+                .map(|byte| byte_level_char(*byte))
+                .collect()
+        })
         .collect()
+}
+
+fn pretokenize(text: &str) -> Vec<&str> {
+    let mut pieces = Vec::new();
+    let mut idx = 0;
+    while idx < text.len() {
+        if let Some(end) = contraction_end(text, idx) {
+            pieces.push(&text[idx..end]);
+            idx = end;
+            continue;
+        }
+
+        let ch = text[idx..].chars().next().expect("valid char boundary");
+        let mut start = idx;
+        let mut scan = idx;
+        if ch == ' ' {
+            let next_idx = idx + ch.len_utf8();
+            if next_idx < text.len() {
+                let next = text[next_idx..]
+                    .chars()
+                    .next()
+                    .expect("valid char boundary");
+                if !next.is_whitespace() {
+                    scan = next_idx;
+                }
+            }
+        }
+
+        let first = text[scan..].chars().next().expect("valid char boundary");
+        let class = char_class(first);
+        if scan != idx && class == CharClass::Whitespace {
+            start = idx;
+            scan = idx;
+        }
+        let mut end = scan + first.len_utf8();
+        while end < text.len() {
+            if contraction_end(text, end).is_some() {
+                break;
+            }
+            let next = text[end..].chars().next().expect("valid char boundary");
+            if char_class(next) != class {
+                break;
+            }
+            end += next.len_utf8();
+        }
+
+        pieces.push(&text[start..end]);
+        idx = end;
+    }
+    pieces
+}
+
+fn contraction_end(text: &str, idx: usize) -> Option<usize> {
+    ["'s", "'t", "'re", "'ve", "'m", "'ll", "'d"]
+        .iter()
+        .find_map(|suffix| {
+            let end = idx + suffix.len();
+            text.get(idx..end)
+                .is_some_and(|value| value.eq_ignore_ascii_case(suffix))
+                .then_some(end)
+        })
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+enum CharClass {
+    Letter,
+    Number,
+    Whitespace,
+    Other,
+}
+
+fn char_class(ch: char) -> CharClass {
+    if ch.is_alphabetic() {
+        CharClass::Letter
+    } else if ch.is_numeric() {
+        CharClass::Number
+    } else if ch.is_whitespace() {
+        CharClass::Whitespace
+    } else {
+        CharClass::Other
+    }
 }
 
 fn byte_level_char(byte: u8) -> char {
@@ -981,7 +1069,7 @@ mod tests {
             .expect("write array type");
         file.write_all(&8u32.to_le_bytes())
             .expect("write array string element type");
-        file.write_all(&7u64.to_le_bytes())
+        file.write_all(&13u64.to_le_bytes())
             .expect("write array len");
         write_gguf_string(&mut file, "<s>");
         write_gguf_string(&mut file, "</s>");
@@ -990,24 +1078,33 @@ mod tests {
         write_gguf_string(&mut file, "i");
         write_gguf_string(&mut file, "Hi");
         write_gguf_string(&mut file, "\u{0120}");
+        write_gguf_string(&mut file, ".");
+        write_gguf_string(&mut file, "c");
+        write_gguf_string(&mut file, "p");
+        write_gguf_string(&mut file, "cp");
+        write_gguf_string(&mut file, "cpp");
+        write_gguf_string(&mut file, ".cpp");
 
         write_gguf_string(&mut file, "tokenizer.ggml.merges");
         file.write_all(&9u32.to_le_bytes())
             .expect("write array type");
         file.write_all(&8u32.to_le_bytes())
             .expect("write array string element type");
-        file.write_all(&1u64.to_le_bytes())
+        file.write_all(&4u64.to_le_bytes())
             .expect("write array len");
         write_gguf_string(&mut file, "H i");
+        write_gguf_string(&mut file, "c p");
+        write_gguf_string(&mut file, "cp p");
+        write_gguf_string(&mut file, ". cpp");
 
         write_gguf_string(&mut file, "tokenizer.ggml.token_type");
         file.write_all(&9u32.to_le_bytes())
             .expect("write array type");
         file.write_all(&5u32.to_le_bytes())
             .expect("write array i32 element type");
-        file.write_all(&7u64.to_le_bytes())
+        file.write_all(&13u64.to_le_bytes())
             .expect("write array len");
-        for token_type in [3i32, 3, 2, 1, 1, 1, 1] {
+        for token_type in [3i32, 3, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1] {
             file.write_all(&token_type.to_le_bytes())
                 .expect("write token type");
         }
@@ -1044,7 +1141,7 @@ mod tests {
             header.metadata_value("tokenizer.ggml.tokens"),
             Some(&GgufMetadataValue::Array {
                 element_type: GgufValueType::String,
-                len: 7,
+                len: 13,
                 string_samples: vec![
                     "<s>".to_string(),
                     "</s>".to_string(),
@@ -1052,7 +1149,8 @@ mod tests {
                     "H".to_string(),
                     "i".to_string(),
                     "Hi".to_string(),
-                    "\u{0120}".to_string()
+                    "\u{0120}".to_string(),
+                    ".".to_string()
                 ],
                 string_values: vec![
                     "<s>".to_string(),
@@ -1061,7 +1159,13 @@ mod tests {
                     "H".to_string(),
                     "i".to_string(),
                     "Hi".to_string(),
-                    "\u{0120}".to_string()
+                    "\u{0120}".to_string(),
+                    ".".to_string(),
+                    "c".to_string(),
+                    "p".to_string(),
+                    "cp".to_string(),
+                    "cpp".to_string(),
+                    ".cpp".to_string()
                 ],
                 i32_samples: Vec::new(),
                 i32_values: Vec::new()
@@ -1069,10 +1173,10 @@ mod tests {
         );
         assert_eq!(
             header.i32_array_values("tokenizer.ggml.token_type"),
-            Some(&[3, 3, 2, 1, 1, 1, 1][..])
+            Some(&[3, 3, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1][..])
         );
         let tokenizer_index = header.tokenizer_index().expect("tokenizer index");
-        assert_eq!(tokenizer_index.token_count, 7);
+        assert_eq!(tokenizer_index.token_count, 13);
         assert_eq!(tokenizer_index.token_to_id.get("<s>"), Some(&0));
         assert_eq!(tokenizer_index.token_to_id.get("</s>"), Some(&1));
         assert_eq!(
@@ -1093,6 +1197,10 @@ mod tests {
         assert_eq!(
             tokenizer_index.encode_byte_bpe(" Hi", false),
             Some(vec![6, 5])
+        );
+        assert_eq!(
+            tokenizer_index.encode_byte_bpe(".cpp", false),
+            Some(vec![7, 11])
         );
         assert_eq!(header.tensors[0].name, "token_embd.weight");
         assert_eq!(header.tensors[0].dimensions, vec![32000, 4096]);

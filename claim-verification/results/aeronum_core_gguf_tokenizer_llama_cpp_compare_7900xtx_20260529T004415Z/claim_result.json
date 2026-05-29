@@ -1,0 +1,68 @@
+{
+  "claim_id": "aeronum_core_gguf_tokenizer_llama_cpp_compare_20260529",
+  "status": "verified_current_limited",
+  "timestamp_utc": "2026-05-29T00:44:15Z",
+  "repo_commit_before_changes": "ca414dd5c5cecddaa8879572c191a705efd5e0cd",
+  "hardware": {
+    "primary_gpu": "Radeon RX 7900 XTX",
+    "rocm_agent": "gfx1100",
+    "secondary_gpu": "AMD Radeon Graphics",
+    "secondary_rocm_agent": "gfx1036",
+    "cpu": "AMD Ryzen 9 9950X 16-Core Processor"
+  },
+  "software": {
+    "pytorch": "2.5.1+rocm6.2",
+    "torch_hip": "6.2.41133-dd7f95766",
+    "llama_cpp_binary": "/home/rob/llama.cpp/build-gpu/bin/llama-tokenize"
+  },
+  "command": "benchmarks/gguf/compare_tokenizer.py --model /home/rob/models/mistralai_Mistral-Small-3.1-24B-Instruct-2503-Q4_K_M.gguf",
+  "model": {
+    "path": "/home/rob/models/mistralai_Mistral-Small-3.1-24B-Instruct-2503-Q4_K_M.gguf",
+    "sha256": "c5743c1bf39db0ae8a5ade5df0374b8e9e492754a199cfdad7ef393c1590f7c0",
+    "tokenizer_model": "gpt2",
+    "tokenizer_pre": "tekken",
+    "token_count": 131072,
+    "merge_count": 269443
+  },
+  "result_summary": {
+    "exit_code": 0,
+    "all_match": true,
+    "prompt_count": 10,
+    "comparison_count": 20,
+    "prompt_labels": [
+      "hello_world",
+      "hello_world_punctuation",
+      "leading_space",
+      "lowercase_sentence",
+      "artifact_prompt",
+      "digits_and_periods",
+      "contraction",
+      "umlaut",
+      "emoji_rocket",
+      "llama_cpp_text"
+    ],
+    "previous_mismatch_fixed": {
+      "text": "this is \ud83e\udd99.cpp",
+      "with_bos_ids": [1, 2496, 1395, 119685, 1166, 1153, 1046, 51228],
+      "without_bos_ids": [2496, 1395, 119685, 1166, 1153, 1046, 51228]
+    }
+  },
+  "scope_limitations": [
+    "This verifies repo-owned GGUF byte-level BPE tokenization against llama.cpp for a fixed prompt set.",
+    "This does not verify exhaustive tokenizer parity.",
+    "This does not verify special-token parsing.",
+    "This does not verify q4_K/q6_K tensor execution.",
+    "This does not verify AeroNum-native GGUF token inference throughput."
+  ],
+  "artifacts": [
+    "benchmarks/gguf/compare_tokenizer.py",
+    "core/examples/gguf_tokenizer_compare.rs",
+    "core/src/aeronn/model.rs",
+    "claim-verification/results/aeronum_core_gguf_tokenizer_llama_cpp_compare_7900xtx_20260529T004415Z/command_config.txt",
+    "claim-verification/results/aeronum_core_gguf_tokenizer_llama_cpp_compare_7900xtx_20260529T004415Z/hardware_software_metadata.txt",
+    "claim-verification/results/aeronum_core_gguf_tokenizer_llama_cpp_compare_7900xtx_20260529T004415Z/tokenizer_compare.stdout.log",
+    "claim-verification/results/aeronum_core_gguf_tokenizer_llama_cpp_compare_7900xtx_20260529T004415Z/tokenizer_compare.stderr.log",
+    "claim-verification/results/aeronum_core_gguf_tokenizer_llama_cpp_compare_7900xtx_20260529T004415Z/tokenizer_compare.exit_code.txt",
+    "claim-verification/results/aeronum_core_gguf_tokenizer_llama_cpp_compare_7900xtx_20260529T004415Z/tokenizer_compare_result.json"
+  ]
+}

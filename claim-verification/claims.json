@@ -222,23 +222,20 @@
       ]
     },
     {
-      "id": "aeronum_core_gguf_byte_bpe_tokenizer_20260529",
+      "id": "aeronum_core_gguf_tokenizer_llama_cpp_compare_20260529",
       "status": "verified_current_limited",
-      "claim": "aeronum-core includes a byte-level BPE tokenizer path built from GGUF tokenizer.ggml.tokens and tokenizer.ggml.merges. The repo-owned command `cargo run -p aeronum-core --example gguf_header_smoke -- --model /home/rob/models/mistralai_Mistral-Small-3.1-24B-Instruct-2503-Q4_K_M.gguf --device rocm --max-tokens 16 --prompt \"AeroNum GGUF tokenizer smoke\"` reported byte-BPE token IDs that matched `/home/rob/llama.cpp/build-gpu/bin/llama-tokenize` for fixed ASCII prompts on the same local GGUF file. `Hello world` with BOS matched [1,22177,4304], `Hello world` without BOS matched [22177,4304], and `AeroNum GGUF tokenizer smoke` with BOS matched [1,1065,3168,9516,105675,52359,128405,29528]. The model SHA-256 was c5743c1bf39db0ae8a5ade5df0374b8e9e492754a199cfdad7ef393c1590f7c0, tokenizer model was gpt2, tokenizer pre was tekken, token_count was 131072, and merge_count was 269443. This is a fixed-prompt byte-level BPE tokenizer check, not exhaustive Unicode tokenization, not general special-token parsing, not q4_K/q6_K tensor execution, and not AeroNum-native GGUF token inference throughput.",
+      "claim": "aeronum-core includes a byte-level BPE tokenizer path built from GGUF tokenizer.ggml.tokens and tokenizer.ggml.merges, with GPT-style pre-tokenization for letters, numbers, punctuation/symbol runs, whitespace, and common contractions. The repo-owned command `benchmarks/gguf/compare_tokenizer.py --model /home/rob/models/mistralai_Mistral-Small-3.1-24B-Instruct-2503-Q4_K_M.gguf` matched `/home/rob/llama.cpp/build-gpu/bin/llama-tokenize` for 10 fixed prompts and 20 with/without-BOS comparisons on the same local GGUF file. The prompt set covered Hello world, punctuation, leading spaces, lowercase words, AeroNum GGUF tokenizer smoke, digits and periods, a contraction, Äpfel, 🚀, and this is 🦙.cpp. The previous emoji-plus-suffix mismatch now matched llama.cpp with BOS IDs [1,2496,1395,119685,1166,1153,1046,51228] and without-BOS IDs [2496,1395,119685,1166,1153,1046,51228]. The model SHA-256 was c5743c1bf39db0ae8a5ade5df0374b8e9e492754a199cfdad7ef393c1590f7c0, tokenizer model was gpt2, tokenizer pre was tekken, token_count was 131072, and merge_count was 269443. This is a fixed-prompt tokenizer parity check, not exhaustive tokenizer parity, not special-token parsing, not q4_K/q6_K tensor execution, and not AeroNum-native GGUF token inference throughput.",
       "artifacts": [
+        "benchmarks/gguf/compare_tokenizer.py",
+        "core/examples/gguf_tokenizer_compare.rs",
         "core/src/aeronn/model.rs",
-        "core/examples/gguf_header_smoke.rs",
-        "claim-verification/results/aeronum_core_gguf_byte_bpe_tokenizer_7900xtx_20260529T003552Z/claim_result.json",
-        "claim-verification/results/aeronum_core_gguf_byte_bpe_tokenizer_7900xtx_20260529T003552Z/byte_bpe_tokenizer_comparison.json",
-        "claim-verification/results/aeronum_core_gguf_byte_bpe_tokenizer_7900xtx_20260529T003552Z/gguf_byte_bpe_tokenizer_result.json",
-        "claim-verification/results/aeronum_core_gguf_byte_bpe_tokenizer_7900xtx_20260529T003552Z/gguf_byte_bpe_tokenizer.stdout.log",
-        "claim-verification/results/aeronum_core_gguf_byte_bpe_tokenizer_7900xtx_20260529T003552Z/gguf_byte_bpe_tokenizer.stderr.log",
-        "claim-verification/results/aeronum_core_gguf_byte_bpe_tokenizer_7900xtx_20260529T003552Z/gguf_byte_bpe_tokenizer.exit_code.txt",
-        "claim-verification/results/aeronum_core_gguf_byte_bpe_tokenizer_7900xtx_20260529T003552Z/llama_tokenize_hello_world_with_bos.stdout.log",
-        "claim-verification/results/aeronum_core_gguf_byte_bpe_tokenizer_7900xtx_20260529T003552Z/llama_tokenize_hello_world_no_bos.stdout.log",
-        "claim-verification/results/aeronum_core_gguf_byte_bpe_tokenizer_7900xtx_20260529T003552Z/llama_tokenize_artifact_prompt_with_bos.stdout.log",
-        "claim-verification/results/aeronum_core_gguf_byte_bpe_tokenizer_7900xtx_20260529T003552Z/command_config.txt",
-        "claim-verification/results/aeronum_core_gguf_byte_bpe_tokenizer_7900xtx_20260529T003552Z/hardware_software_metadata.txt"
+        "claim-verification/results/aeronum_core_gguf_tokenizer_llama_cpp_compare_7900xtx_20260529T004415Z/claim_result.json",
+        "claim-verification/results/aeronum_core_gguf_tokenizer_llama_cpp_compare_7900xtx_20260529T004415Z/tokenizer_compare_result.json",
+        "claim-verification/results/aeronum_core_gguf_tokenizer_llama_cpp_compare_7900xtx_20260529T004415Z/tokenizer_compare.stdout.log",
+        "claim-verification/results/aeronum_core_gguf_tokenizer_llama_cpp_compare_7900xtx_20260529T004415Z/tokenizer_compare.stderr.log",
+        "claim-verification/results/aeronum_core_gguf_tokenizer_llama_cpp_compare_7900xtx_20260529T004415Z/tokenizer_compare.exit_code.txt",
+        "claim-verification/results/aeronum_core_gguf_tokenizer_llama_cpp_compare_7900xtx_20260529T004415Z/command_config.txt",
+        "claim-verification/results/aeronum_core_gguf_tokenizer_llama_cpp_compare_7900xtx_20260529T004415Z/hardware_software_metadata.txt"
       ]
     },
     {
@@ -311,7 +308,7 @@
     {
       "id": "aeronum_gpt2_nccl_gguf_claims_20260528",
       "status": "blocked",
-      "claim": "AeroNum-vs-PyTorch GPT-2 training speedup, NCCL/MPI multi-GPU scaling, and AeroNum-native GGUF token-inference throughput claims are not included because no current AeroNum artifact or rerun verified them. A PyTorch/Hugging Face GPT-2 reference passed, AeroNum-owned tiny language-model, tiny transformer-forward, and tiny transformer output-projection training analogues passed but are not GPT-2, NCCL/DDP world size 1 passed, the integrated distributed_compare.py guard blocks the local two-device NCCL topology before launch, post-reboot NCCL attempts failed on the local Radeon RX 7900 XTX plus integrated AMD Radeon Graphics topology, a two-rank single-XTX attempt was rejected by RCCL as duplicate GPU usage, the AeroNum GGUF core result parses metadata, tokenizer string-array samples, the full tokenizer token array, tokenizer merges, tokenizer token-type array, exact-token-piece encode/decode for known special tokens, a byte-level BPE path matching llama.cpp on fixed ASCII prompts, tokenizer config, selected Llama hyperparameters, tensor directory records, tensor byte ranges, loads all 81 F32 tensors into LlamaModel, and offloads those model weights through ROCm device 0 but still reaches only placeholder generation, and the GGUF token-inference result is a llama.cpp reference through an AeroNum repo wrapper.",
+      "claim": "AeroNum-vs-PyTorch GPT-2 training speedup, NCCL/MPI multi-GPU scaling, and AeroNum-native GGUF token-inference throughput claims are not included because no current AeroNum artifact or rerun verified them. A PyTorch/Hugging Face GPT-2 reference passed, AeroNum-owned tiny language-model, tiny transformer-forward, and tiny transformer output-projection training analogues passed but are not GPT-2, NCCL/DDP world size 1 passed, the integrated distributed_compare.py guard blocks the local two-device NCCL topology before launch, post-reboot NCCL attempts failed on the local Radeon RX 7900 XTX plus integrated AMD Radeon Graphics topology, a two-rank single-XTX attempt was rejected by RCCL as duplicate GPU usage, the AeroNum GGUF core result parses metadata, tokenizer string-array samples, the full tokenizer token array, tokenizer merges, tokenizer token-type array, exact-token-piece encode/decode for known special tokens, a byte-level BPE path matching llama.cpp on 10 fixed prompts, tokenizer config, selected Llama hyperparameters, tensor directory records, tensor byte ranges, loads all 81 F32 tensors into LlamaModel, and offloads those model weights through ROCm device 0 but still reaches only placeholder generation, and the GGUF token-inference result is a llama.cpp reference through an AeroNum repo wrapper.",
       "artifacts": [
         "claim-verification/results/aeronum_pytorch_gpt2_reference_7900xtx_20260528T224500Z/claim_result.json",
         "claim-verification/results/aeronum_tiny_lm_train_7900xtx_20260528T231229Z/claim_result.json",
@@ -336,8 +333,8 @@
         "claim-verification/results/aeronum_nccl_debug_20260528T225759Z/heterogeneous.stderr.log",
         "claim-verification/results/aeronum_nccl_debug_20260528T225759Z/heterogeneous_no_p2p_shm.stdout.log",
         "claim-verification/results/aeronum_nccl_debug_20260528T225759Z/heterogeneous_no_p2p_shm.stderr.log",
-        "claim-verification/results/aeronum_core_gguf_byte_bpe_tokenizer_7900xtx_20260529T003552Z/claim_result.json",
-        "claim-verification/results/aeronum_core_gguf_byte_bpe_tokenizer_7900xtx_20260529T003552Z/byte_bpe_tokenizer_comparison.json"
+        "claim-verification/results/aeronum_core_gguf_tokenizer_llama_cpp_compare_7900xtx_20260529T004415Z/claim_result.json",
+        "claim-verification/results/aeronum_core_gguf_tokenizer_llama_cpp_compare_7900xtx_20260529T004415Z/tokenizer_compare_result.json"
       ]
     }
   ]
